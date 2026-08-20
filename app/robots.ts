@@ -6,6 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://lectoro.app/sitemap.xml",
+    sitemap: "https://lectoro.com/sitemap.xml",
+    host: "https://lectoro.com",
   };
 }
