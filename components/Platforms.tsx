@@ -17,11 +17,11 @@ export default function Platforms() {
           <div className="flex items-center gap-2 font-display font-extrabold text-xl text-red-600 hover:scale-105 transition-transform">
             <span>TED Talks</span>
           </div>
-          <div className="flex items-center gap-2 font-display font-extrabold text-xl text-blue-500 hover:scale-105 transition-transform">
-            <span>Coursera</span>
+          <div className="flex items-center gap-2 font-display font-extrabold text-xl hover:scale-105 transition-transform">
+            <span>X.com</span>
           </div>
           <div className="flex items-center gap-2 font-display font-extrabold text-xl text-purple-400 hover:scale-105 transition-transform">
-            <span>Udemy</span>
+            <span>Plex.tv</span>
           </div>
           <div className="flex items-center gap-2 font-display font-extrabold text-xl text-cyan-400 hover:scale-105 transition-transform">
             <span>🌐 Any Web Article & Docs</span>

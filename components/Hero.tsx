@@ -140,7 +140,14 @@ export default function Hero() {
               <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/85 z-[2] pointer-events-none"></div>
 
               <div className="absolute h-full w-full top-0 left-0">
-                <Image src="/hero.png" alt="AI Video" fill className="object-cover w-full h-full" />
+                <Image
+                  src="/hero.png"
+                  alt="AI Video"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1024px"
+                  className="object-cover w-full h-full"
+                />
               </div>
 
               {/* Lectoro Active Mode Watermark */}

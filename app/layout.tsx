@@ -83,8 +83,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`scroll-smooth ${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-[#070913] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`scroll-smooth ${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+    >
+      <body
+        suppressHydrationWarning
+        className="bg-[#070913] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white"
+      >
         {/* Ambient Visual Glow & Grid */}
         <div className="ambient-glow" aria-hidden="true">
           <div className="glow-sphere-1"></div>
