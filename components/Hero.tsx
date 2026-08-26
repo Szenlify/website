@@ -4,24 +4,119 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 
-interface WordDemoState {
+interface WordItem {
+  id: "scooby" | "makes" | "english" | "easy";
   word: string;
-  ipa: string;
   trans: string;
   note: string;
+  wordAudio: string;
+  explanationAudio: string;
 }
 
-export default function Hero() {
-  const [selectedWord, setSelectedWord] = useState<WordDemoState>({
-    word: "relentless",
-    ipa: "/rɪˈlent.ləs/",
-    trans: "unyielding, determined, uncompromising",
-    note: "In legal context, Harvey uses this word to emphasize unwavering perseverance to win tough cases.",
-  });
-  const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+const DEMO_WORDS: Record<string, WordItem> = {
+  Scooby: {
+    id: "scooby",
+    word: "Scooby",
+    trans: "Scooby (postać / imię)",
+    note: "Imię kultowego psa ze Scooby-Doo, symbolizujące bezstresową i zabawną naukę angielskiego przez wideo.",
+    wordAudio: "/audio/words/scooby.mp3",
+    explanationAudio: "/audio/translations/scooby.mp3",
+  },
+  Makes: {
+    id: "makes",
+    word: "Makes",
+    trans: "sprawia, czyni",
+    note: "Czasownik 'make' w 3. os. l. poj. Konstrukcja 'make [something] [adjective]' oznacza sprawianie, że coś staje się proste.",
+    wordAudio: "/audio/words/makes.mp3",
+    explanationAudio: "/audio/translations/makes.mp3",
+  },
+  English: {
+    id: "english",
+    word: "English",
+    trans: "język angielski",
+    note: "Język angielski. W języku angielskim nazwy języków i narodowości zawsze piszemy wielką literą.",
+    wordAudio: "/audio/words/english.mp3",
+    explanationAudio: "/audio/translations/english.mp3",
+  },
+  Easy: {
+    id: "easy",
+    word: "Easy",
+    trans: "łatwy, prosty, przystępny",
+    note: "Przymiotnik oznaczający coś prostego. Podkreśla naturalne przyswajanie słownictwa bez wkuwania.",
+    wordAudio: "/audio/words/easy.mp3",
+    explanationAudio: "/audio/translations/easy.mp3",
+  },
+};
 
-  const handleSelectWord = (word: string, ipa: string, trans: string, note: string) => {
-    setSelectedWord({ word, ipa, trans, note });
+export default function Hero() {
+  const [selectedWord, setSelectedWord] = useState<WordItem>(DEMO_WORDS["Scooby"]);
+  const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+  const [activeAudio, setActiveAudio] = useState<{ id: string; type: "word" | "explanation" } | null>(null);
+  const currentAudioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  const stopCurrentAudio = () => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.currentTime = 0;
+      currentAudioRef.current = null;
+    }
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    setActiveAudio(null);
+  };
+
+  const playAudioWithFallback = (
+    audioFileUrl: string,
+    fallbackText: string,
+    fallbackLang: string,
+    id: string,
+    type: "word" | "explanation"
+  ) => {
+    stopCurrentAudio();
+    setActiveAudio({ id, type });
+
+    const audio = new Audio(audioFileUrl);
+    currentAudioRef.current = audio;
+
+    const triggerFallback = () => {
+      currentAudioRef.current = null;
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(fallbackText);
+        utterance.lang = fallbackLang;
+        utterance.rate = 0.95;
+        utterance.onend = () => setActiveAudio(null);
+        utterance.onerror = () => setActiveAudio(null);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setActiveAudio(null);
+      }
+    };
+
+    audio.onended = () => {
+      setActiveAudio(null);
+      currentAudioRef.current = null;
+    };
+
+    audio.onerror = () => {
+      // Audio not added to folder yet -> seamless fallback
+      triggerFallback();
+    };
+
+    audio.play().catch(() => {
+      triggerFallback();
+    });
+  };
+
+  const handlePlayWordAudio = (item: WordItem) => {
+    playAudioWithFallback(item.wordAudio, item.word, "en-US", item.id, "word");
+  };
+
+  const handlePlayExplanationAudio = (item: WordItem) => {
+    // Reads translation and explanation
+    const speechText = `${item.trans}. ${item.note}`;
+    playAudioWithFallback(item.explanationAudio, speechText, "pl-PL", item.id, "explanation");
   };
 
   const handleSaveFlashcard = () => {
@@ -31,22 +126,13 @@ export default function Hero() {
     }, 2500);
   };
 
-  const handlePlayPronunciation = (text: string) => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.95;
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
   return (
     <section className="relative pt-20 pb-16 text-center overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Live Pill Badge */}
         <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-xs font-semibold text-indigo-300 tracking-wide uppercase mb-6">
           <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_#06b6d4] badge-dot"></span>
-          <span>Chrome Extension Manifest V3 • Gemini 2.5 AI & ElevenLabs</span>
+          <span>Next-generation immersion</span>
         </div>
 
         {/* Main Hero Headline */}
@@ -162,78 +248,93 @@ export default function Hero() {
 
               {/* Subtitles & Interactive Popover Area */}
               <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 w-full max-w-2xl mx-auto text-center pt-8 pb-4">
-                {/* Popover Tooltip for currently selected word */}
-                <div className="interactive-word-tooltip" id="interactiveTooltip">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-display font-extrabold text-lg text-white tooltip-word">{selectedWord.word}</span>
-                    <span className="text-xs text-slate-400 font-mono">{selectedWord.ipa}</span>
+                {/* Popover Tooltip matching exact Extension layout & styles */}
+                <div className="__qt_sentence_translation" id="__qt_sentence_translation">
+                  <div className="__qt_header">
+                    <span>EN → PL</span>
                   </div>
-                  <div className="text-sm font-semibold text-cyan-400 mb-2 tooltip-trans">{selectedWord.trans}</div>
-                  <div className="bg-indigo-500/10 border-l-2 border-indigo-500 p-2 rounded text-xs text-slate-300 mb-3 text-left leading-relaxed tooltip-ai-note">
-                    <strong>💡 Gemini AI Tutor:</strong> {selectedWord.note}
+                  <div className="__qt_body">
+                    {/* EN Row (Original Word + Audio Pronunciation) */}
+                    <div className="__qt_row">
+                      <span className="__qt_label" title="Source language: English">EN</span>
+                      <span className="__qt_text __qt_original">{selectedWord.word}</span>
+                      <span className="__qt_word-actions">
+                        <button
+                          type="button"
+                          className={`__qt_speak ${activeAudio?.id === selectedWord.id && activeAudio?.type === "word" ? "speaking" : ""}`}
+                          onClick={() => handlePlayWordAudio(selectedWord)}
+                          title="Odtwórz wymowę słowa"
+                          aria-label="Odtwórz wymowę słowa"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                          </svg>
+                        </button>
+                      </span>
+                    </div>
+
+                    {/* PL Row (Translation + Read Translation & AI Explanation) */}
+                    <div className="__qt_row">
+                      <span className="__qt_label" title="Translation language: Polish">PL</span>
+                      <span className="__qt_text __qt_translated">{selectedWord.trans}</span>
+                      <span className="__qt_word-actions">
+                        <button
+                          type="button"
+                          className={`__qt_speak ${activeAudio?.id === selectedWord.id && activeAudio?.type === "explanation" ? "speaking" : ""}`}
+                          onClick={() => handlePlayExplanationAudio(selectedWord)}
+                          title="Odtwórz tłumaczenie i wyjaśnienie AI"
+                          aria-label="Odtwórz tłumaczenie i wyjaśnienie AI"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                          </svg>
+                        </button>
+                      </span>
+                    </div>
+
+                    {/* AI Result Block */}
+                    <div className="__qt_ai-result">
+                      <div className="__qt_ai-label">✨ AI Explanation:</div>
+                      <div className="__qt_ai-text">{selectedWord.note}</div>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="__qt_save-footer">
                     <button
                       type="button"
-                      className={`flex-1 py-1.5 px-3 text-xs font-bold rounded-lg text-white flex items-center justify-center gap-1.5 transition duration-200 ${
-                        savedSuccess ? "bg-emerald-600" : "bg-indigo-600 hover:bg-indigo-500"
-                      }`}
+                      className={`__qt_ai-explain-save-btn ${savedSuccess ? "saved" : ""}`}
                       onClick={handleSaveFlashcard}
+                      title="Save word for review"
                     >
-                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                      </svg>
-                      <span>{savedSuccess ? "Saved to Deck!" : "Save word"}</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="py-1.5 px-3 text-xs font-bold rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center gap-1.5 transition duration-200"
-                      onClick={() => handlePlayPronunciation(selectedWord.word)}
-                    >
-                      <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                      </svg>
-                      <span>Pronounce</span>
+                      <span>{savedSuccess ? "✓" : "💾"}</span>
+                      <span>{savedSuccess ? "Saved to Deck!" : "Save"}</span>
                     </button>
                   </div>
                 </div>
 
-                {/* Dual Subtitle Box */}
-                <div className="inline-block px-6 py-4">
-                  <div className="font-display text-lg sm:text-2xl font-bold text-white mb-1 tracking-tight">
-                    You need to be{" "}
-                    <span
-                      className={`clickable-word ${selectedWord.word === "relentless" ? "active" : ""}`}
-                      onClick={() =>
-                        handleSelectWord(
-                          "relentless",
-                          "/rɪˈlent.ləs/",
-                          "unyielding, determined, uncompromising",
-                          "Harvey emphasizes unstoppable determination to win."
-                        )
-                      }
-                    >
-                      relentless
-                    </span>{" "}
-                    if you want to win this{" "}
-                    <span
-                      className={`clickable-word ${selectedWord.word === "trial" ? "active" : ""}`}
-                      onClick={() =>
-                        handleSelectWord(
-                          "trial",
-                          "/ˈtraɪ.əl/",
-                          "court hearing, legal proceeding",
-                          "A formal examination of evidence in court before a judge."
-                        )
-                      }
-                    >
-                      trial
-                    </span>
-                    .
+                {/* Dual Subtitle Box with Speaker Icon next to every word */}
+                <div className="inline-block px-1 py-4">
+                  <div className="font-display text-xl sm:text-3xl font-extrabold text-white mb-1.5 tracking-tight flex items-center justify-center flex-wrap gap-2">
+                    {(["Scooby", "Makes", "English", "Easy"] as const).map((wordKey) => {
+                      const item = DEMO_WORDS[wordKey];
+                      const isSelected = selectedWord.id === item.id;
+
+                      return (
+                        <span
+                          key={item.id}
+                          className={`clickable-word ${isSelected ? "active" : ""}`}
+                          onClick={() => {
+                            setSelectedWord(item);
+                          }}
+                        >
+                          <span>{item.word}</span>
+                        </span>
+                      );
+                    })}
                   </div>
                   <div className="text-sm sm:text-base font-medium text-slate-400">
-                    Debes ser implacable si quieres ganar este juicio. / Musisz być nieustępliwy.
+                    Scooby sprawia, że nauka angielskiego jest dziecinnie prosta.
                   </div>
                 </div>
               </div>
