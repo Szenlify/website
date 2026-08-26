@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface LogoProps {
   className?: string;
@@ -34,20 +35,14 @@ export default function Logo({ className = "", showText = true, size = "md" }: L
       className={`inline-flex items-center gap-3 group transition-transform duration-200 ${className}`}
       aria-label="Lectoro AI Home"
     >
-      <div
-        className={`${currentSize.icon} bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform duration-200 shrink-0`}
-      >
-        <svg className={`${currentSize.svg} text-white fill-current`} viewBox="0 0 24 24">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
-        </svg>
-      </div>
+      <Image src="/icon48.png" alt="Lectoro AI" width={34} height={34} />
       {showText && (
         <div className="flex items-baseline leading-none select-none">
           <span className={`font-display font-extrabold ${currentSize.text} text-white tracking-tight`}>
             Lectoro
           </span>
-          <span className={`font-display font-extrabold ${currentSize.text} text-indigo-400`}>
-            .ai
+          <span className={`font-display font-extrabold ${currentSize.text} text-teal-400`}>
+            AI
           </span>
         </div>
       )}
