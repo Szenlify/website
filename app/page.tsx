@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import Platforms from "@/components/Platforms";
+import ShowcaseCarousel from "@/components/ShowcaseCarousel";
 import Features from "@/components/Features";
 import Comparison from "@/components/Comparison";
 import HowItWorks from "@/components/HowItWorks";
@@ -14,6 +15,7 @@ export default function HomePage() {
       <Hero />
       <Platforms />
       <Features />
+      <ShowcaseCarousel />
       <Comparison />
       <HowItWorks />
       <Pricing />
