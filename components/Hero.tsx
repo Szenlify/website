@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useState } from "react";
 
 interface WordDemoState {
@@ -84,13 +85,13 @@ export default function Hero() {
 
         {/* Trust signals */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs sm:text-sm text-slate-400 font-medium">
-          <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+          {/* <div className="flex items-center gap-1.5 text-amber-400 font-bold">
             <span>★★★★★</span>
             <span className="text-white font-bold">4.9/5</span>
             <span className="text-slate-400 font-normal">(1,280+ ratings)</span>
-          </div>
+          </div> */}
           <span>•</span>
-          <span>No credit card required</span>
+          <span>Credit card required</span>
           <span>•</span>
           <span>Instant 5-second install</span>
         </div>
@@ -117,12 +118,12 @@ export default function Hero() {
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-                <span className="truncate">https://www.netflix.com/watch/81040344 — Suits (S01E01)</span>
+                <span className="truncate">https://www.netflix.com/watch/81040344</span>
               </div>
 
               <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 shrink-0">
                 <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                <span className="hidden sm:inline">Lectoro Active</span>
+                <span className="hidden sm:inline">LectoroAI</span>
               </div>
             </div>
 
@@ -138,11 +139,8 @@ export default function Hero() {
               {/* Backdrop Cinematic Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/85 z-[2] pointer-events-none"></div>
 
-              {/* Decorative Center Element / Watermark */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-[2] opacity-15 pointer-events-none select-none">
-                <svg className="w-28 h-28 mx-auto fill-white" viewBox="0 0 24 24">
-                  <path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z" />
-                </svg>
+              <div className="absolute h-full w-full top-0 left-0">
+                <Image src="/hero.png" alt="AI Video" fill className="object-cover w-full h-full" />
               </div>
 
               {/* Lectoro Active Mode Watermark */}
@@ -150,11 +148,11 @@ export default function Hero() {
                 <svg className="w-3.5 h-3.5 text-cyan-400 fill-current" viewBox="0 0 24 24">
                   <polygon points="5 3 19 12 5 21 5 3"></polygon>
                 </svg>
-                <span>Lectoro Dual Subtitles Mode</span>
+                <span>Lectoro Subtitles Mode</span>
               </div>
 
               {/* Subtitles & Interactive Popover Area */}
-              <div className="relative z-20 w-full max-w-2xl mx-auto my-auto text-center pt-8 pb-4">
+              <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 w-full max-w-2xl mx-auto text-center pt-8 pb-4">
                 {/* Popover Tooltip for currently selected word */}
                 <div className="interactive-word-tooltip" id="interactiveTooltip">
                   <div className="flex items-center justify-between mb-1.5">
@@ -176,7 +174,7 @@ export default function Hero() {
                       <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                       </svg>
-                      <span>{savedSuccess ? "✓ Saved to Deck!" : "Save to SRS"}</span>
+                      <span>{savedSuccess ? "Saved to Deck!" : "Save word"}</span>
                     </button>
                     <button
                       type="button"
@@ -193,7 +191,7 @@ export default function Hero() {
                 </div>
 
                 {/* Dual Subtitle Box */}
-                <div className="inline-block bg-[#05070f]/90 backdrop-blur-md border border-white/15 px-6 py-4 rounded-2xl shadow-2xl">
+                <div className="inline-block px-6 py-4">
                   <div className="font-display text-lg sm:text-2xl font-bold text-white mb-1 tracking-tight">
                     You need to be{" "}
                     <span
@@ -246,7 +244,7 @@ export default function Hero() {
                   <div className="w-[45%] h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full"></div>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-300">
-                  <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">EN ⇄ ES / PL</span>
+                  <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">EN ⇄ PL</span>
                   <svg className="w-4 h-4 text-slate-400 hover:text-white cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
                   </svg>
