@@ -172,7 +172,7 @@ export default function ShowcaseCarousel({ images = DEFAULT_SHOWCASE_IMAGES }: S
       {/* Header Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 flex items-end justify-between gap-4">
         <div />
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center text-center">
           <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-2 block">
             Visual Experience
           </span>
@@ -266,14 +266,11 @@ export default function ShowcaseCarousel({ images = DEFAULT_SHOWCASE_IMAGES }: S
                     scrollToSlide(index);
                   }
                 }}
-                className={`shrink-0 snap-center rounded-2xl sm:rounded-3xl overflow-hidden border transition-all duration-500 relative group flex items-center justify-center cursor-pointer shadow-2xl ${
+                className={`shrink-0 snap-center h-90 md:h-[44vh] rounded-2xl sm:rounded-3xl overflow-hidden border transition-all duration-500 relative group flex items-center justify-center cursor-pointer shadow-2xl ${
                   isActive
                     ? "border-indigo-500/60 shadow-indigo-500/25 scale-100 opacity-100"
-                    : "border-white/10 shadow-black/80 scale-[0.95] opacity-65 hover:opacity-85 hover:scale-[0.97]"
+                    : "border-white/10 shadow-black/80 scale-[0.9] opacity-65 hover:opacity-85 hover:scale-[0.97]"
                 }`}
-                style={{
-                  height: "clamp(280px, 56vh, 560px)",
-                }}
               >
                 {/* Image Container with Original Aspect Ratio (object-contain, no cropping) */}
                 <div className="relative h-full w-auto flex items-center justify-center bg-[#080b19]">
