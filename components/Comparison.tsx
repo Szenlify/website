@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Logo from "./Logo";
 
 interface ComparisonRow {
   category: string;
@@ -279,7 +280,7 @@ export default function Comparison() {
                   <div className="absolute -top-px left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400" />
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-display font-black text-lg text-white flex items-center gap-1.5">
-                      <span>✨ Lectoro AI</span>
+                      <Logo size="sm" />
                     </span>
                     <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-400/20 text-emerald-300 border border-emerald-400/40">
                       Winner
@@ -439,7 +440,7 @@ export default function Comparison() {
                     <div className="p-4 rounded-xl bg-indigo-500/15 border border-indigo-500/40 space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-black text-white flex items-center gap-1">
-                          <span>✨ Lectoro AI</span>
+                          <Logo size="sm" />
                         </span>
                         <span className="w-5 h-5 rounded-full bg-emerald-400/20 text-emerald-300 flex items-center justify-center text-xs font-black">
                           ✓

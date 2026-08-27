@@ -15,25 +15,26 @@ export interface CarouselItem {
  */
 export const DEFAULT_SHOWCASE_IMAGES: (string | CarouselItem)[] = [
   {
-    src: "/showcase/video-word-card.jpg",
-    alt: "Interactive dual subtitles with clickable word cards",
-    title: "Clickable Subtitles & Instant AI Definitions",
+    src: "/showcase/wardog.png",
+    alt: "Master Idioms & Context with AI",
+    title: "Master Idioms & Context with AI",
+  },
+    {
+    src: "/showcase/plex.png",
+    alt: "Flashcards within reach",
+    title: "Flashcards within reach",
   },
   {
-    src: "/showcase/x.png",
-    alt: "Translating posts and video captions on X.com",
-    title: "Translating posts and video captions on X.com",
+    src: "/showcase/xx.png",
+    alt: "Translating posts & video on X.com",
+    title: "Translating posts & video on X.com",
   },
   {
     src: "/showcase/bbc.png",
-    alt: "Dual Subtitles mode in video player",
-    title: "Seamless Bilingual Subtitles on Netflix & YouTube",
+    alt: "Learn from Any Page",
+    title: "Learn from Any Page",
   },
-  {
-    src: "/showcase/review-panel.jpg",
-    alt: "Spaced Repetition (SRS) Flashcard review panel",
-    title: "Spaced Repetition (SRS) Micro-Review Sessions",
-  },
+
 ];
 
 interface ShowcaseCarouselProps {

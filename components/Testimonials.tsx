@@ -1,12 +1,10 @@
-import React from "react";
-
 export default function Testimonials() {
   return (
     <section className="py-24 relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3 block">User Testimonials</span>
-          <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white mb-4">Loved by 1,000+ Language Enthusiasts</h2>
+          <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white mb-4">Loved by Language Enthusiasts</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
