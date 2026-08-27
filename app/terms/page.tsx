@@ -121,7 +121,7 @@ export default function TermsPage() {
                 Official Domain: <span className="text-indigo-400">lectoroai.com</span>
               </div>
               <div className="text-slate-400 text-xs">
-                Email: <a href="mailto:support@lectoroai.com" className="text-indigo-400 font-mono">support@lectoroai.com</a>
+                Email: <a href="mailto:lectoroai@gmail.com" className="text-indigo-400 font-mono">lectoroai@gmail.com</a>
               </div>
             </div>
           </section>
