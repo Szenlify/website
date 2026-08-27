@@ -22,7 +22,12 @@ export const DEFAULT_SHOWCASE_IMAGES: (string | CarouselItem)[] = [
     title: "Clickable Subtitles & Instant AI Definitions",
   },
   {
-    src: "/showcase/video-ai-closed.jpg",
+    src: "/showcase/x.png",
+    alt: "Dual Subtitles mode in video player",
+    title: "Seamless Bilingual Subtitles on Netflix & YouTube",
+  },
+   {
+    src: "/showcase/bbc.png",
     alt: "Dual Subtitles mode in video player",
     title: "Seamless Bilingual Subtitles on Netflix & YouTube",
   },
@@ -30,11 +35,6 @@ export const DEFAULT_SHOWCASE_IMAGES: (string | CarouselItem)[] = [
     src: "/showcase/review-panel.jpg",
     alt: "Spaced Repetition (SRS) Flashcard review panel",
     title: "Spaced Repetition (SRS) Micro-Review Sessions",
-  },
-  {
-    src: "/showcase/Screenshot 2026-08-20 at 18.02.19.png",
-    alt: "Lectoro AI Learning Dashboard",
-    title: "Complete Video Immersion Learning Flow",
   },
 ];
 
