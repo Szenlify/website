@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 
 export default function Features() {
@@ -42,7 +43,7 @@ export default function Features() {
             <div className="flex flex-wrap gap-2">
               <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">YouTube & Netflix</span>
               <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">Click-to-Pause</span>
-              <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">WebP Snapshots</span>
+              <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">Snapshots</span>
             </div>
           </div>
 
@@ -70,13 +71,13 @@ export default function Features() {
               <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-2xl text-purple-400 mb-6 group-hover:scale-110 transition-transform">
                 🧠
               </div>
-              <h3 className="font-display font-bold text-2xl text-white mb-3">Gemini 2.5 AI Tutor</h3>
+              <h3 className="font-display font-bold text-2xl text-white mb-3"> AI Tutor</h3>
               <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                Forget rigid dictionary definitions. Gemini 2.5 breaks down slang, cultural references, and phrasal verbs in 1 ultra-sharp sentence, exactly like a personal native tutor.
+                Forget rigid dictionary definitions. AI breaks down slang, cultural references, and phrasal verbs in 1 ultra-sharp sentence, exactly like a personal native tutor.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">Google Gemini 2.5</span>
+              <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">AI</span>
               <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">1-Sentence Nuance</span>
               <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">Context Examples</span>
             </div>
@@ -87,13 +88,13 @@ export default function Features() {
             <div>
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-bold text-emerald-400 mb-4">
                 <span className="w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_8px_#10b981]"></span>
-                <span>SuperMemo SM-2 Algorithm</span>
+                <span>SuperMemo Algorithm</span>
               </div>
               <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white mb-4 leading-tight">
                 Lock Words Into Long-Term Memory Without Cramming
               </h3>
               <p className="text-slate-300 text-base leading-relaxed mb-6">
-                Up to 90% of new words are forgotten within 7 days without spaced review. Lectoro uses the proven <strong>Spaced Repetition (SRS)</strong> algorithm to automatically schedule 5-minute daily micro-reviews right before you forget.
+                Up to 90% of new words are forgotten within 7 days without spaced review. Lectoro uses the proven <strong>Spaced Repetition</strong> algorithm to automatically schedule 5-minute daily micro-reviews right before you forget.
               </p>
               <ul className="space-y-3 text-slate-300 text-sm mb-6">
                 <li className="flex items-center gap-3">
@@ -109,61 +110,14 @@ export default function Features() {
             </div>
 
             {/* Interactive Flashcard Showcase Widget */}
-            <div className="w-full max-w-md mx-auto">
-              <div className="bg-gradient-to-b from-[#18203c] to-[#0e1225] border border-indigo-500/40 rounded-3xl p-6 sm:p-7 shadow-2xl shadow-indigo-950/50 relative">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 px-3 py-1 rounded-md border border-emerald-500/30">
-                    Review in 3 days
-                  </span>
-                  <span className="text-xs font-semibold text-red-400 flex items-center gap-1.5">
-                    <span>🎬 Netflix</span>
-                  </span>
-                </div>
-
-                <div className="w-full h-36 rounded-xl bg-slate-900 mb-4 overflow-hidden relative border border-white/10 flex items-center justify-center group">
-                  <div className="text-center">
-                    <div className="text-3xl mb-1">⚖️</div>
-                    <span className="text-xs text-slate-400">Suits S01E01 Snapshot</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-display font-extrabold text-2xl text-white">relentless</span>
-                  <button
-                    type="button"
-                    className="w-9 h-9 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-transform hover:scale-110"
-                    onClick={() => handlePlayPronunciation("relentless")}
-                    title="Listen Pronunciation"
-                  >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="text-sm font-semibold text-cyan-400 mb-3">unyielding, uncompromising, determined</div>
-
-                <div className="text-xs text-slate-300 bg-white/[0.03] p-3 rounded-lg border-l-2 border-cyan-400 mb-5 leading-relaxed">
-                  “You need to be relentless if you want to win this trial.”
-                </div>
-
-                {/* SRS Evaluation buttons */}
-                <div className="grid grid-cols-4 gap-2">
-                  <button type="button" className="py-2 px-1 text-xs font-bold rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500 border border-white/10 text-slate-400 transition">
-                    Again (1d)
-                  </button>
-                  <button type="button" className="py-2 px-1 text-xs font-bold rounded-lg bg-white/5 hover:bg-amber-500/20 hover:text-amber-400 hover:border-amber-500 border border-white/10 text-slate-400 transition">
-                    Hard (2d)
-                  </button>
-                  <button type="button" className="py-2 px-1 text-xs font-bold rounded-lg bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500 border border-white/10 text-slate-400 transition">
-                    Good (4d)
-                  </button>
-                  <button type="button" className="py-2 px-1 text-xs font-bold rounded-lg bg-white/5 hover:bg-cyan-500/20 hover:text-cyan-400 hover:border-cyan-500 border border-white/10 text-slate-400 transition">
-                    Easy (7d)
-                  </button>
-                </div>
-              </div>
+            <div className="w-full max-w-xs mx-auto rotate-4">
+              <Image
+                src="/showcase/review.png"
+                alt="Review flashcard popup"
+                width={600}
+                height={600}
+                className="w-full rounded-2xl border border-white/10 shadow-2xl shadow-indigo-500/30"
+              />
             </div>
           </div>
 
@@ -186,10 +140,10 @@ export default function Features() {
           </div>
 
           {/* Feature 6 */}
-          <div className="glass-panel p-8 flex flex-col justify-between group">
+          <div className="glass-panel p-8 flex flex-col justify-between group col-span-1 md:col-span-2">
             <div>
               <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
-                📊
+                <Image src="/platforms/anki.png" alt="Anki" width={40} height={40} />
               </div>
               <h3 className="font-display font-bold text-2xl text-white mb-3">AI Quizzes & 1-Click Anki Export</h3>
               <p className="text-slate-300 text-sm leading-relaxed mb-6">
