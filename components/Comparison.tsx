@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function Comparison() {
   return (
     <section className="py-24 border-t border-white/10 bg-[#050711]/40 relative z-10" id="comparison">
