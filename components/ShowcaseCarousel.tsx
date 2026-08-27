@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 
 export interface CarouselItem {
@@ -11,9 +11,7 @@ export interface CarouselItem {
 
 /**
  * 📸 LISTA ZDJĘĆ DO KARUZELI:
- * Tutaj po prostu dodajesz kolejne zdjęcia!
- * Możesz podać samą ścieżkę do pliku w folderze /public np. "/showcase/twoje-zdjecie.jpg"
- * lub obiekt { src: "...", alt: "...", title: "..." }.
+ * Tutaj możesz podawać kolejne zdjęcia z folderu /public
  */
 export const DEFAULT_SHOWCASE_IMAGES: (string | CarouselItem)[] = [
   {
@@ -26,7 +24,7 @@ export const DEFAULT_SHOWCASE_IMAGES: (string | CarouselItem)[] = [
     alt: "Dual Subtitles mode in video player",
     title: "Seamless Bilingual Subtitles on Netflix & YouTube",
   },
-   {
+  {
     src: "/showcase/bbc.png",
     alt: "Dual Subtitles mode in video player",
     title: "Seamless Bilingual Subtitles on Netflix & YouTube",
@@ -44,12 +42,13 @@ interface ShowcaseCarouselProps {
 
 export default function ShowcaseCarousel({ images = DEFAULT_SHOWCASE_IMAGES }: ShowcaseCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  // Mouse Drag / Swipe State
+  // Mouse Drag State
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [startX, setStartX] = useState<number>(0);
-  const [scrollLeftState, setScrollLeftState] = useState<number>(0);
+  const startXRef = useRef<number>(0);
+  const startScrollLeftRef = useRef<number>(0);
   const isMovedRef = useRef<boolean>(false);
 
   // Normalize images to uniform object format
@@ -63,24 +62,19 @@ export default function ShowcaseCarousel({ images = DEFAULT_SHOWCASE_IMAGES }: S
     return item;
   });
 
+  // Calculate which slide is closest to container center
   const updateCurrentIndex = useCallback(() => {
     if (!scrollRef.current) return;
     const container = scrollRef.current;
-    const scrollLeft = container.scrollLeft;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
 
-    // When near the start where the invisible spacer is active
-    if (scrollLeft <= 30) {
-      setCurrentIndex(0);
-      return;
-    }
-
-    // Children[0] is the invisible spacer, Children[1..N] are the actual image cards
-    const slides = Array.from(container.children).slice(1, normalizedImages.length + 1) as HTMLElement[];
     let closestIndex = 0;
     let minDiff = Infinity;
 
-    slides.forEach((slide, idx) => {
-      const diff = Math.abs(slide.offsetLeft - scrollLeft);
+    slideRefs.current.forEach((slide, idx) => {
+      if (!slide) return;
+      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+      const diff = Math.abs(slideCenter - containerCenter);
       if (diff < minDiff) {
         minDiff = diff;
         closestIndex = idx;
@@ -88,23 +82,32 @@ export default function ShowcaseCarousel({ images = DEFAULT_SHOWCASE_IMAGES }: S
     });
 
     setCurrentIndex(closestIndex);
-  }, [normalizedImages.length]);
+  }, []);
 
-  const scrollToSlide = (index: number) => {
-    if (!scrollRef.current) return;
+  // Smooth scroll to center a specific slide
+  const scrollToSlide = useCallback((index: number) => {
     const container = scrollRef.current;
-    if (index === 0) {
-      container.scrollTo({ left: 0, behavior: "smooth" });
-      setCurrentIndex(0);
-      return;
-    }
-    // Target child index is +1 because children[0] is the invisible spacer
-    const targetChild = container.children[index + 1] as HTMLElement | undefined;
-    if (targetChild) {
-      container.scrollTo({ left: targetChild.offsetLeft, behavior: "smooth" });
-      setCurrentIndex(index);
-    }
-  };
+    const slide = slideRefs.current[index];
+    if (!container || !slide) return;
+
+    const containerCenter = container.clientWidth / 2;
+    const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+    const targetScrollLeft = slideCenter - containerCenter;
+
+    container.scrollTo({
+      left: targetScrollLeft,
+      behavior: "smooth",
+    });
+    setCurrentIndex(index);
+  }, []);
+
+  // Center the first slide on initial render and on resize
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      scrollToSlide(0);
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [scrollToSlide]);
 
   const handlePrev = () => {
     const nextIndex = Math.max(0, currentIndex - 1);
@@ -116,31 +119,49 @@ export default function ShowcaseCarousel({ images = DEFAULT_SHOWCASE_IMAGES }: S
     scrollToSlide(nextIndex);
   };
 
-  // --- Mouse Drag to Swipe Handlers ---
+  // --- Mouse Drag to Swipe Handlers (Fluid 1:1 dragging without snap fighting) ---
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return;
     setIsDragging(true);
     isMovedRef.current = false;
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeftState(scrollRef.current.scrollLeft);
+    startXRef.current = e.pageX;
+    startScrollLeftRef.current = scrollRef.current.scrollLeft;
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !scrollRef.current) return;
     e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 1.4; // Sensitivity multiplier
-    if (Math.abs(walk) > 4) {
+    const deltaX = e.pageX - startXRef.current;
+    if (Math.abs(deltaX) > 5) {
       isMovedRef.current = true;
     }
-    scrollRef.current.scrollLeft = scrollLeftState - walk;
+    // 1:1 immediate tracking
+    scrollRef.current.scrollLeft = startScrollLeftRef.current - deltaX;
   };
 
   const handleMouseUpOrLeave = () => {
-    if (isDragging) {
-      setIsDragging(false);
-      updateCurrentIndex();
-    }
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    if (!scrollRef.current) return;
+    const container = scrollRef.current;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+
+    // Center the closest slide smoothly after drag release
+    let closestIndex = 0;
+    let minDiff = Infinity;
+
+    slideRefs.current.forEach((slide, idx) => {
+      if (!slide) return;
+      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+      const diff = Math.abs(slideCenter - containerCenter);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = idx;
+      }
+    });
+
+    scrollToSlide(closestIndex);
   };
 
   return (
@@ -204,14 +225,10 @@ export default function ShowcaseCarousel({ images = DEFAULT_SHOWCASE_IMAGES }: S
       </div>
 
       {/* 
-        Full-width Bleed Carousel Track:
-        - Pierwszy element to niewidoczne "zdjęcie" (spacer):
-          * Na telefonach: 5vw (5% szerokości ekranu)
-          * Na PC: 40vw (40% szerokości ekranu)
-        - Brak stałego paddingu z lewej/prawej (pl-0 pr-0).
-        - W pozycji początkowej jest pusta przestrzeń (5% na tel, 40% na PC),
-          a przy przewijaniu palcem lub myszką zdjęcia wjeżdżają w to puste pole
-          i zapełniają ekran aż do samej lewej krawędzi!
+        Full-width Smooth Snapping Carousel Track:
+        - Natural image dimensions (no fixed aspect ratio cropping)
+        - Snap-center ensures the active item is placed exactly in the middle
+        - Side spacers enable first and last items to be centered at any screen width
       */}
       <div className="w-full overflow-hidden">
         <div
@@ -221,52 +238,81 @@ export default function ShowcaseCarousel({ images = DEFAULT_SHOWCASE_IMAGES }: S
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
-          className={`flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth py-3 no-scrollbar pl-0 pr-0 select-none ${
-            isDragging ? "cursor-grabbing scroll-auto" : "cursor-grab snap-x snap-mandatory"
+          className={`flex items-center gap-4 sm:gap-8 overflow-x-auto py-6 no-scrollbar select-none touch-pan-x ${
+            isDragging
+              ? "cursor-grabbing scroll-auto snap-none"
+              : "cursor-grab scroll-smooth snap-x snap-mandatory"
           }`}
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {/* Niewidoczne pierwsze "zdjęcie" jako odstęp początkowy: 5% na telefonie, 40% na PC */}
+          {/* Symmetrical Leading Spacer: allows first slide to center at 50vw */}
           <div
-            className="w-[4vw] min-w-[4vw] lg:w-[25vw] lg:min-w-[25vw] shrink-0 pointer-events-none snap-start"
+            className="shrink-0 pointer-events-none w-[max(1rem,calc(50vw-min(40vw,380px)))]"
             aria-hidden="true"
           />
 
-          {/* Właściwe zdjęcia w karuzeli */}
-          {normalizedImages.map((img, index) => (
-            <div
-              key={index}
-              className="w-[82vw] min-w-[82vw] sm:w-[68vw] sm:min-w-[68vw] md:w-[58vw] md:min-w-[58vw] lg:w-[45vw] lg:min-w-[45vw] xl:w-[42vw] xl:min-w-[42vw] max-w-[760px] shrink-0 snap-start rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 bg-[#0a0e1e]/90 backdrop-blur-xl shadow-2xl shadow-black/80 group hover:border-indigo-500/50 transition-all duration-300 relative aspect-[16/10]"
-            >
-              <Image
-                src={img.src}
-                alt={img.alt || `Lectoro Screenshot ${index + 1}`}
-                fill
-                draggable={false}
-                sizes="(max-width: 768px) 82vw, (max-width: 1200px) 45vw, 760px"
-                className="object-cover w-full h-full pointer-events-none group-hover:scale-[1.015] transition-transform duration-500"
-              />
+          {/* Carousel Slides in their Natural Original Dimensions */}
+          {normalizedImages.map((img, index) => {
+            const isActive = currentIndex === index;
 
-              {/* Gradient Bottom Vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#070913]/75 via-transparent to-transparent pointer-events-none" />
+            return (
+              <div
+                key={index}
+                ref={(el) => {
+                  slideRefs.current[index] = el;
+                }}
+                onClick={() => {
+                  if (!isMovedRef.current) {
+                    scrollToSlide(index);
+                  }
+                }}
+                className={`shrink-0 snap-center rounded-2xl sm:rounded-3xl overflow-hidden border transition-all duration-500 relative group flex items-center justify-center cursor-pointer shadow-2xl ${
+                  isActive
+                    ? "border-indigo-500/60 shadow-indigo-500/25 scale-100 opacity-100"
+                    : "border-white/10 shadow-black/80 scale-[0.95] opacity-65 hover:opacity-85 hover:scale-[0.97]"
+                }`}
+                style={{
+                  height: "clamp(280px, 56vh, 560px)",
+                }}
+              >
+                {/* Image Container with Original Aspect Ratio (object-contain, no cropping) */}
+                <div className="relative h-full w-auto flex items-center justify-center bg-[#080b19]">
+                  <Image
+                    src={img.src}
+                    alt={img.alt || `Lectoro Screenshot ${index + 1}`}
+                    width={1800}
+                    height={1100}
+                    draggable={false}
+                    className="h-full w-auto max-w-[86vw] sm:max-w-[78vw] object-contain rounded-2xl sm:rounded-3xl pointer-events-none"
+                    priority={index === 0}
+                  />
 
-              {/* Optional Title Overlay */}
-              {img.title && (
-                <div className="absolute bottom-3 left-4 right-4 sm:bottom-4 sm:left-5 text-left pointer-events-none">
-                  <span className="text-xs sm:text-sm font-semibold text-white/90 drop-shadow-md bg-black/45 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 inline-block">
-                    {img.title}
-                  </span>
+                  {/* Subtle bottom gradient vignette for text legibility */}
+                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#070913]/85 via-[#070913]/30 to-transparent pointer-events-none" />
+
+                  {/* Title Overlay Badge */}
+                  {img.title && (
+                    <div className="absolute bottom-3.5 left-4 right-4 sm:bottom-4 sm:left-5 text-left pointer-events-none">
+                      <span className="text-xs sm:text-sm font-semibold text-white/95 drop-shadow-md bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/15 inline-flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${isActive ? "bg-cyan-400 animate-pulse" : "bg-white/40"}`} />
+                        <span>{img.title}</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
 
-          {/* Końcowy odstęp na prawą krawędź */}
-          <div className="w-[5vw] min-w-[5vw] lg:w-[15vw] lg:min-w-[15vw] shrink-0 pointer-events-none" aria-hidden="true" />
+          {/* Symmetrical Trailing Spacer: allows last slide to center at 50vw */}
+          <div
+            className="shrink-0 pointer-events-none w-[max(1rem,calc(50vw-min(40vw,380px)))]"
+            aria-hidden="true"
+          />
         </div>
 
         {/* Wskaźniki kropkowe (dots) */}
-        <div className="flex items-center justify-center gap-2 mt-6">
+        <div className="flex items-center justify-center gap-2 mt-4">
           {normalizedImages.map((_, index) => (
             <button
               key={index}
