@@ -8,7 +8,7 @@ export default function Pricing() {
           <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3 block">Transparent Pricing</span>
           <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white mb-4">Choose the Plan That Fits Your Goals</h2>
           <p className="text-slate-400 text-base sm:text-lg">
-            Start completely free. Upgrade whenever you're ready to unlock the full power of Gemini AI tutors and ElevenLabs voices.
+            Start completely free. Upgrade whenever you're ready to unlock the full power of AI tutors and ElevenLabs voices.
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export default function Pricing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-emerald-400 font-bold">✓</span>
-                  <span>10 Gemini AI queries / month</span>
+                  <span>10 AI queries / month</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-emerald-400 font-bold">✓</span>
@@ -88,7 +88,7 @@ export default function Pricing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-emerald-400 font-bold">✓</span>
-                  <span><strong>200 Gemini 2.5 AI queries</strong> / month</span>
+                  <span><strong>200 2.5 AI queries</strong> / month</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-emerald-400 font-bold">✓</span>
@@ -137,7 +137,7 @@ export default function Pricing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-emerald-400 font-bold">✓</span>
-                  <span><strong>1,200 Gemini AI queries</strong> / month</span>
+                  <span><strong>1,200 AI queries</strong> / month</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-emerald-400 font-bold">✓</span>

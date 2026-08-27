@@ -21,8 +21,8 @@ export const DEFAULT_SHOWCASE_IMAGES: (string | CarouselItem)[] = [
   },
   {
     src: "/showcase/x.png",
-    alt: "Dual Subtitles mode in video player",
-    title: "Seamless Bilingual Subtitles on Netflix & YouTube",
+    alt: "Translating posts and video captions on X.com",
+    title: "Translating posts and video captions on X.com",
   },
   {
     src: "/showcase/bbc.png",

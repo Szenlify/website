@@ -13,7 +13,7 @@ export default function Footer() {
               <Logo size="sm" />
             </div>
             <p className="text-slate-400 text-xs leading-relaxed max-w-xs">
-              Next-generation immersion platform with bilingual video subtitles, Gemini AI assistant, ElevenLabs audio, and Spaced Repetition.
+              Next-generation immersion platform with bilingual video subtitles, AI assistant, ElevenLabs audio, and Spaced Repetition.
             </p>
           </div>
 

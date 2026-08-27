@@ -142,7 +142,7 @@ export default function Hero() {
 
         {/* Hero Subtitle */}
         <p className="font-body text-lg sm:text-xl text-slate-300/90 leading-relaxed max-w-3xl mx-auto mb-10">
-          Watch movies & shows with <strong>smart bilingual clickable subtitles</strong>. Instantly translate idioms in 1 second with Gemini AI, listen to native ElevenLabs voices, and lock vocabulary into long-term memory with <strong>Spaced Repetition (SRS)</strong>.
+          Watch movies & shows with <strong>smart bilingual clickable subtitles</strong>. Instantly translate idioms in 1 second with AI, listen to native ElevenLabs voices, and lock vocabulary into long-term memory with <strong>Spaced Repetition (SRS)</strong>.
         </p>
 
         {/* Hero CTAs */}

@@ -22,7 +22,7 @@ export default function Features() {
             Why Lectoro AI Works 10x Faster Than Traditional Apps
           </h2>
           <p className="text-slate-400 text-base sm:text-lg">
-            We blend natural <strong>video immersion</strong> with cutting-edge Gemini AI models and scientifically proven memory psychology.
+            We blend natural <strong>video immersion</strong> with cutting-edge AI models and scientifically proven memory psychology.
           </p>
         </div>
 
