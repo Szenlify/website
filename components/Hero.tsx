@@ -307,7 +307,6 @@ export default function Hero() {
                       onClick={handleSaveFlashcard}
                       title="Save word for review"
                     >
-                      <span>{savedSuccess ? "✓" : "💾"}</span>
                       <span>{savedSuccess ? "Saved to Deck!" : "Save"}</span>
                     </button>
                   </div>
