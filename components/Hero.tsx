@@ -11,6 +11,7 @@ interface WordItem {
     trans: string;
     note: string;
     wordAudio: string;
+    translationAudio: string;
 }
 
 const DEMO_WORDS: Record<WordItem["id"], WordItem> = {
@@ -20,6 +21,7 @@ const DEMO_WORDS: Record<WordItem["id"], WordItem> = {
         trans: "I",
         note: 'A German personal pronoun meaning "I." It is used when the speaker refers to themselves.',
         wordAudio: "/audio/words/ich.mp3",
+        translationAudio: "/audio/translations/ich.mp3",
     },
 
     glaube: {
@@ -28,6 +30,7 @@ const DEMO_WORDS: Record<WordItem["id"], WordItem> = {
         trans: "think / believe",
         note: 'A form of the verb "glauben," meaning "to think" or "to believe." In "Ich glaube," it usually means "I think."',
         wordAudio: "/audio/words/glaube.mp3",
+        translationAudio: "/audio/translations/glaube.mp3",
     },
 
     wir: {
@@ -36,6 +39,7 @@ const DEMO_WORDS: Record<WordItem["id"], WordItem> = {
         trans: "we",
         note: 'A German personal pronoun meaning "we." It refers to the speaker together with other people.',
         wordAudio: "/audio/words/wir.mp3",
+        translationAudio: "/audio/translations/wir.mp3",
     },
 
     haben: {
@@ -44,6 +48,7 @@ const DEMO_WORDS: Record<WordItem["id"], WordItem> = {
         trans: "have",
         note: 'The verb "haben" means "to have." Here it follows "wir," so "wir haben" means "we have."',
         wordAudio: "/audio/words/haben.mp3",
+        translationAudio: "/audio/translations/haben.mp3",
     },
 
     arger: {
@@ -52,6 +57,7 @@ const DEMO_WORDS: Record<WordItem["id"], WordItem> = {
         trans: "trouble",
         note: 'A noun meaning "trouble" or "problems." The phrase "Ärger haben" means "to be in trouble."',
         wordAudio: "/audio/words/arger.mp3",
+        translationAudio: "/audio/translations/arger.mp3",
     },
 };
 
@@ -137,20 +143,14 @@ export default function Hero({ dict }: HeroProps) {
     };
 
     const handlePlayExplanationAudio = (item: WordItem) => {
-        stopCurrentAudio();
-        setActiveAudio({ id: item.id, type: "explanation" });
-
         const speechText = `${item.trans}. ${item.note}`;
-        if (typeof window !== "undefined" && "speechSynthesis" in window) {
-            const utterance = new SpeechSynthesisUtterance(speechText);
-            utterance.lang = "en-US";
-            utterance.rate = 0.95;
-            utterance.onend = () => setActiveAudio(null);
-            utterance.onerror = () => setActiveAudio(null);
-            window.speechSynthesis.speak(utterance);
-        } else {
-            setActiveAudio(null);
-        }
+        playAudioWithFallback(
+            item.translationAudio,
+            speechText,
+            "en-US",
+            item.id,
+            "explanation",
+        );
     };
 
     const handleSaveFlashcard = () => {
