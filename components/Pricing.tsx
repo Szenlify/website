@@ -1,6 +1,13 @@
 import React from "react";
+import type { Dict } from "@/lib/i18n/types";
 
-export default function Pricing() {
+interface PricingProps {
+    dict: Dict;
+}
+
+export default function Pricing({ dict }: PricingProps) {
+    const { pricing } = dict;
+
     return (
         <section
             className="py-24 border-t border-white/10 bg-[#050711]/40 relative z-10"
@@ -9,15 +16,13 @@ export default function Pricing() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3 block">
-                        Transparent Pricing
+                        {pricing.tag}
                     </span>
                     <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white mb-4">
-                        Choose the Plan That Fits Your Goals
+                        {pricing.title}
                     </h2>
                     <p className="text-slate-400 text-base sm:text-lg">
-                        Start completely free. Upgrade whenever you&apos;re
-                        ready to unlock the full power of AI tutors and
-                        ElevenLabs voices.
+                        {pricing.subtitle}
                     </p>
                 </div>
 
@@ -26,10 +31,10 @@ export default function Pricing() {
                     <div className="glass-panel p-8 sm:p-9 flex flex-col justify-between">
                         <div>
                             <div className="font-display font-extrabold text-2xl text-white mb-1">
-                                FREE
+                                {pricing.free.name}
                             </div>
                             <p className="text-xs text-slate-400 mb-6">
-                                For casual viewers and beginners
+                                {pricing.free.desc}
                             </p>
 
                             <div className="flex items-baseline gap-1 mb-8">
@@ -37,7 +42,7 @@ export default function Pricing() {
                                     $0
                                 </span>
                                 <span className="text-sm font-semibold text-slate-400">
-                                    / forever
+                                    {pricing.free.forever}
                                 </span>
                             </div>
 
@@ -46,38 +51,31 @@ export default function Pricing() {
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        Dual subtitles for Netflix & YouTube
-                                    </span>
+                                    <span>{pricing.free.f1}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>In-page web article translation</span>
+                                    <span>{pricing.free.f2}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        Up to{" "}
-                                        <strong>50 saved SRS flashcards</strong>
-                                    </span>
+                                    <span>{pricing.free.f3}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>10 AI queries / month</span>
+                                    <span>{pricing.free.f4}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        Standard browser speech synthesis
-                                    </span>
+                                    <span>{pricing.free.f5}</span>
                                 </li>
                             </ul>
                         </div>
@@ -88,22 +86,22 @@ export default function Pricing() {
                             rel="noopener noreferrer"
                             className="w-full py-3.5 px-6 rounded-xl text-center text-sm font-bold text-white bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/30 transition"
                         >
-                            Get Started Free
+                            {pricing.free.cta}
                         </a>
                     </div>
 
                     {/* Basic Plan (Most Popular) */}
                     <div className="glass-panel p-8 sm:p-9 flex flex-col justify-between relative bg-gradient-to-b from-[#1e274d]/90 to-[#0e1222]/95 border-2 border-indigo-500 shadow-2xl shadow-indigo-500/25 md:-translate-y-2">
                         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[11px] font-extrabold uppercase tracking-wider py-1 px-4 rounded-full shadow-lg">
-                            Most Popular
+                            {pricing.mostPopular}
                         </div>
 
                         <div>
                             <div className="font-display font-extrabold text-2xl text-indigo-400 mb-1">
-                                BASIC
+                                {pricing.basic.name}
                             </div>
                             <p className="text-xs text-slate-400 mb-6">
-                                For regular language learners
+                                {pricing.basic.desc}
                             </p>
 
                             <div className="flex items-baseline gap-1 mb-8">
@@ -111,7 +109,7 @@ export default function Pricing() {
                                     $7.99
                                 </span>
                                 <span className="text-sm font-semibold text-slate-400">
-                                    / month
+                                    {pricing.basic.mo}
                                 </span>
                             </div>
 
@@ -120,51 +118,37 @@ export default function Pricing() {
                                     <span className="text-indigo-400 font-black">
                                         ✓
                                     </span>
-                                    <span>3 DAYS FREE TRIAL</span>
+                                    <span>{pricing.basic.trial}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>Everything in FREE plan</span>
+                                    <span>{pricing.basic.f1}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        Up to{" "}
-                                        <strong>3,000 SRS flashcards</strong> in
-                                        cloud
-                                    </span>
+                                    <span>{pricing.basic.f2}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        <strong>200 2.5 AI queries</strong> /
-                                        month
-                                    </span>
+                                    <span>{pricing.basic.f3}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        <strong>
-                                            20,000 ElevenLabs characters
-                                        </strong>{" "}
-                                        / mo
-                                    </span>
+                                    <span>{pricing.basic.f4}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        1-Click export to Anki, PDF, and CSV
-                                    </span>
+                                    <span>{pricing.basic.f5}</span>
                                 </li>
                             </ul>
                         </div>
@@ -175,7 +159,7 @@ export default function Pricing() {
                             rel="noopener noreferrer"
                             className="w-full py-3.5 px-6 rounded-xl text-center text-sm font-extrabold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-lg shadow-indigo-500/40 hover:shadow-indigo-500/60 transition"
                         >
-                            Start 3-Day Free Trial
+                            {pricing.basic.cta}
                         </a>
                     </div>
 
@@ -183,10 +167,10 @@ export default function Pricing() {
                     <div className="glass-panel p-8 sm:p-9 flex flex-col justify-between">
                         <div>
                             <div className="font-display font-extrabold text-2xl text-white mb-1">
-                                PRO
+                                {pricing.pro.name}
                             </div>
                             <p className="text-xs text-slate-400 mb-6">
-                                For exam preparation & polyglots
+                                {pricing.pro.desc}
                             </p>
 
                             <div className="flex items-baseline gap-1 mb-8">
@@ -194,7 +178,7 @@ export default function Pricing() {
                                     $19.99
                                 </span>
                                 <span className="text-sm font-semibold text-slate-400">
-                                    / month
+                                    {pricing.pro.mo}
                                 </span>
                             </div>
 
@@ -203,48 +187,37 @@ export default function Pricing() {
                                     <span className="text-indigo-400 font-black">
                                         ✓
                                     </span>
-                                    <span>3 DAYS FREE TRIAL</span>
+                                    <span>{pricing.pro.trial}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>Everything in BASIC plan</span>
+                                    <span>{pricing.pro.f1}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        Up to{" "}
-                                        <strong>10,000 SRS flashcards</strong>
-                                    </span>
+                                    <span>{pricing.pro.f2}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        <strong>1,200 AI queries</strong> /
-                                        month
-                                    </span>
+                                    <span>{pricing.pro.f3}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>
-                                        <strong>
-                                            120,000 ElevenLabs characters
-                                        </strong>{" "}
-                                        / mo
-                                    </span>
+                                    <span>{pricing.pro.f4}</span>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>
-                                    <span>Priority AI quiz generation</span>
+                                    <span>{pricing.pro.f5}</span>
                                 </li>
                             </ul>
                         </div>
@@ -255,7 +228,7 @@ export default function Pricing() {
                             rel="noopener noreferrer"
                             className="w-full py-3.5 px-6 rounded-xl text-center text-sm font-bold text-white bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/30 transition"
                         >
-                            Start Pro Trial
+                            {pricing.pro.cta}
                         </a>
                     </div>
                 </div>

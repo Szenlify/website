@@ -1,21 +1,25 @@
 import Image from "next/image";
+import type { Dict } from "@/lib/i18n/types";
 
-export default function Features() {
+interface FeaturesProps {
+    dict: Pick<Dict, "features">;
+}
+
+export default function Features({ dict }: FeaturesProps) {
+    const { features } = dict;
     return (
         <section className="py-24 relative z-10" id="features">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3 block">
-                        Complete Learning Ecosystem
+                        {features.tag}
                     </span>
                     <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white mb-4">
-                        Why Lectoro AI Works 10x Faster Than Traditional Apps
+                        {features.title}
                     </h2>
                     <p className="text-slate-400 text-base sm:text-lg">
-                        We blend natural <strong>video immersion</strong> with
-                        cutting-edge AI models and scientifically proven memory
-                        psychology.
+                        {features.subtitle}
                     </p>
                 </div>
 
@@ -28,24 +32,21 @@ export default function Features() {
                                 🎬
                             </div>
                             <h3 className="font-display font-bold text-2xl text-white mb-3">
-                                Dual Subtitles & Frame Captures
+                                {features.f1.title}
                             </h3>
                             <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                                Display original language alongside your native
-                                translation. Click any unknown word to
-                                automatically pause the video and capture
-                                high-res scene snapshots for your flashcards.
+                                {features.f1.desc}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                YouTube & Netflix
+                                {features.f1.b1}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Click-to-Pause
+                                {features.f1.b2}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Snapshots
+                                {features.f1.b3}
                             </span>
                         </div>
                     </div>
@@ -57,24 +58,21 @@ export default function Features() {
                                 🌐
                             </div>
                             <h3 className="font-display font-bold text-2xl text-white mb-3">
-                                In-Page Web Translator
+                                {features.f2.title}
                             </h3>
                             <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                                Reading technical documentation, Reddit, or
-                                industry news? Highlight any text snippet to
-                                instantly reveal contextual definitions and
-                                grammatical analysis in a floating dock.
+                                {features.f2.desc}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Floating Toolbar
+                                {features.f2.b1}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Multi-Tier Cache
+                                {features.f2.b2}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Phrase Detection
+                                {features.f2.b3}
                             </span>
                         </div>
                     </div>
@@ -87,24 +85,21 @@ export default function Features() {
                             </div>
                             <h3 className="font-display font-bold text-2xl text-white mb-3">
                                 {" "}
-                                AI Tutor
+                                {features.f3.title}
                             </h3>
                             <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                                Forget rigid dictionary definitions. AI breaks
-                                down slang, cultural references, and phrasal
-                                verbs in 1 ultra-sharp sentence, exactly like a
-                                personal native tutor.
+                                {features.f3.desc}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                AI
+                                {features.f3.b1}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                1-Sentence Nuance
+                                {features.f3.b2}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Context Examples
+                                {features.f3.b3}
                             </span>
                         </div>
                     </div>
@@ -114,40 +109,32 @@ export default function Features() {
                         <div>
                             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-bold text-emerald-400 mb-4">
                                 <span className="w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_8px_#10b981]"></span>
-                                <span>SuperMemo Algorithm</span>
+                                <span>{features.f4.badge}</span>
                             </div>
                             <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white mb-4 leading-tight">
-                                Lock Words Into Long-Term Memory Without
-                                Cramming
+                                {features.f4.title}
                             </h3>
                             <p className="text-slate-300 text-base leading-relaxed mb-6">
-                                Up to 90% of new words are forgotten within 7
-                                days without spaced review. Lectoro uses the
-                                proven <strong>Spaced Repetition</strong>{" "}
-                                algorithm to automatically schedule 5-minute
-                                daily micro-reviews right before you forget.
+                                {features.f4.desc}
                             </p>
                             <ul className="space-y-3 text-slate-300 text-sm mb-6">
                                 <li className="flex items-center gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>{" "}
-                                    5-minute daily sessions in the extension
-                                    popup
+                                    {features.f4.l1}
                                 </li>
                                 <li className="flex items-center gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>{" "}
-                                    Real-time pending review badge in your
-                                    browser bar
+                                    {features.f4.l2}
                                 </li>
                                 <li className="flex items-center gap-3">
                                     <span className="text-emerald-400 font-bold">
                                         ✓
                                     </span>{" "}
-                                    Visual flashcards paired with exact movie
-                                    frame snapshots
+                                    {features.f4.l3}
                                 </li>
                             </ul>
                         </div>
@@ -171,24 +158,21 @@ export default function Features() {
                                 🎙️
                             </div>
                             <h3 className="font-display font-bold text-2xl text-white mb-3">
-                                ElevenLabs Neural Voice TTS
+                                {features.f5.title}
                             </h3>
                             <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                                Master authentic accents and natural cadence
-                                with world-class ElevenLabs voice synthesis
-                                models (Roger, Sarah, Charlie) with ultra-fast
-                                local audio caching.
+                                {features.f5.desc}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                ElevenLabs Flash v2.5
+                                {features.f5.b1}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Lifelike Accents
+                                {features.f5.b2}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Audio Cache
+                                {features.f5.b3}
                             </span>
                         </div>
                     </div>
@@ -205,24 +189,21 @@ export default function Features() {
                                 />
                             </div>
                             <h3 className="font-display font-bold text-2xl text-white mb-3">
-                                AI Quizzes & 1-Click Anki Export
+                                {features.f6.title}
                             </h3>
                             <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                                Test yourself with 6 dynamic AI-generated quiz
-                                types. Export your entire vocabulary collection
-                                to Anki (.txt), Excel/CSV, or printable PDF
-                                study worksheets in seconds.
+                                {features.f6.desc}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Anki .txt Export
+                                {features.f6.b1}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                Interactive Quizzes
+                                {features.f6.b2}
                             </span>
                             <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-white/5 border border-white/10 text-slate-400">
-                                PDF Printouts
+                                {features.f6.b3}
                             </span>
                         </div>
                     </div>

@@ -3,258 +3,37 @@
 import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
-
-interface ComparisonRow {
-    category: string;
-    feature: string;
-    description: string;
-    lectoro: {
-        title: string;
-        detail: string;
-        isPositive: boolean;
-    };
-    languageReactor: {
-        title: string;
-        detail: string;
-        isPositive: boolean;
-    };
-    lingopie: {
-        title: string;
-        detail: string;
-        isPositive: boolean;
-    };
-    duolingo: {
-        title: string;
-        detail: string;
-        isPositive: boolean;
-    };
-}
-
-const COMPARISON_DATA: ComparisonRow[] = [
-    {
-        category: "AI & Intelligence",
-        feature: "Contextual AI Tutor (Slang & Idioms)",
-        description:
-            "Explains nuanced cultural references, jokes, and phrasal verbs in real time.",
-        lectoro: {
-            title: "AI Tutor",
-            detail: "Explains slang, cultural humor & grammar in 1 sharp sentence.",
-            isPositive: true,
-        },
-        languageReactor: {
-            title: "Translation & Lookup Tools",
-            detail: "Offers bilingual subtitles, dictionary tools and machine translation in Pro.",
-            isPositive: false,
-        },
-        lingopie: {
-            title: "Conversational Meanings",
-            detail: "Includes contextual word meanings, video flashcards and grammar explanations.",
-            isPositive: false,
-        },
-        duolingo: {
-            title: "Course-Based AI Features",
-            detail: "AI conversation features vary by course, platform and subscription tier.",
-            isPositive: false,
-        },
-    },
-    {
-        category: "Content Freedom",
-        feature: "Supported Platforms & Web Reading",
-        description:
-            "Where you can actually learn without paying extra or switching apps.",
-        lectoro: {
-            title: "YouTube, Netflix & Entire Web",
-            detail: "Works on videos AND any webpage, news, Reddit or X (Twitter).",
-            isPositive: true,
-        },
-        languageReactor: {
-            title: "Netflix, YouTube, Books & Web",
-            detail: "Supports video, podcasts, imported webpages and uploaded books on desktop.",
-            isPositive: false,
-        },
-        lingopie: {
-            title: "Curated Streaming Catalog",
-            detail: "Provides thousands of shows, movies, podcasts and other learning content.",
-            isPositive: false,
-        },
-        duolingo: {
-            title: "Structured Course Content",
-            detail: "Focuses on guided lessons rather than learning across arbitrary webpages.",
-            isPositive: false,
-        },
-    },
-    {
-        category: "Ergonomics & UX",
-        feature: "Zero-Mouse Keyboard Flow",
-        description:
-            "Hands-free video playback and subtitle navigation from your couch.",
-        lectoro: {
-            title: "Keyboard Navigation",
-            detail: "Navigate subtitles, control playback and access learning tools from the keyboard.",
-            isPositive: true,
-        },
-        languageReactor: {
-            title: "Keyboard & Gesture Controls",
-            detail: "Provides shortcuts and gestures for precise video navigation and playback.",
-            isPositive: false,
-        },
-        lingopie: {
-            title: "Interactive Video Player",
-            detail: "Words can be selected directly from subtitles while watching catalog content.",
-            isPositive: false,
-        },
-        duolingo: {
-            title: "Interactive Exercises",
-            detail: "Uses short listening, speaking, writing and selection-based exercises.",
-            isPositive: false,
-        },
-    },
-    {
-        category: "Memory Retention",
-        feature: "Automated Scene Snapshots for Anki",
-        description:
-            "Captures visual frames so your memory links words directly to scenes.",
-        lectoro: {
-            title: "Automatic Scene Snapshots",
-            detail: "Pairs saved vocabulary with high-resolution frames from the current scene.",
-            isPositive: true,
-        },
-        languageReactor: {
-            title: "Saved Vocabulary Tools",
-            detail: "Lets learners save vocabulary; media-rich export options depend on workflow.",
-            isPositive: false,
-        },
-        lingopie: {
-            title: "Video Flashcards",
-            detail: "Builds flashcards around vocabulary encountered in its video catalog.",
-            isPositive: false,
-        },
-        duolingo: {
-            title: "Course Visuals",
-            detail: "Uses course illustrations rather than snapshots from the learner's media.",
-            isPositive: false,
-        },
-    },
-    {
-        category: "Export & Ownership",
-        feature: "1-Click Anki & Excel Export",
-        description:
-            "Own your vocabulary database forever without platform lock-in.",
-        lectoro: {
-            title: "1-Click Anki .txt / CSV / PDF",
-            detail: "Exports saved vocabulary in formats listed elsewhere on this site.",
-            isPositive: true,
-        },
-        languageReactor: {
-            title: "Vocabulary Export Available",
-            detail: "Export format and media support depend on the selected plan and workflow.",
-            isPositive: false,
-        },
-        lingopie: {
-            title: "In-App Vocabulary Review",
-            detail: "Official product pages emphasize in-app flashcards and repetition tools.",
-            isPositive: false,
-        },
-        duolingo: {
-            title: "In-App Progress",
-            detail: "Official plans focus on synced course progress, not study-deck export.",
-            isPositive: false,
-        },
-    },
-    {
-        category: "Study System",
-        feature: "Spaced Repetition System (SRS)",
-        description:
-            "Scientifically proven memory algorithm that schedules optimal review intervals.",
-        lectoro: {
-            title: "Built-in Spaced Repetition",
-            detail: "5-min daily micro-reviews right in Chrome popup. Zero setup.",
-            isPositive: true,
-        },
-        languageReactor: {
-            title: "Saved Items & Phrase Practice",
-            detail: "Includes saved-language tools, with a different review workflow from Lectoro.",
-            isPositive: false,
-        },
-        lingopie: {
-            title: "Flashcards & Repetition Tools",
-            detail: "Includes video flashcards and repetition features within its subscription.",
-            isPositive: false,
-        },
-        duolingo: {
-            title: "Personalized Practice",
-            detail: "Schedules practice inside its course-based learning path.",
-            isPositive: false,
-        },
-    },
-    {
-        category: "Design & Performance",
-        feature: "Modern Video Overlay & Speed",
-        description:
-            "Aesthetic non-intrusive UI that keeps the movie front and center.",
-        lectoro: {
-            title: "Sleek Dark Glassmorphism",
-            detail: "Ultra-fast, lightweight dock that never covers or blocks the video.",
-            isPositive: true,
-        },
-        languageReactor: {
-            title: "Subtitle-Focused Browser UI",
-            detail: "Adds bilingual subtitles and learning controls around supported media.",
-            isPositive: false,
-        },
-        lingopie: {
-            title: "Dedicated Streaming Player",
-            detail: "Combines catalog playback with clickable subtitles and learning tools.",
-            isPositive: false,
-        },
-        duolingo: {
-            title: "Gamified Course UI",
-            detail: "Uses streaks, hearts and challenges; paid plans include an ad-free option.",
-            isPositive: false,
-        },
-    },
-    {
-        category: "Cost & Value",
-        feature: "Pricing & Fair Access",
-        description:
-            "Honest pricing without subscription traps or forced long-term lock-in.",
-        lectoro: {
-            title: "Free Tier + Affordable Access",
-            detail: "Generous free immersion. No credit card required to start.",
-            isPositive: true,
-        },
-        languageReactor: {
-            title: "Free + Pro Features",
-            detail: "Core access is free; features such as machine translation are offered in Pro.",
-            isPositive: false,
-        },
-        lingopie: {
-            title: "$83.88 / year listed",
-            detail: "The official pricing page also lists quarterly and lifetime options.",
-            isPositive: false,
-        },
-        duolingo: {
-            title: "Free + Paid Subscriptions",
-            detail: "Super adds no ads, unlimited hearts and extra practice; prices vary by market.",
-            isPositive: false,
-        },
-    },
-];
+import type { Dict } from "@/lib/i18n/types";
 
 type CompetitorKey = "languageReactor" | "lingopie" | "duolingo";
 
-const COMPETITOR_TABS: { key: CompetitorKey; label: string; badge: string }[] =
-    [
+interface ComparisonProps {
+    dict: Dict;
+}
+
+export default function Comparison({ dict }: ComparisonProps) {
+    const { comparison } = dict;
+    const competitorTabs: {
+        key: CompetitorKey;
+        label: string;
+        badge: string;
+    }[] = [
         {
             key: "languageReactor",
-            label: "vs. Language Reactor",
-            badge: "Primary Competitor",
+            label: comparison.tabs.vsLR,
+            badge: comparison.tabs.vsLRbadge,
         },
-        { key: "lingopie", label: "vs. Lingopie", badge: "Streaming Platform" },
-        { key: "duolingo", label: "vs. Duolingo", badge: "Course-Based App" },
+        {
+            key: "lingopie",
+            label: comparison.tabs.vsLingopie,
+            badge: comparison.tabs.vsLingopieBadge,
+        },
+        {
+            key: "duolingo",
+            label: comparison.tabs.vsDuolingo,
+            badge: comparison.tabs.vsDuolingoBadge,
+        },
     ];
-
-export default function Comparison() {
     const [mobileCompetitor, setMobileCompetitor] =
         useState<CompetitorKey>("languageReactor");
     const [mobileSlide, setMobileSlide] = useState(0);
@@ -301,7 +80,7 @@ export default function Comparison() {
 
     return (
         <section
-            className="py-24 border-t border-white/10 bg-[#050711]/60 relative z-10"
+            className="py-24 border-t border-white/10 bg-[#050711]/60 relative z-10 overflow-hidden"
             id="comparison"
         >
             {/* Background Ambient Glow */}
@@ -311,21 +90,19 @@ export default function Comparison() {
                 {/* Section Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-bold text-cyan-400 mb-4 tracking-wider uppercase">
-                        <span>Direct Feature Breakdown</span>
+                        <span>{comparison.tag}</span>
                     </div>
                     <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white mb-4">
-                        How Lectoro AI{" "}
+                        {comparison.title}{" "}
                         <span className="text-gradient">
-                            Outperforms the Rest
+                            {comparison.titleHighlight}
                         </span>
                     </h2>
                     <p className="text-slate-400 text-base sm:text-lg leading-relaxed">
-                        Compare Lectoro AI with other popular approaches to
-                        video immersion and language learning.
+                        {comparison.subtitle}
                     </p>
                     <p className="text-slate-500 text-xs mt-3">
-                        Based on publicly listed product features and pricing;
-                        availability and prices may vary.
+                        {comparison.disclaimer}
                     </p>
                 </div>
 
@@ -337,7 +114,7 @@ export default function Comparison() {
                         <thead>
                             <tr className="border-b border-white/10 bg-[#090d1a]/95">
                                 <th className="p-6 w-[28%] font-display font-bold text-sm text-slate-300">
-                                    Feature & Capability
+                                    {comparison.featureCol}
                                 </th>
 
                                 {/* LECTORO AI (HERO COLUMN) */}
@@ -348,11 +125,11 @@ export default function Comparison() {
                                             <Logo size="sm" />
                                         </span>
                                         <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-400/20 text-emerald-300 border border-emerald-400/40">
-                                            Winner
+                                            {comparison.winnerBadge}
                                         </span>
                                     </div>
                                     <span className="text-xs text-indigo-300/80 font-normal mt-1 block">
-                                        Next-Gen AI Media Immersion
+                                        {comparison.lectoSubtitle}
                                     </span>
                                 </th>
 
@@ -362,7 +139,7 @@ export default function Comparison() {
                                         Language Reactor
                                     </div>
                                     <span className="text-xs text-slate-400 font-normal mt-1 block">
-                                        Legacy extension (ex-LLN)
+                                        {comparison.lrSubtitle}
                                     </span>
                                 </th>
 
@@ -372,14 +149,14 @@ export default function Comparison() {
                                         Lingopie
                                     </div>
                                     <span className="text-xs text-slate-400 font-normal mt-1 block">
-                                        Curated streaming platform
+                                        {comparison.lingoSubtitle}
                                     </span>
                                 </th>
                             </tr>
                         </thead>
 
                         <tbody className="divide-y divide-white/5 text-sm">
-                            {COMPARISON_DATA.map((row, idx) => (
+                            {comparison.rows.map((row, idx) => (
                                 <tr
                                     key={idx}
                                     className="hover:bg-white/[0.02] transition-colors"
@@ -453,7 +230,7 @@ export default function Comparison() {
                 <div className="block lg:hidden space-y-6">
                     {/* Competitor Selector Pills */}
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2">
-                        {COMPETITOR_TABS.map((tab) => {
+                        {competitorTabs.map((tab) => {
                             const isSelected = mobileCompetitor === tab.key;
                             return (
                                 <button
@@ -488,7 +265,7 @@ export default function Comparison() {
                                 msOverflowStyle: "none",
                             }}
                         >
-                            {COMPARISON_DATA.map((row, idx) => {
+                            {comparison.rows.map((row, idx) => {
                                 const compData = row[mobileCompetitor];
                                 const isActive = mobileSlide === idx;
 
@@ -576,7 +353,7 @@ export default function Comparison() {
                                     )
                                 }
                                 disabled={mobileSlide === 0}
-                                aria-label="Previous comparison"
+                                aria-label={comparison.previousAriaLabel}
                                 className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white flex items-center justify-center transition disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
                             >
                                 <span aria-hidden="true">←</span>
@@ -584,16 +361,16 @@ export default function Comparison() {
 
                             <div
                                 className="flex items-center justify-center gap-2"
-                                aria-label="Comparison slides"
+                                aria-label={comparison.slidesAriaLabel}
                             >
-                                {COMPARISON_DATA.map((row, index) => (
+                                {comparison.rows.map((row, index) => (
                                     <button
                                         key={row.category}
                                         type="button"
                                         onClick={() =>
                                             scrollToMobileSlide(index)
                                         }
-                                        aria-label={`Go to comparison ${index + 1}: ${row.category}`}
+                                        aria-label={`${comparison.goToAriaLabel} ${index + 1}: ${row.category}`}
                                         aria-current={
                                             mobileSlide === index
                                                 ? "true"
@@ -613,15 +390,15 @@ export default function Comparison() {
                                 onClick={() =>
                                     scrollToMobileSlide(
                                         Math.min(
-                                            COMPARISON_DATA.length - 1,
+                                            comparison.rows.length - 1,
                                             mobileSlide + 1,
                                         ),
                                     )
                                 }
                                 disabled={
-                                    mobileSlide === COMPARISON_DATA.length - 1
+                                    mobileSlide === comparison.rows.length - 1
                                 }
-                                aria-label="Next comparison"
+                                aria-label={comparison.nextAriaLabel}
                                 className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white flex items-center justify-center transition disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
                             >
                                 <span aria-hidden="true">→</span>
@@ -638,18 +415,13 @@ export default function Comparison() {
                         <div className="space-y-2 text-center md:text-left">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-bold text-emerald-400">
                                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                <span>The Verdict</span>
+                                <span>{comparison.verdictTag}</span>
                             </div>
                             <h3 className="font-display font-extrabold text-xl sm:text-2xl text-white">
-                                Choose the workflow that fits how you already
-                                learn.
+                                {comparison.verdictTitle}
                             </h3>
                             <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
-                                Lectoro AI combines{" "}
-                                <strong>AI context intelligence</strong>,{" "}
-                                <strong>keyboard navigation</strong> and{" "}
-                                <strong>video snapshots</strong>, with a free
-                                tier available to start.
+                                {comparison.verdictBody}
                             </p>
                         </div>
 
@@ -660,7 +432,7 @@ export default function Comparison() {
                                 rel="noopener noreferrer"
                                 className="w-full sm:w-auto text-center px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 shadow-xl shadow-indigo-500/30 hover:scale-102 active:scale-98 transition-all duration-200"
                             >
-                                Add to Chrome Free ➔
+                                {comparison.verdictCta}
                             </Link>
                         </div>
                     </div>

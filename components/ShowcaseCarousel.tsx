@@ -16,43 +16,43 @@ export interface CarouselItem {
 export const DEFAULT_SHOWCASE_IMAGES: (string | CarouselItem)[] = [
     {
         src: "/showcase/1.jpg",
-        alt: "Master Idioms & Context with AI",
-        title: "Master Idioms & Context with AI",
+        alt: "Lectoro AI clickable subtitles and translation panel on a TED video",
+        title: "Learn from Clickable Video Subtitles",
     },
     {
         src: "/showcase/2.jpg",
-        alt: "Master Idioms & Context with AI",
-        title: "Master Idioms & Context with AI",
+        alt: "Lectoro AI Chrome extension translating selected text and subtitles on X",
+        title: "Translate Text on Any Web Page",
     },
     {
         src: "/showcase/3.jpg",
-        alt: "Master Idioms & Context with AI",
-        title: "Master Idioms & Context with AI",
+        alt: "Lectoro AI setup guide for YouTube and Netflix subtitles, keyboard shortcuts and flashcard reviews",
+        title: "Video Learning and Review Workflow",
     },
     {
         src: "/showcase/4.jpg",
-        alt: "Master Idioms & Context with AI",
-        title: "Master Idioms & Context with AI",
+        alt: "Lectoro AI English to German subtitle translation with a contextual AI explanation on YouTube",
+        title: "AI Explains Phrases in Context",
     },
     {
         src: "/showcase/5.jpg",
-        alt: "Master Idioms & Context with AI",
-        title: "Master Idioms & Context with AI",
+        alt: "Lectoro AI spaced-repetition flashcard with a saved Netflix scene snapshot",
+        title: "Review Video Flashcards with SRS",
     },
     {
         src: "/showcase/6.jpg",
-        alt: "Master Idioms & Context with AI",
-        title: "Master Idioms & Context with AI",
+        alt: "Lectoro AI toolbar translating and reading selected words on an X post",
+        title: "Translate, Listen or Ask AI",
     },
     {
         src: "/showcase/wardog.png",
-        alt: "Master Idioms & Context with AI",
-        title: "Master Idioms & Context with AI",
+        alt: "Lectoro AI English to French translation and idiom explanation over a video",
+        title: "Understand Idioms While Watching",
     },
     {
         src: "/showcase/plex.png",
-        alt: "Flashcards within reach",
-        title: "Flashcards within reach",
+        alt: "Lectoro AI daily flashcard review open beside the Plex streaming catalog",
+        title: "Learn and Review Vocabulary on Plex",
     },
 ];
 

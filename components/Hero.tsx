@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+import type { Dict } from "@/lib/i18n/types";
 
 interface WordItem {
     id: "ich" | "glaube" | "wir" | "haben" | "arger";
@@ -54,7 +55,12 @@ const DEMO_WORDS: Record<WordItem["id"], WordItem> = {
     },
 };
 
-export default function Hero() {
+interface HeroProps {
+    dict: Pick<Dict, "hero">;
+}
+
+export default function Hero({ dict }: HeroProps) {
+    const { hero } = dict;
     const [selectedWord, setSelectedWord] = useState<WordItem>(
         DEMO_WORDS.haben,
     );
@@ -160,24 +166,18 @@ export default function Hero() {
                 {/* Live Pill Badge */}
                 <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-xs font-semibold text-indigo-300 tracking-wide uppercase mb-6">
                     <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_#06b6d4] badge-dot"></span>
-                    <span>Next-generation immersion</span>
+                    <span>{hero.badge}</span>
                 </div>
 
                 {/* Main Hero Headline */}
                 <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight text-white mb-6">
-                    Turn Netflix & YouTube into Your{" "}
-                    <span className="text-gradient">
-                        Personal Language School
-                    </span>
+                    {hero.title}{" "}
+                    <span className="text-gradient">{hero.titleHighlight}</span>
                 </h1>
 
                 {/* Hero Subtitle */}
                 <p className="font-body text-lg sm:text-xl text-slate-300/90 leading-relaxed max-w-3xl mx-auto mb-10">
-                    Watch movies & shows with{" "}
-                    <strong>smart bilingual clickable subtitles</strong>.
-                    Instantly translate idioms in 1 second with AI, listen to
-                    native ElevenLabs voices, and lock vocabulary into long-term
-                    memory with <strong>Spaced Repetition (SRS)</strong>.
+                    {hero.subtitle}
                 </p>
 
                 {/* Hero CTAs */}
@@ -201,9 +201,11 @@ export default function Hero() {
                             <path d="M256 345.5c-33.6 0-61.6-17.91-77.29-44.79L76 123.05l-.14-.24A224 224 0 0 0 207.4 474.55v-.05l77.69-134.6a84.1 84.1 0 0 1-29.09 5.6" />
                             <path d="m91.29 104.57 77.35 133.25A89.19 89.19 0 0 1 256 166h205.17a246.5 246.5 0 0 0-25.78-43.94l.12.08A245.3 245.3 0 0 1 461.17 166h.17a246 246 0 0 0-25.66-44 2.6 2.6 0 0 1-.35-.26 223.93 223.93 0 0 0-344.19-17.4l.14.24Z" />
                         </svg>
-                        <span>Install in Chrome</span>
+                        <span>{hero.installCta}</span>
                         <span className="px-2.5 absolute -top-2 -left-3 sm:-left-6 rotate-[-27deg] py-1 rounded-lg text-xs font-extrabold -tracking-widest bg-teal-500 text-amber-200 uppercase">
-                            <span className="animate-pulse">3-Day Free</span>
+                            <span className="animate-pulse">
+                                {hero.trialBadge}
+                            </span>
                         </span>
                     </Link>
 
@@ -211,7 +213,7 @@ export default function Hero() {
                         href="#demo"
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-bold text-white bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                     >
-                        <span>Try Interactive Demo</span>
+                        <span>{hero.demoCta}</span>
                         <svg
                             className="w-4 h-4"
                             viewBox="0 0 24 24"
@@ -232,23 +234,24 @@ export default function Hero() {
             <span className="text-slate-400 font-normal">(1,280+ ratings)</span>
           </div> */}
                     {/* <span>•</span> */}
-                    <span>Credit card required</span>
+                    <span>{hero.noCard}</span>
                     <span>•</span>
-                    <span>Instant 5-second install</span>
+                    <span>{hero.builtFor}</span>
                 </div>
             </div>
 
             {/* Interactive Hero Showcase & Drop-In Slot for AI Video Recording */}
             <div
-                className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-12"
+                className="max-w-5xl mx-auto mt-8 sm:mt-12"
                 id="demo"
+                translate="no"
             >
                 <div className="relative group">
                     {/* Glow effect behind container */}
                     <div className="absolute -inset-4 bg-linear-to-r from-indigo-500/30 via-purple-500/20 to-cyan-500/30 rounded-[28px] blur-2xl opacity-75 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
 
                     {/* Main Player Simulator Frame */}
-                    <div className="relative z-10 bg-[#090d1a] border border-white/15 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/90">
+                    <div className="relative z-10 bg-[#090d1a] border-y sm:border border-white/15 rounded-none sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/90">
                         {/* Player Top Window Bar */}
                         <div className="bg-[#0d1224] px-4 py-3 border-b border-white/10 flex items-center justify-between">
                             <div className="flex items-center gap-2">
