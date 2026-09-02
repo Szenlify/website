@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MouseEvent } from "react";
-import { Check, ChevronDown, Globe2, Menu, Play, Sparkles } from "lucide-react";
+import {
+    BookOpen,
+    Check,
+    ChevronDown,
+    Globe2,
+    Menu,
+    Sparkles,
+} from "lucide-react";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +28,7 @@ import {
 } from "@/components/ui/sheet";
 import { LOCALES, type Dict, type Locale } from "@/lib/i18n/types";
 import { CHROME_STORE_URL } from "@/lib/config";
+import { getGuideCatalogCopy } from "@/lib/guides/catalog";
 import {
     getLocalizedHref,
     getLocalizedSectionHref,
@@ -36,6 +44,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
     const pathname = usePathname();
 
     const { nav, lang } = dict;
+    const guidesLabel = getGuideCatalogCopy(locale).label;
     const LANG_OPTIONS = LOCALES.map((code) => ({ code, label: lang[code] }));
     const currentLangLabel =
         LANG_OPTIONS.find((l) => l.code === locale)?.label ?? "EN";
@@ -46,7 +55,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
 
     return (
         <>
-            <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/90 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
+            <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/50 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                     <Logo locale={locale} />
                     <nav className="hidden lg:flex items-center gap-8">
@@ -57,10 +66,10 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                             {nav.features}
                         </Link>
                         <Link
-                            href={getLocalizedSectionHref("demo", locale)}
+                            href={getLocalizedHref("/guides", locale)}
                             className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
                         >
-                            {nav.liveDemo}
+                            {guidesLabel}
                         </Link>
                         <Link
                             href={getLocalizedSectionHref(
@@ -82,12 +91,6 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                             className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
                         >
                             {nav.pricing}
-                        </Link>
-                        <Link
-                            href={getLocalizedSectionHref("faq", locale)}
-                            className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
-                        >
-                            {nav.faq}
                         </Link>
                     </nav>
                     <div className="flex items-center gap-3">
@@ -175,11 +178,8 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                             nav.features,
                                         ],
                                         [
-                                            getLocalizedSectionHref(
-                                                "demo",
-                                                locale,
-                                            ),
-                                            nav.liveDemo,
+                                            getLocalizedHref("/guides", locale),
+                                            guidesLabel,
                                         ],
                                         [
                                             getLocalizedSectionHref(
@@ -202,13 +202,6 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                             ),
                                             nav.pricing,
                                         ],
-                                        [
-                                            getLocalizedSectionHref(
-                                                "faq",
-                                                locale,
-                                            ),
-                                            nav.faq,
-                                        ],
                                     ].map(([href, label], index) => (
                                         <SheetClose key={href} asChild>
                                             <Link
@@ -220,7 +213,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                                     <Sparkles className="size-3.5 text-indigo-400" />
                                                 )}
                                                 {index === 1 && (
-                                                    <Play className="size-3.5 text-indigo-400" />
+                                                    <BookOpen className="size-3.5 text-indigo-400" />
                                                 )}
                                             </Link>
                                         </SheetClose>
