@@ -74,7 +74,7 @@ export default async function LocaleLayout({
     return (
         <>
             <Navbar dict={dict} locale={locale} />
-            <main className="flex-grow">{children}</main>
+            <main id="main-content" className="grow">{children}</main>
             <Footer dict={dict} locale={locale} />
         </>
     );

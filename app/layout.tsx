@@ -106,6 +106,14 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
     const locale = (await headers()).get("x-locale") ?? "en";
+        const skipLink =
+                locale === "pl"
+                        ? "Przejdź do treści"
+                        : locale === "de"
+                            ? "Zum Inhalt springen"
+                            : locale === "es"
+                                ? "Saltar al contenido"
+                                : "Skip to content";
 
     return (
         <html
@@ -117,6 +125,12 @@ export default async function RootLayout({
                 suppressHydrationWarning
                 className="bg-[#070913] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white"
             >
+                <a
+                    href="#main-content"
+                    className="fixed left-4 top-3 z-100 -translate-y-20 rounded-md bg-white px-4 py-2 text-sm font-bold text-slate-950 shadow-xl transition-transform focus:translate-y-0"
+                >
+                    {skipLink}
+                </a>
                 {/* Ambient Visual Glow & Grid */}
                 <div className="ambient-glow" aria-hidden="true">
                     <div className="glow-sphere-1"></div>

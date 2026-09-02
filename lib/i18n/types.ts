@@ -84,6 +84,11 @@ export interface Dict {
     };
 
     showcase: {
+        tag: string;
+        title: string;
+        previous: string;
+        next: string;
+        slideLabel: string;
         s1: { alt: string; title: string };
         s2: { alt: string; title: string };
         s3: { alt: string; title: string };
@@ -182,6 +187,9 @@ export interface Dict {
     testimonials: {
         tag: string;
         title: string;
+        starsLabel: string;
+        previous: string;
+        next: string;
         t1: { quote: string; name: string; role: string };
         t2: { quote: string; name: string; role: string };
         t3: { quote: string; name: string; role: string };

@@ -93,6 +93,11 @@ export const es: Dict = {
     },
 
     showcase: {
+        tag: "Experiencia visual",
+        title: "Lectoro AI en acción",
+        previous: "Captura anterior",
+        next: "Captura siguiente",
+        slideLabel: "Captura",
         s1: {
             alt: "Panel de subtítulos clicables y traducciones de Lectoro AI en un vídeo de TED",
             title: "Aprende de subtítulos de vídeo clicables",
@@ -428,6 +433,9 @@ export const es: Dict = {
     },
 
     testimonials: {
+        starsLabel: "5 de 5 estrellas",
+        previous: "Testimonio anterior",
+        next: "Testimonio siguiente",
         tag: "Testimonios de usuarios",
         title: "Amado por los entusiastas de los idiomas",
         t1: {

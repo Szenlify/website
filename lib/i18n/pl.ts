@@ -93,6 +93,11 @@ export const pl: Dict = {
     },
 
     showcase: {
+        tag: "Zobacz w praktyce",
+        title: "Lectoro AI w działaniu",
+        previous: "Poprzedni zrzut ekranu",
+        next: "Następny zrzut ekranu",
+        slideLabel: "Zrzut ekranu",
         s1: {
             alt: "Panel napisów i tłumaczeń Lectoro AI na filmie TED",
             title: "Nauka z klikalnych napisów wideo",
@@ -427,6 +432,9 @@ export const pl: Dict = {
     },
 
     testimonials: {
+        starsLabel: "5 na 5 gwiazdek",
+        previous: "Poprzednia opinia",
+        next: "Następna opinia",
         tag: "Opinie użytkowników",
         title: "Uwielbiany przez miłośników języków",
         t1: {

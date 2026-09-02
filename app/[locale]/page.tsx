@@ -170,7 +170,7 @@ export default async function LocaleHomePage({
             <Hero dict={dict} />
             <Platforms dict={dict} />
             <Features dict={dict} />
-            <ShowcaseCarousel images={localizedImages} />
+            <ShowcaseCarousel images={localizedImages} labels={dict.showcase} />
             <Comparison dict={dict} />
             <HowItWorks dict={dict} />
             <Pricing dict={dict} />

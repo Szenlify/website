@@ -1,6 +1,9 @@
-"use client";
-
-import React, { useState } from "react";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 import type { Dict } from "@/lib/i18n/types";
 
 interface FAQProps {
@@ -9,11 +12,6 @@ interface FAQProps {
 
 export default function FAQ({ dict }: FAQProps) {
     const { faq } = dict;
-    const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-
-    const toggleFaq = (index: number) => {
-        setOpenFaqIndex((prev) => (prev === index ? null : index));
-    };
 
     return (
         <section
@@ -30,40 +28,27 @@ export default function FAQ({ dict }: FAQProps) {
                     </h2>
                 </div>
 
-                <div className="space-y-4">
-                    {faq.items.map((item, index) => {
-                        const isOpen = openFaqIndex === index;
-                        return (
-                            <div
-                                key={index}
-                                className="rounded-2xl border border-white/10 bg-[#0e1222]/90 overflow-hidden transition"
-                            >
-                                <button
-                                    type="button"
-                                    className="w-full p-6 text-left font-display font-bold text-base sm:text-lg text-white flex items-center justify-between gap-4"
-                                    onClick={() => toggleFaq(index)}
-                                    aria-expanded={isOpen}
-                                >
-                                    <span>{item.question}</span>
-                                    <svg
-                                        className={`w-5 h-5 text-indigo-400 shrink-0 transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2.5"
-                                    >
-                                        <path d="M6 9l6 6 6-6" />
-                                    </svg>
-                                </button>
-                                {isOpen && (
-                                    <div className="px-6 pb-6 text-sm text-slate-300 leading-relaxed animate-in fade-in-50 duration-200">
-                                        {item.answer}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
+                <Accordion
+                    type="single"
+                    collapsible
+                    defaultValue="faq-0"
+                    className="space-y-4"
+                >
+                    {faq.items.map((item, index) => (
+                        <AccordionItem
+                            key={item.question}
+                            value={`faq-${index}`}
+                            className="overflow-hidden rounded-2xl border border-white/10 bg-[#0e1222]/90"
+                        >
+                            <AccordionTrigger className="p-6 font-display text-base font-bold text-white hover:no-underline sm:text-lg [&>svg]:size-5 [&>svg]:text-indigo-400">
+                                {item.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="px-6 pb-6 text-sm leading-relaxed text-slate-300">
+                                {item.answer}
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
             </div>
         </section>
     );

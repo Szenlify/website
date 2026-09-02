@@ -1,5 +1,6 @@
 import React from "react";
 import type { Dict } from "@/lib/i18n/types";
+import { CHROME_STORE_URL } from "@/lib/config";
 
 interface PricingProps {
     dict: Dict;
@@ -81,7 +82,7 @@ export default function Pricing({ dict }: PricingProps) {
                         </div>
 
                         <a
-                            href="https://chromewebstore.google.com/"
+                            href={CHROME_STORE_URL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-3.5 px-6 rounded-xl text-center text-sm font-bold text-white bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/30 transition"
@@ -154,7 +155,7 @@ export default function Pricing({ dict }: PricingProps) {
                         </div>
 
                         <a
-                            href="https://chromewebstore.google.com/"
+                            href={CHROME_STORE_URL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-3.5 px-6 rounded-xl text-center text-sm font-extrabold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-lg shadow-indigo-500/40 hover:shadow-indigo-500/60 transition"
@@ -223,7 +224,7 @@ export default function Pricing({ dict }: PricingProps) {
                         </div>
 
                         <a
-                            href="https://chromewebstore.google.com/"
+                            href={CHROME_STORE_URL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-3.5 px-6 rounded-xl text-center text-sm font-bold text-white bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/30 transition"

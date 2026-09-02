@@ -22,6 +22,8 @@ export default function Platforms({ dict }: PlatformsProps) {
                         alt="Netflix"
                         width={100}
                         height={100}
+                        sizes="(max-width: 640px) 48px, 56px"
+                        className="size-12 object-contain sm:size-14"
                     />
 
                     {/* YouTube */}

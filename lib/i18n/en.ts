@@ -93,6 +93,11 @@ export const en: Dict = {
     },
 
     showcase: {
+        tag: "Visual experience",
+        title: "See Lectoro AI in action",
+        previous: "Previous screenshot",
+        next: "Next screenshot",
+        slideLabel: "Screenshot",
         s1: {
             alt: "Lectoro AI clickable subtitles and translation panel on a TED video",
             title: "Learn from Clickable Video Subtitles",
@@ -427,6 +432,9 @@ export const en: Dict = {
     },
 
     testimonials: {
+        starsLabel: "5 out of 5 stars",
+        previous: "Previous testimonial",
+        next: "Next testimonial",
         tag: "User Testimonials",
         title: "Loved by Language Enthusiasts",
         t1: {

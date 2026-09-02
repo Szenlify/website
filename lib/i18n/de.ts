@@ -93,6 +93,11 @@ export const de: Dict = {
     },
 
     showcase: {
+        tag: "Visuelles Erlebnis",
+        title: "Lectoro AI in Aktion",
+        previous: "Vorheriger Screenshot",
+        next: "Nächster Screenshot",
+        slideLabel: "Screenshot",
         s1: {
             alt: "Lectoro AI anklickbare Untertitel und Übersetzungspanel in einem TED-Video",
             title: "Aus anklickbaren Videountertiteln lernen",
@@ -427,6 +432,9 @@ export const de: Dict = {
     },
 
     testimonials: {
+        starsLabel: "5 von 5 Sternen",
+        previous: "Vorherige Bewertung",
+        next: "Nächste Bewertung",
         tag: "Nutzerbewertungen",
         title: "Geliebt von Sprachenbegeisterten",
         t1: {

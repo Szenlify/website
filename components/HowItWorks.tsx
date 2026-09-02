@@ -22,9 +22,9 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="glass-panel p-8 relative">
-                        <div className="font-display font-black text-5xl text-indigo-500/20 mb-4">
+                <ol className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <li className="glass-panel p-8 relative">
+                        <div aria-hidden="true" className="font-display font-black text-5xl text-indigo-500/20 mb-4">
                             01
                         </div>
                         <h3 className="font-display font-bold text-xl text-white mb-3">
@@ -33,10 +33,10 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
                         <p className="text-slate-300 text-sm leading-relaxed">
                             {hiw.s1desc}
                         </p>
-                    </div>
+                    </li>
 
-                    <div className="glass-panel p-8 relative">
-                        <div className="font-display font-black text-5xl text-indigo-500/20 mb-4">
+                    <li className="glass-panel p-8 relative">
+                        <div aria-hidden="true" className="font-display font-black text-5xl text-indigo-500/20 mb-4">
                             02
                         </div>
                         <h3 className="font-display font-bold text-xl text-white mb-3">
@@ -45,10 +45,10 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
                         <p className="text-slate-300 text-sm leading-relaxed">
                             {hiw.s2desc}
                         </p>
-                    </div>
+                    </li>
 
-                    <div className="glass-panel p-8 relative">
-                        <div className="font-display font-black text-5xl text-indigo-500/20 mb-4">
+                    <li className="glass-panel p-8 relative">
+                        <div aria-hidden="true" className="font-display font-black text-5xl text-indigo-500/20 mb-4">
                             03
                         </div>
                         <h3 className="font-display font-bold text-xl text-white mb-3">
@@ -57,8 +57,8 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
                         <p className="text-slate-300 text-sm leading-relaxed">
                             {hiw.s3desc}
                         </p>
-                    </div>
-                </div>
+                    </li>
+                </ol>
             </div>
         </section>
     );

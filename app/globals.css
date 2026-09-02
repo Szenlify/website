@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
     --bg-dark: #070913;
@@ -64,6 +65,21 @@ h5,
 h6 {
     font-family: var(--font-display);
     letter-spacing: -0.03em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 /* Ambient Visual Glow & Cosmic Grid */
@@ -413,6 +429,11 @@ h6 {
 }
 
 .clickable-word {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -425,10 +446,16 @@ h6 {
 }
 
 .clickable-word:hover,
+.clickable-word:focus-visible,
 .clickable-word.active {
     background: rgba(99, 102, 241, 0.4);
     color: #ffffff;
     box-shadow: 0 0 14px rgba(99, 102, 241, 0.6);
+}
+
+.clickable-word:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
 }
 
 .clickable-word.active::after {

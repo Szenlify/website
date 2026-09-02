@@ -133,11 +133,11 @@ export default function HomePage() {
                 }}
             />
             <Navbar dict={en} locale="en" />
-            <main className="flex-grow">
+            <main id="main-content" className="grow">
                 <Hero dict={en} />
                 <Platforms dict={en} />
                 <Features dict={en} />
-                <ShowcaseCarousel images={images} />
+                <ShowcaseCarousel images={images} labels={en.showcase} />
                 <Comparison dict={en} />
                 <HowItWorks dict={en} />
                 <Pricing dict={en} />

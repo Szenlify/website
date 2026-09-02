@@ -140,13 +140,14 @@ export default function Features({ dict }: FeaturesProps) {
                         </div>
 
                         {/* Interactive Flashcard Showcase Widget */}
-                        <div className="w-full max-w-xs mx-auto rotate-4">
+                        <div className="w-full max-w-xs mx-auto">
                             <Image
-                                src="/showcase/review.png"
+                                            src="/showcase/rev.png"
                                 alt="Review flashcard popup"
                                 width={600}
                                 height={600}
-                                className="w-full rounded-2xl border border-white/10 shadow-2xl shadow-indigo-500/30"
+                                sizes="(max-width: 640px) 80vw, 320px"
+                                className="w-full rounded-2xl border border-white/10 shadow-2xl shadow-emerald-500/30"
                             />
                         </div>
                     </div>
@@ -186,6 +187,8 @@ export default function Features({ dict }: FeaturesProps) {
                                     alt="Anki"
                                     width={40}
                                     height={40}
+                                    sizes="40px"
+                                    className="size-10 object-contain"
                                 />
                             </div>
                             <h3 className="font-display font-bold text-2xl text-white mb-3">

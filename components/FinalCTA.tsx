@@ -1,5 +1,6 @@
 import React from "react";
 import type { Dict } from "@/lib/i18n/types";
+import { CHROME_STORE_URL } from "@/lib/config";
 
 interface FinalCTAProps {
     dict: Pick<Dict, "finalCta">;
@@ -23,7 +24,7 @@ export default function FinalCTA({ dict }: FinalCTAProps) {
                             {finalCta.subtitle}
                         </p>
                         <a
-                            href="https://chromewebstore.google.com/"
+                            href={CHROME_STORE_URL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-base font-extrabold text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"

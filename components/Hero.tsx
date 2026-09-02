@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import type { Dict } from "@/lib/i18n/types";
+import { CHROME_STORE_URL } from "@/lib/config";
 
 interface WordItem {
     id: "ich" | "glaube" | "wir" | "haben" | "arger";
@@ -183,7 +184,7 @@ export default function Hero({ dict }: HeroProps) {
                 {/* Hero CTAs */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
                     <Link
-                        href="https://chromewebstore.google.com/"
+                        href={CHROME_STORE_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3 rounded-2xl text-base font-extrabold text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
@@ -306,7 +307,7 @@ export default function Hero({ dict }: HeroProps) {
                             <div className="absolute h-full w-full top-0 left-0">
                                 <Image
                                     src="/hero.png"
-                                    alt="AI Video"
+                                    alt=""
                                     fill
                                     priority
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1024px"
@@ -455,15 +456,17 @@ export default function Hero({ dict }: HeroProps) {
                                                 selectedWord.id === item.id;
 
                                             return (
-                                                <span
+                                                <button
+                                                    type="button"
                                                     key={item.id}
                                                     className={`clickable-word ${isSelected ? "active" : ""}`}
                                                     onClick={() => {
                                                         setSelectedWord(item);
                                                     }}
+                                                    aria-pressed={isSelected}
                                                 >
                                                     <span>{item.word}</span>
-                                                </span>
+                                                </button>
                                             );
                                         })}
                                     </div>
@@ -476,10 +479,9 @@ export default function Hero({ dict }: HeroProps) {
                             {/* Player Bottom Control Bar */}
                             <div className="relative z-10 flex items-center justify-between px-4 py-2.5 bg-slate-900/90 border border-white/10 rounded-xl">
                                 <div className="flex items-center gap-3">
-                                    <button
-                                        type="button"
-                                        className="text-white hover:text-indigo-400 transition"
-                                        aria-label="Pause Demo"
+                                    <span
+                                        className="text-white"
+                                        aria-hidden="true"
                                     >
                                         <svg
                                             className="w-4 h-4 fill-current"
@@ -498,7 +500,7 @@ export default function Hero({ dict }: HeroProps) {
                                                 height="16"
                                             ></rect>
                                         </svg>
-                                    </button>
+                                    </span>
                                     <span className="text-xs font-mono text-slate-400">
                                         14:28 / 42:15
                                     </span>
