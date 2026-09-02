@@ -34,6 +34,7 @@ export async function generateMetadata({
                 pl: `${baseUrl}/pl`,
                 de: `${baseUrl}/de`,
                 es: `${baseUrl}/es`,
+                ja: `${baseUrl}/ja`,
             },
         },
         openGraph: {
@@ -45,7 +46,9 @@ export async function generateMetadata({
                       ? "de_DE"
                       : locale === "es"
                         ? "es_ES"
-                        : "en_US",
+                        : locale === "ja"
+                          ? "ja_JP"
+                          : "en_US",
             url: localeUrl,
             siteName: "Lectoro AI",
             images: [
@@ -74,7 +77,9 @@ export default async function LocaleLayout({
     return (
         <>
             <Navbar dict={dict} locale={locale} />
-            <main id="main-content" className="grow">{children}</main>
+            <main id="main-content" className="grow">
+                {children}
+            </main>
             <Footer dict={dict} locale={locale} />
         </>
     );

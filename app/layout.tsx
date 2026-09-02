@@ -106,14 +106,16 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
     const locale = (await headers()).get("x-locale") ?? "en";
-        const skipLink =
-                locale === "pl"
-                        ? "Przejdź do treści"
-                        : locale === "de"
-                            ? "Zum Inhalt springen"
-                            : locale === "es"
-                                ? "Saltar al contenido"
-                                : "Skip to content";
+    const skipLink =
+        locale === "pl"
+            ? "Przejdź do treści"
+            : locale === "de"
+              ? "Zum Inhalt springen"
+              : locale === "es"
+                ? "Saltar al contenido"
+                : locale === "ja"
+                  ? "メインコンテンツへ移動"
+                  : "Skip to content";
 
     return (
         <html

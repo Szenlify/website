@@ -5,8 +5,9 @@ import { en } from "./en";
 import { pl } from "./pl";
 import { de } from "./de";
 import { es } from "./es";
+import { ja } from "./ja";
 
-const dictionaries: Record<Locale, Dict> = { en, pl, de, es };
+const dictionaries: Record<Locale, Dict> = { en, pl, de, es, ja };
 
 export function isLocale(value: string): value is Locale {
     return value in dictionaries;

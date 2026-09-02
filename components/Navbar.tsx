@@ -41,6 +41,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
         { code: "pl", label: lang.pl },
         { code: "de", label: lang.de },
         { code: "es", label: lang.es },
+        { code: "ja", label: lang.ja },
     ];
     const currentLangLabel =
         LANG_OPTIONS.find((l) => l.code === locale)?.label ?? "EN";

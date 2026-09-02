@@ -30,7 +30,9 @@ export async function generateMetadata({
               ? "de_DE"
               : locale === "es"
                 ? "es_ES"
-                : "en_US";
+                : locale === "ja"
+                  ? "ja_JP"
+                  : "en_US";
 
     return {
         title: dict.meta.homeTitle,
@@ -43,6 +45,7 @@ export async function generateMetadata({
                 pl: `${baseUrl}/pl`,
                 de: `${baseUrl}/de`,
                 es: `${baseUrl}/es`,
+                ja: `${baseUrl}/ja`,
             },
         },
         openGraph: {

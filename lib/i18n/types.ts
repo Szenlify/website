@@ -1,6 +1,6 @@
-export type Locale = "en" | "pl" | "de" | "es";
+export type Locale = "en" | "pl" | "de" | "es" | "ja";
 
-export const LOCALES: Locale[] = ["en", "pl", "de", "es"];
+export const LOCALES: Locale[] = ["en", "pl", "de", "es", "ja"];
 
 export interface FaqItem {
     question: string;
@@ -44,6 +44,7 @@ export interface Dict {
         pl: string;
         de: string;
         es: string;
+        ja: string;
         selectLanguage: string;
     };
 

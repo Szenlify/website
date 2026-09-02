@@ -4,7 +4,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = "https://lectoroai.com";
     const homepageUpdated = new Date("2026-09-01");
     const legalPagesUpdated = new Date("2026-08-26");
-    const locales = ["pl", "de", "es"];
+    const locales = ["pl", "de", "es", "ja"];
     const languageAlternates = (path = "") => ({
         languages: {
             "x-default": `${baseUrl}${path}`,
@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             pl: `${baseUrl}/pl${path}`,
             de: `${baseUrl}/de${path}`,
             es: `${baseUrl}/es${path}`,
+            ja: `${baseUrl}/ja${path}`,
         },
     });
 

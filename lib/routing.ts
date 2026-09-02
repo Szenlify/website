@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/types";
 
-const PREFIXED_LOCALES: Locale[] = ["pl", "de", "es"];
+const PREFIXED_LOCALES: Locale[] = ["pl", "de", "es", "ja"];
 
 export function getLocalizedHref(path: string, locale: Locale): string {
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;

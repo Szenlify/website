@@ -21,6 +21,7 @@ export const es: Dict = {
         pl: "Polski",
         de: "Deutsch",
         es: "Español",
+        ja: "日本語",
         selectLanguage: "Idioma",
     },
 

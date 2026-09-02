@@ -26,6 +26,7 @@ export async function generateMetadata({
                 pl: `${baseUrl}/pl/privacy`,
                 de: `${baseUrl}/de/privacy`,
                 es: `${baseUrl}/es/privacy`,
+                ja: `${baseUrl}/ja/privacy`,
             },
         },
         openGraph: {
