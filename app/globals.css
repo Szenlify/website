@@ -432,7 +432,8 @@ h6 {
     appearance: none;
     border: 0;
     background: transparent;
-    color: inherit;
+    color: #ffffff;
+    opacity: 1;
     font: inherit;
     display: inline-flex;
     align-items: center;
