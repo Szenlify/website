@@ -22,6 +22,11 @@ export const ja: Dict = {
         de: "Deutsch",
         es: "Español",
         ja: "日本語",
+        ko: "한국어",
+        fr: "Français",
+        "pt-BR": "Português (Brasil)",
+        "es-MX": "Español (México)",
+        hi: "हिन्दी",
         selectLanguage: "言語",
     },
     hero: {

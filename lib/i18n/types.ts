@@ -1,6 +1,19 @@
-export type Locale = "en" | "pl" | "de" | "es" | "ja";
+export const LOCALE_CONFIG = {
+    en: { openGraph: "en_US", skipLink: "Skip to content" },
+    pl: { openGraph: "pl_PL", skipLink: "Przejdź do treści" },
+    de: { openGraph: "de_DE", skipLink: "Zum Inhalt springen" },
+    es: { openGraph: "es_ES", skipLink: "Saltar al contenido" },
+    ja: { openGraph: "ja_JP", skipLink: "メインコンテンツへ移動" },
+    ko: { openGraph: "ko_KR", skipLink: "본문으로 이동" },
+    fr: { openGraph: "fr_FR", skipLink: "Aller au contenu" },
+    "pt-BR": { openGraph: "pt_BR", skipLink: "Ir para o conteúdo" },
+    "es-MX": { openGraph: "es_MX", skipLink: "Ir al contenido" },
+    hi: { openGraph: "hi_IN", skipLink: "मुख्य सामग्री पर जाएँ" },
+} as const;
 
-export const LOCALES: Locale[] = ["en", "pl", "de", "es", "ja"];
+export type Locale = keyof typeof LOCALE_CONFIG;
+
+export const LOCALES = Object.keys(LOCALE_CONFIG) as Locale[];
 
 export interface FaqItem {
     question: string;
@@ -45,6 +58,11 @@ export interface Dict {
         de: string;
         es: string;
         ja: string;
+        ko: string;
+        fr: string;
+        "pt-BR": string;
+        "es-MX": string;
+        hi: string;
         selectLanguage: string;
     };
 

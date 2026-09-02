@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { LOCALE_CONFIG, type Locale } from "@/lib/i18n/types";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -105,17 +106,11 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const locale = (await headers()).get("x-locale") ?? "en";
-    const skipLink =
-        locale === "pl"
-            ? "Przejdź do treści"
-            : locale === "de"
-              ? "Zum Inhalt springen"
-              : locale === "es"
-                ? "Saltar al contenido"
-                : locale === "ja"
-                  ? "メインコンテンツへ移動"
-                  : "Skip to content";
+    const requestedLocale = (await headers()).get("x-locale") ?? "en";
+    const locale = (
+        requestedLocale in LOCALE_CONFIG ? requestedLocale : "en"
+    ) as Locale;
+    const skipLink = LOCALE_CONFIG[locale].skipLink;
 
     return (
         <html

@@ -12,6 +12,8 @@ import FAQ from "@/components/FAQ";
 import FinalCTA from "@/components/FinalCTA";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import type { CarouselItem } from "@/components/ShowcaseCarousel";
+import { LOCALE_CONFIG } from "@/lib/i18n/types";
+import { getLanguageAlternates } from "@/lib/routing";
 
 export async function generateMetadata({
     params,
@@ -23,30 +25,14 @@ export async function generateMetadata({
     const dict = await getDictionary(locale);
     const baseUrl = "https://lectoroai.com";
     const localeUrl = locale === "en" ? baseUrl : `${baseUrl}/${locale}`;
-    const ogLocale =
-        locale === "pl"
-            ? "pl_PL"
-            : locale === "de"
-              ? "de_DE"
-              : locale === "es"
-                ? "es_ES"
-                : locale === "ja"
-                  ? "ja_JP"
-                  : "en_US";
+    const ogLocale = LOCALE_CONFIG[locale].openGraph;
 
     return {
         title: dict.meta.homeTitle,
         description: dict.meta.homeDesc,
         alternates: {
             canonical: localeUrl,
-            languages: {
-                "x-default": baseUrl,
-                en: baseUrl,
-                pl: `${baseUrl}/pl`,
-                de: `${baseUrl}/de`,
-                es: `${baseUrl}/es`,
-                ja: `${baseUrl}/ja`,
-            },
+            languages: getLanguageAlternates(baseUrl),
         },
         openGraph: {
             type: "website",

@@ -165,8 +165,7 @@ export default function Hero({ dict }: HeroProps) {
         <section className="relative pt-20 pb-16 text-center overflow-hidden">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Live Pill Badge */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-xs font-semibold text-indigo-300 tracking-wide uppercase mb-6">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_#06b6d4] badge-dot"></span>
+                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-semibold text-amber-300 tracking-wide uppercase mb-6">
                     <span>{hero.badge}</span>
                 </div>
 
@@ -441,7 +440,7 @@ export default function Hero({ dict }: HeroProps) {
 
                                 {/* Dual Subtitle Box with Speaker Icon next to every word */}
                                 <div className="inline-block px-1 py-4">
-                                    <div className="font-display text-xl sm:text-3xl font-extrabold text-white mb-1.5 tracking-tight flex items-center justify-center flex-wrap gap-2">
+                                    <div className="font-display text-xl sm:text-3xl font-extrabold text-white mb-1.5 tracking-tight flex items-center justify-center flex-wrap gap-1">
                                         {(
                                             [
                                                 "ich",

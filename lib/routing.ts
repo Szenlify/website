@@ -1,10 +1,13 @@
-import type { Locale } from "@/lib/i18n/types";
+import { LOCALES, type Locale } from "@/lib/i18n/types";
 
-const PREFIXED_LOCALES: Locale[] = ["pl", "de", "es", "ja"];
+export const PREFIXED_LOCALES = LOCALES.filter((locale) => locale !== "en");
 
 export function getLocalizedHref(path: string, locale: Locale): string {
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-    return locale === "en" ? normalizedPath : `/${locale}${normalizedPath}`;
+    if (locale === "en") return normalizedPath;
+    return normalizedPath === "/"
+        ? `/${locale}`
+        : `/${locale}${normalizedPath}`;
 }
 
 export function getLocalizedSectionHref(
@@ -14,13 +17,26 @@ export function getLocalizedSectionHref(
     return `${getLocalizedHref("/", locale)}#${section}`;
 }
 
+export function getLanguageAlternates(baseUrl: string, path = "") {
+    return Object.fromEntries([
+        ["x-default", `${baseUrl}${path}`],
+        ...LOCALES.map((locale) => [
+            locale,
+            `${baseUrl}${getLocalizedHref(path || "/", locale)}`.replace(
+                /\/$/,
+                "",
+            ),
+        ]),
+    ]);
+}
+
 export function switchLocalePathname(
     pathname: string,
     targetLocale: Locale,
 ): string {
     let basePath = pathname;
 
-    for (const locale of ["en", ...PREFIXED_LOCALES]) {
+    for (const locale of LOCALES) {
         if (pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)) {
             basePath = pathname.slice(locale.length + 1) || "/";
             break;

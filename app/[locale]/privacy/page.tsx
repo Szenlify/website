@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary, isLocale } from "@/lib/i18n";
+import { getLanguageAlternates } from "@/lib/routing";
 
 export async function generateMetadata({
     params,
@@ -20,14 +21,7 @@ export async function generateMetadata({
         description: dict.meta.privacyDesc,
         alternates: {
             canonical: canonicalUrl,
-            languages: {
-                "x-default": `${baseUrl}/privacy`,
-                en: `${baseUrl}/privacy`,
-                pl: `${baseUrl}/pl/privacy`,
-                de: `${baseUrl}/de/privacy`,
-                es: `${baseUrl}/es/privacy`,
-                ja: `${baseUrl}/ja/privacy`,
-            },
+            languages: getLanguageAlternates(baseUrl, "/privacy"),
         },
         openGraph: {
             type: "website",

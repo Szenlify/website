@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { LOCALES } from "@/lib/i18n/types";
 
-const NON_EN_LOCALES = ["pl", "de", "es", "ja"];
-const ALL_LOCALES = ["en", ...NON_EN_LOCALES];
+const NON_EN_LOCALES = LOCALES.filter((locale) => locale !== "en");
+const ALL_LOCALES = LOCALES;
 
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -16,13 +17,22 @@ export function proxy(request: NextRequest) {
     }
 
     // Already prefixed with a non-English locale? Pass through.
-    const hasNonEnLocale = NON_EN_LOCALES.some(
-        (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
+    const pathnameLocale = pathname.split("/")[1];
+    const matchedLocale = NON_EN_LOCALES.find(
+        (locale) => locale.toLowerCase() === pathnameLocale.toLowerCase(),
     );
-    if (hasNonEnLocale) {
-        const locale = pathname.split("/")[1];
+    if (matchedLocale) {
+        if (pathnameLocale !== matchedLocale) {
+            const url = request.nextUrl.clone();
+            url.pathname = pathname.replace(
+                `/${pathnameLocale}`,
+                `/${matchedLocale}`,
+            );
+            return NextResponse.redirect(url, { status: 301 });
+        }
+
         const requestHeaders = new Headers(request.headers);
-        requestHeaders.set("x-locale", locale);
+        requestHeaders.set("x-locale", matchedLocale);
         return NextResponse.next({ request: { headers: requestHeaders } });
     }
 

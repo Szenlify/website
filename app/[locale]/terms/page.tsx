@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary, isLocale } from "@/lib/i18n";
+import { getLanguageAlternates } from "@/lib/routing";
 
 export async function generateMetadata({
     params,
@@ -20,14 +21,7 @@ export async function generateMetadata({
         description: dict.meta.termsDesc,
         alternates: {
             canonical: canonicalUrl,
-            languages: {
-                "x-default": `${baseUrl}/terms`,
-                en: `${baseUrl}/terms`,
-                pl: `${baseUrl}/pl/terms`,
-                de: `${baseUrl}/de/terms`,
-                es: `${baseUrl}/es/terms`,
-                ja: `${baseUrl}/ja/terms`,
-            },
+            languages: getLanguageAlternates(baseUrl, "/terms"),
         },
         openGraph: {
             type: "website",

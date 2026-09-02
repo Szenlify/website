@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getDictionary, isLocale, LOCALES } from "@/lib/i18n";
+import { LOCALE_CONFIG } from "@/lib/i18n/types";
+import { getLanguageAlternates } from "@/lib/routing";
 
 export async function generateStaticParams() {
     return LOCALES.map((locale) => ({ locale }));
@@ -28,27 +30,11 @@ export async function generateMetadata({
         metadataBase: new URL(baseUrl),
         alternates: {
             canonical: localeUrl,
-            languages: {
-                "x-default": baseUrl,
-                en: baseUrl,
-                pl: `${baseUrl}/pl`,
-                de: `${baseUrl}/de`,
-                es: `${baseUrl}/es`,
-                ja: `${baseUrl}/ja`,
-            },
+            languages: getLanguageAlternates(baseUrl),
         },
         openGraph: {
             type: "website",
-            locale:
-                locale === "pl"
-                    ? "pl_PL"
-                    : locale === "de"
-                      ? "de_DE"
-                      : locale === "es"
-                        ? "es_ES"
-                        : locale === "ja"
-                          ? "ja_JP"
-                          : "en_US",
+            locale: LOCALE_CONFIG[locale].openGraph,
             url: localeUrl,
             siteName: "Lectoro AI",
             images: [

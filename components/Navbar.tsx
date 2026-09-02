@@ -19,7 +19,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import type { Dict, Locale } from "@/lib/i18n/types";
+import { LOCALES, type Dict, type Locale } from "@/lib/i18n/types";
 import { CHROME_STORE_URL } from "@/lib/config";
 import {
     getLocalizedHref,
@@ -36,13 +36,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
     const pathname = usePathname();
 
     const { nav, lang } = dict;
-    const LANG_OPTIONS = [
-        { code: "en", label: lang.en },
-        { code: "pl", label: lang.pl },
-        { code: "de", label: lang.de },
-        { code: "es", label: lang.es },
-        { code: "ja", label: lang.ja },
-    ];
+    const LANG_OPTIONS = LOCALES.map((code) => ({ code, label: lang[code] }));
     const currentLangLabel =
         LANG_OPTIONS.find((l) => l.code === locale)?.label ?? "EN";
 
