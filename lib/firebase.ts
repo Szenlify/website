@@ -3,6 +3,8 @@ import {
     getAuth,
     GoogleAuthProvider,
     signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
     signOut as fbSignOut,
     type User,
 } from "firebase/auth";
@@ -19,9 +21,10 @@ const firebaseConfig = {
     apiKey: "AIzaSyCjJRBkjpxbCVtCSaB6Clk01eIx1-3V7Po",
     authDomain: "extension-eng.firebaseapp.com",
     projectId: "extension-eng",
-    storageBucket: "extension-eng.appspot.com",
+    storageBucket: "extension-eng.firebasestorage.app",
     messagingSenderId: "249798889726",
-    appId: "1:249798889726:web:6ecv7pm3n7pk65i6drk1shv2vn0lvfvn",
+    appId: "1:249798889726:web:ec7665bd684a79343455af",
+    measurementId: "G-ZHBR7CGGPG",
 };
 
 export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
@@ -31,9 +34,32 @@ export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
 
-export async function loginWithGoogle(): Promise<User> {
-    const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+export async function loginWithGoogle(): Promise<User | null> {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        return result.user;
+    } catch (error: any) {
+        console.warn("signInWithPopup error, testing fallback:", error);
+        // If popup is blocked by browser or on mobile, fallback to redirect
+        if (
+            error.code === "auth/popup-blocked" ||
+            error.code === "auth/cancelled-popup-request"
+        ) {
+            await signInWithRedirect(auth, googleProvider);
+            return null;
+        }
+        throw error;
+    }
+}
+
+export async function checkRedirectAuth(): Promise<User | null> {
+    try {
+        const result = await getRedirectResult(auth);
+        return result?.user ?? null;
+    } catch (error) {
+        console.error("checkRedirectAuth error:", error);
+        return null;
+    }
 }
 
 export async function logoutUser(): Promise<void> {

@@ -43,7 +43,7 @@ interface NavbarProps {
 
 export default function Navbar({ dict, locale }: NavbarProps) {
     const pathname = usePathname();
-    const { user, dueWords, signInWithGoogle, signOut } = useAuth();
+    const { user, isSigningIn, dueWords, signInWithGoogle, signOut } = useAuth();
 
     const { nav, lang } = dict;
     const guidesLabel = getGuideCatalogCopy(locale).label;
@@ -58,7 +58,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
     return (
         <>
             <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
                     <Logo locale={locale} />
                     <nav className="hidden lg:flex items-center gap-8">
                         <Link
@@ -96,7 +96,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                         </Link>
                     </nav>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
                         {/* Language selector (desktop) */}
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
@@ -133,37 +133,42 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        {/* Sign in / User Profile (Desktop) */}
+                        {/* Sign in / User Profile */}
                         {!user ? (
                             <button
                                 type="button"
+                                disabled={isSigningIn}
                                 onClick={() => void signInWithGoogle()}
-                                className="hidden sm:inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+                                className="inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-50"
                             >
-                                <svg className="size-4 shrink-0" viewBox="0 0 24 24">
-                                    <path
-                                        fill="#EA4335"
-                                        d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-                                    />
-                                    <path
-                                        fill="#4285F4"
-                                        d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-                                    />
-                                    <path
-                                        fill="#FBBC05"
-                                        d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-2.9z"
-                                    />
-                                    <path
-                                        fill="#34A853"
-                                        d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
-                                    />
-                                </svg>
-                                <span>{nav.signIn || "Zaloguj się"}</span>
+                                {isSigningIn ? (
+                                    <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+                                ) : (
+                                    <svg className="size-4 shrink-0" viewBox="0 0 24 24">
+                                        <path
+                                            fill="#EA4335"
+                                            d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
+                                        />
+                                        <path
+                                            fill="#4285F4"
+                                            d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
+                                        />
+                                        <path
+                                            fill="#FBBC05"
+                                            d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-2.9z"
+                                        />
+                                        <path
+                                            fill="#34A853"
+                                            d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
+                                        />
+                                    </svg>
+                                )}
+                                <span>{isSigningIn ? "Logowanie..." : (nav.signIn || "Zaloguj się")}</span>
                             </button>
                         ) : (
-                            <div className="hidden sm:flex items-center gap-2.5">
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-bold text-xs">
-                                    <span>{nav.reviews || "Powtórki"}</span>
+                            <div className="flex items-center gap-2 sm:gap-2.5">
+                                <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-bold text-xs">
+                                    <span className="hidden xs:inline">{nav.reviews || "Powtórki"}</span>
                                     <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono">
                                         {dueWords.length}
                                     </span>
@@ -173,7 +178,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                     <DropdownMenuTrigger asChild>
                                         <button
                                             type="button"
-                                            className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer"
+                                            className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer"
                                         >
                                             {user.photoURL ? (
                                                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -187,7 +192,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                                     {(user.displayName || user.email || "U")[0].toUpperCase()}
                                                 </div>
                                             )}
-                                            <span className="text-xs font-semibold text-slate-300 max-w-[100px] truncate">
+                                            <span className="hidden md:inline text-xs font-semibold text-slate-300 max-w-[100px] truncate">
                                                 {user.displayName || user.email}
                                             </span>
                                             <ChevronDown className="size-3 text-slate-400" />
@@ -342,12 +347,15 @@ export default function Navbar({ dict, locale }: NavbarProps) {
 
                                         {/* Mobile Auth Button */}
                                         {!user ? (
-                                            <SheetClose asChild>
-                                                <Button
-                                                    type="button"
-                                                    onClick={() => void signInWithGoogle()}
-                                                    className="h-11 w-full rounded-xl font-bold flex items-center justify-center gap-2.5 bg-indigo-600 hover:bg-indigo-500 text-white"
-                                                >
+                                            <Button
+                                                type="button"
+                                                disabled={isSigningIn}
+                                                onClick={() => void signInWithGoogle()}
+                                                className="h-11 w-full rounded-xl font-bold flex items-center justify-center gap-2.5 bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer"
+                                            >
+                                                {isSigningIn ? (
+                                                    <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+                                                ) : (
                                                     <svg className="size-4" viewBox="0 0 24 24">
                                                         <path
                                                             fill="#EA4335"
@@ -366,9 +374,9 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                                             d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
                                                         />
                                                     </svg>
-                                                    <span>{nav.signIn || "Zaloguj się"}</span>
-                                                </Button>
-                                            </SheetClose>
+                                                )}
+                                                <span>{isSigningIn ? "Logowanie..." : (nav.signIn || "Zaloguj się")}</span>
+                                            </Button>
                                         ) : (
                                             <div className="flex flex-col gap-2">
                                                 <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">

@@ -9,12 +9,15 @@ import {
     logoutUser,
     fetchUserWords,
     saveWordReviewRating,
+    checkRedirectAuth,
 } from "@/lib/firebase";
 import { SRS, type ReviewWord } from "@/lib/srs";
 
 interface AuthContextValue {
     user: User | null;
     loading: boolean;
+    isSigningIn: boolean;
+    authError: string | null;
     words: ReviewWord[];
     dueWords: ReviewWord[];
     loadingWords: boolean;
@@ -27,6 +30,8 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
     user: null,
     loading: true,
+    isSigningIn: false,
+    authError: null,
     words: [],
     dueWords: [],
     loadingWords: false,
@@ -39,6 +44,8 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isSigningIn, setIsSigningIn] = useState(false);
+    const [authError, setAuthError] = useState<string | null>(null);
     const [words, setWords] = useState<ReviewWord[]>([]);
     const [loadingWords, setLoadingWords] = useState(false);
 
@@ -53,6 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     useEffect(() => {
+        // Check if returning from a redirect sign-in
+        void checkRedirectAuth().then((redirectUser) => {
+            if (redirectUser) {
+                setUser(redirectUser);
+            }
+        });
+
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
             setLoading(false);
@@ -73,11 +87,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [user, loadWords]);
 
     const signInWithGoogle = useCallback(async () => {
+        setAuthError(null);
+        setIsSigningIn(true);
         try {
             await loginWithGoogle();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Google sign in error:", error);
+            const msg = error.code
+                ? `Błąd logowania (${error.code}): ${error.message}`
+                : `Nie udało się zalogować: ${error.message || error}`;
+            setAuthError(msg);
+            alert(msg);
             throw error;
+        } finally {
+            setIsSigningIn(false);
         }
     }, []);
 
@@ -111,6 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             value={{
                 user,
                 loading,
+                isSigningIn,
+                authError,
                 words,
                 dueWords,
                 loadingWords,
