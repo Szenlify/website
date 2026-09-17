@@ -72,11 +72,10 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                     <Logo locale={locale} />
                     <nav className="hidden lg:flex items-center gap-7">
                         {user && (
-                            <button
-                                type="button"
-                                onClick={openReviews}
+                            <Link
+                                href={getLocalizedHref("/dashboard/reviews", locale)}
                                 className={`flex items-center gap-2 text-sm font-bold transition-all px-3 py-1.5 rounded-xl cursor-pointer ${
-                                    viewMode === "reviews"
+                                    pathname.includes("/dashboard/reviews")
                                         ? "bg-indigo-600/30 text-indigo-200 border border-indigo-500/50 shadow-sm shadow-indigo-500/20"
                                         : "text-slate-300 hover:text-white hover:bg-white/5"
                                 }`}
@@ -86,7 +85,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                 <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-mono font-bold tabular-nums">
                                     {rawDueCount}
                                 </span>
-                            </button>
+                            </Link>
                         )}
                         <Link
                             href={getLocalizedSectionHref("features", locale)}
@@ -200,24 +199,24 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                         ) : (
                             <div className="flex items-center gap-2 sm:gap-2.5">
                                 {/* Clickable review counter badge to open reviews */}
-                                <button
-                                    type="button"
-                                    onClick={openReviews}
-                                    title="Kliknij, aby przejść do powtórek"
-                                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95"
+                                <Link
+                                    href={getLocalizedHref("/dashboard/reviews", locale)}
+                                    title={nav.reviews || "Powtórki"}
+                                    className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95 ${
+                                        pathname.includes("/dashboard/reviews") ? "ring-2 ring-indigo-500/50" : ""
+                                    }`}
                                 >
                                     <span className="hidden xs:inline">{nav.reviews || "Powtórki"}</span>
                                     <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono font-bold">
                                         {rawDueCount}
                                     </span>
-                                </button>
+                                </Link>
 
                                 <DropdownMenu modal={false}>
                                     <DropdownMenuTrigger asChild>
                                         <button
                                             type="button"
-                                            onClick={openReviews}
-                                            title="Profil użytkownika — kliknij aby otworzyć powtórki"
+                                            title="Profil użytkownika"
                                             className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer active:scale-95"
                                         >
                                             {user.photoURL ? (
@@ -247,24 +246,28 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                                 {user.email}
                                             </p>
                                         </div>
-                                        <DropdownMenuItem
-                                            onClick={openReviews}
-                                            className="text-indigo-300 hover:text-white hover:bg-indigo-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between"
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <Sparkles className="size-3.5 text-indigo-400" />
-                                                <span>{nav.reviews || "Powtórki"}</span>
-                                            </div>
-                                            <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] font-mono">
-                                                {rawDueCount}
-                                            </span>
-                                        </DropdownMenuItem>
-                                        {viewMode === "reviews" && (
-                                            <DropdownMenuItem
-                                                onClick={openLanding}
-                                                className="text-slate-300 hover:text-white hover:bg-white/5 cursor-pointer text-xs font-medium py-2"
+                                        <DropdownMenuItem asChild>
+                                            <Link
+                                                href={getLocalizedHref("/dashboard/reviews", locale)}
+                                                className="text-indigo-300 hover:text-white hover:bg-indigo-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between w-full"
                                             >
-                                                <span>Strona główna</span>
+                                                <div className="flex items-center gap-2">
+                                                    <Sparkles className="size-3.5 text-indigo-400" />
+                                                    <span>{nav.reviews || "Powtórki"}</span>
+                                                </div>
+                                                <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] font-mono">
+                                                    {rawDueCount}
+                                                </span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        {pathname.includes("/dashboard/reviews") && (
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href={getLocalizedHref("/", locale)}
+                                                    className="text-slate-300 hover:text-white hover:bg-white/5 cursor-pointer text-xs font-medium py-2 w-full"
+                                                >
+                                                    <span>{dict.reviews?.backToHome || "Strona główna"}</span>
+                                                </Link>
                                             </DropdownMenuItem>
                                         )}
                                         <DropdownMenuItem
@@ -301,9 +304,8 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                 <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-4 py-4">
                                     {user && (
                                         <SheetClose asChild>
-                                            <button
-                                                type="button"
-                                                onClick={openReviews}
+                                            <Link
+                                                href={getLocalizedHref("/dashboard/reviews", locale)}
                                                 className="flex items-center justify-between rounded-2xl p-3.5 mb-2 bg-linear-to-r from-indigo-600/40 via-purple-600/30 to-indigo-600/20 border border-indigo-500/40 text-white font-bold text-sm shadow-md shadow-indigo-500/20 active:scale-98 transition text-left cursor-pointer"
                                             >
                                                 <div className="flex items-center gap-2.5">
@@ -311,9 +313,9 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                                     <span>{nav.reviews || "Powtórki"}</span>
                                                 </div>
                                                 <span className="px-2.5 py-0.5 rounded-full bg-indigo-500 text-white text-xs font-mono font-bold">
-                                                    {rawDueCount} do zrobienia
+                                                    {rawDueCount}
                                                 </span>
-                                            </button>
+                                            </Link>
                                         </SheetClose>
                                     )}
                                     {[
@@ -458,10 +460,9 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                         ) : (
                                             <div className="flex flex-col gap-2">
                                                 <SheetClose asChild>
-                                                    <button
-                                                        type="button"
-                                                        onClick={openReviews}
-                                                        title="Kliknij, aby otworzyć powtórki"
+                                                    <Link
+                                                        href={getLocalizedHref("/dashboard/reviews", locale)}
+                                                        title={nav.reviews || "Powtórki"}
                                                         className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/40 transition cursor-pointer text-left active:scale-98"
                                                     >
                                                         <div className="flex items-center gap-2">
@@ -482,9 +483,9 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                                             </span>
                                                         </div>
                                                         <span className="px-2 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-bold">
-                                                            {rawDueCount} do powtórki
+                                                            {rawDueCount}
                                                         </span>
-                                                    </button>
+                                                    </Link>
                                                 </SheetClose>
                                                 <SheetClose asChild>
                                                     <Button

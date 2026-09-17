@@ -255,7 +255,11 @@ export interface Dict {
         privacyDesc: string;
         termsTitle: string;
         termsDesc: string;
+        reviewsTitle: string;
+        reviewsDesc: string;
     };
+
+    reviews: ReviewsDict;
 
     privacy: {
         breadcrumbHome: string;
@@ -349,4 +353,59 @@ export interface Dict {
             email: string;
         };
     };
+}
+
+export interface ReviewsDict {
+    badge: string;
+    title: string;
+    subtitle: string;
+    breadcrumbHome: string;
+    breadcrumbDashboard: string;
+    breadcrumbReviews: string;
+    loadingTitle: string;
+    loadingSubtitle: string;
+    dbErrorTitle: string;
+    retryButton: string;
+    noWordsTitle: string;
+    noWordsSubtitle: string;
+    syncHowToTitle: string;
+    syncStep1: string;
+    syncStep2: string;
+    syncStep3: string;
+    syncStep4: string;
+    refreshButton: string;
+    allCaughtUpTitle: string;
+    allCaughtUpDesc: string;
+    totalSavedWords: string;
+    practicePromptTitle: string;
+    practicePromptDesc: string;
+    practiceAllButton: string;
+    checkNewButton: string;
+    sessionCompleteTitle: string;
+    sessionCompleteDesc: string;
+    exitPracticeButton: string;
+    changeDirection: string;
+    cramBadge: string;
+    listenAudio: string;
+    movieSnapshotAlt: string;
+    mobileSwipeHint: string;
+    flipShowAnswer: string;
+    flipShowQuestion: string;
+    mobileTapFlip: string;
+    rateMemoryPrompt: string;
+    knowWordPrompt: string;
+    btnAgain: string;
+    btnGood: string;
+    badgeAgain: string;
+    badgeGood: string;
+    shortcutPronounce: string;
+    shortcutFlip: string;
+    shortcutAgain: string;
+    shortcutGood: string;
+    unauthTitle: string;
+    unauthDesc: string;
+    signInWithGoogle: string;
+    signingIn: string;
+    loggedInAs: string;
+    backToHome: string;
 }

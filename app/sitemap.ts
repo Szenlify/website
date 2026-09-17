@@ -33,6 +33,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.2,
             alternates: languageAlternates("/terms"),
         },
+        {
+            url: `${baseUrl}/dashboard/reviews`,
+            lastModified: homepageUpdated,
+            changeFrequency: "daily",
+            priority: 0.8,
+            alternates: languageAlternates("/dashboard/reviews"),
+        },
     ];
 
     const localizedRoutes: MetadataRoute.Sitemap = PREFIXED_LOCALES.flatMap(
@@ -57,6 +64,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 changeFrequency: "yearly" as const,
                 priority: 0.2,
                 alternates: languageAlternates("/terms"),
+            },
+            {
+                url: `${baseUrl}/${locale}/dashboard/reviews`,
+                lastModified: homepageUpdated,
+                changeFrequency: "daily" as const,
+                priority: 0.8,
+                alternates: languageAlternates("/dashboard/reviews"),
             },
         ],
     );

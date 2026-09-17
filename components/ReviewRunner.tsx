@@ -232,13 +232,15 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         );
     };
 
+    const r = dict.reviews;
+
     // 1. Loading State
     if (loadingWords) {
         return (
             <div className="max-w-md mx-auto px-4 py-16 flex flex-col items-center justify-center text-center min-h-[60vh]">
                 <div className="size-12 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-slate-200 font-semibold text-base">Ładowanie powtórek z chmury...</p>
-                <p className="text-slate-400 text-xs mt-1">Sprawdzanie bazy Firebase Firestore...</p>
+                <p className="text-slate-200 font-semibold text-base">{r.loadingTitle}</p>
+                <p className="text-slate-400 text-xs mt-1">{r.loadingSubtitle}</p>
             </div>
         );
     }
@@ -250,7 +252,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                 <div className="size-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mb-4 shadow-lg shadow-red-500/10">
                     <AlertCircle className="size-8" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Błąd bazy danych</h3>
+                <h3 className="text-xl font-bold text-white mb-2">{r.dbErrorTitle}</h3>
                 <p className="text-slate-400 text-sm mb-6 max-w-sm">{wordsError}</p>
                 <button
                     type="button"
@@ -258,7 +260,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-500/30 cursor-pointer transition"
                 >
                     <RefreshCw className="size-4" />
-                    <span>Spróbuj ponownie</span>
+                    <span>{r.retryButton}</span>
                 </button>
             </div>
         );
@@ -272,22 +274,22 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     📚
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">
-                    Brak słówek w chmurze
+                    {r.noWordsTitle}
                 </h2>
                 <p className="text-slate-400 text-sm max-w-md mb-6 leading-relaxed">
-                    Dla konta <strong className="text-indigo-300">{user?.email}</strong> nie znaleziono jeszcze zapisanych słówek w chmurze Firebase.
+                    {r.noWordsSubtitle} <strong className="text-indigo-300">{user?.email}</strong>.
                 </p>
 
                 <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 mb-6 text-left shadow-lg">
                     <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm mb-3">
                         <Info className="size-4 shrink-0" />
-                        <span>Jak zsynchronizować słówka z wtyczki Lectoro:</span>
+                        <span>{r.syncHowToTitle}</span>
                     </div>
                     <ol className="space-y-2.5 text-xs sm:text-sm text-slate-300 list-decimal list-inside leading-relaxed">
-                        <li>Otwórz rozszerzenie <strong>Lectoro</strong> na pasku Chrome.</li>
-                        <li>Kliknij zakładkę <strong>Ustawienia / Chmura</strong>.</li>
-                        <li>Upewnij się, że jesteś zalogowany tym samym kontem Google (<span className="text-indigo-300 font-mono">{user?.email}</span>).</li>
-                        <li>Kliknij przycisk <strong>Synchronizuj</strong> – Twoje słówka z filmów i seriali zostaną przesłane do chmury.</li>
+                        <li>{r.syncStep1}</li>
+                        <li>{r.syncStep2}</li>
+                        <li>{r.syncStep3} (<span className="text-indigo-300 font-mono">{user?.email}</span>).</li>
+                        <li>{r.syncStep4}</li>
                     </ol>
                 </div>
 
@@ -298,7 +300,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                         className="inline-flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/30 cursor-pointer active:scale-95"
                     >
                         <RotateCw className="size-4" />
-                        <span>Odśwież powtórki</span>
+                        <span>{r.refreshButton}</span>
                     </button>
                 </div>
             </div>
@@ -313,20 +315,20 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     ✅
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">
-                    Brak kart do powtórki!
+                    {r.allCaughtUpTitle}
                 </h2>
                 <p className="text-slate-400 text-sm sm:text-base max-w-md mb-6 leading-relaxed">
-                    Wszystkie Twoje słówka są na bieżąco powtórzone. Masz w sumie <strong className="text-white">{words.length}</strong> zapisanych słówek w bazie. Następne powtórki zaplanowane są zgodnie z algorytmem SRS.
+                    {r.allCaughtUpDesc} {r.totalSavedWords} <strong className="text-white">{words.length}</strong>.
                 </p>
 
                 {/* Option to practice in Cram Mode anyway */}
                 <div className="w-full bg-linear-to-b from-indigo-500/10 to-transparent border border-indigo-500/20 rounded-2xl p-5 mb-6 text-center">
                     <div className="flex items-center justify-center gap-2 text-indigo-300 font-bold text-sm mb-1.5">
                         <Zap className="size-4 text-indigo-400" />
-                        <span>Chcesz poćwiczyć mimo to?</span>
+                        <span>{r.practicePromptTitle}</span>
                     </div>
                     <p className="text-xs text-slate-400 mb-4 max-w-xs mx-auto">
-                        Możesz przejrzeć i przećwiczyć wszystkie {words.length} słówek bez czekania na zegar powtórek.
+                        {r.practicePromptDesc} ({words.length})
                     </p>
                     <button
                         type="button"
@@ -334,7 +336,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                         className="inline-flex items-center justify-center gap-2 w-full max-w-xs py-3 px-5 rounded-xl text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 transition shadow-lg shadow-indigo-500/30 cursor-pointer active:scale-95"
                     >
                         <Layers className="size-4" />
-                        <span>Powtórz wszystkie ({words.length} słówek)</span>
+                        <span>{r.practiceAllButton} ({words.length})</span>
                     </button>
                 </div>
 
@@ -344,7 +346,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition cursor-pointer"
                 >
                     <RotateCw className="size-3.5" />
-                    <span>Sprawdź nowe powtórki w bazie</span>
+                    <span>{r.checkNewButton}</span>
                 </button>
             </div>
         );
@@ -358,10 +360,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     🎉
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-white mb-3">
-                    Sesja ukończona!
+                    {r.sessionCompleteTitle}
                 </h2>
                 <p className="text-slate-400 text-sm sm:text-base max-w-sm mb-8 leading-relaxed">
-                    Ukończyłeś wszystkie <strong>{queue.length}</strong> powtórek z tej sesji! Twoja pamięć długotrwała została utrwalona.
+                    {r.sessionCompleteDesc} ({queue.length})
                 </p>
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                     {isCramMode && (
@@ -370,7 +372,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                             onClick={exitCramMode}
                             className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 transition cursor-pointer"
                         >
-                            Zakończ tryb ćwiczeń
+                            {r.exitPracticeButton}
                         </button>
                     )}
                     <button
@@ -379,7 +381,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                         className="inline-flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/30 cursor-pointer active:scale-95"
                     >
                         <RotateCw className="size-4" />
-                        <span>Odśwież powtórki</span>
+                        <span>{r.refreshButton}</span>
                     </button>
                 </div>
             </div>
@@ -400,7 +402,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                             setDirection((d) => (d === "normal" ? "reverse" : "normal"));
                             setAnswerShown(false);
                         }}
-                        title="Zmień kierunek nauki"
+                        title={r.changeDirection}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-400/40 transition cursor-pointer active:scale-95"
                     >
                         <span>{direction === "normal" ? srcLang : tgtLang}</span>
@@ -410,7 +412,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
                     {isCramMode && (
                         <span className="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                            Ćwiczenia
+                            {r.cramBadge}
                         </span>
                     )}
                 </div>
@@ -445,7 +447,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                         className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-red-600/90 border border-red-400 shadow-xl shadow-red-600/30 pointer-events-none"
                         style={{ opacity: Math.min(1, Math.abs(touchDeltaX) / 65) }}
                     >
-                        ✕ NIE ZNAM
+                        ✕ {r.badgeAgain}
                     </div>
                 )}
                 {isDragging && touchDeltaX > 25 && (
@@ -453,7 +455,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                         className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-emerald-600/90 border border-emerald-400 shadow-xl shadow-emerald-600/30 pointer-events-none"
                         style={{ opacity: Math.min(1, Math.abs(touchDeltaX) / 65) }}
                     >
-                        ✓ ZNAM
+                        ✓ {r.badgeGood}
                     </div>
                 )}
 
@@ -468,7 +470,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                             e.stopPropagation();
                             if (showWord) speakText(showWord, speakLang);
                         }}
-                        title="Odsłuchaj wymowę (W)"
+                        title={r.listenAudio}
                         className={`inline-flex items-center justify-center size-10 sm:size-11 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/30 hover:scale-105 active:scale-95 transition cursor-pointer shrink-0 ${
                             isSpeaking ? "review-speak-btn speaking" : ""
                         }`}
@@ -491,7 +493,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={screenshotUrl}
-                            alt="Kadr z filmu"
+                            alt={r.movieSnapshotAlt}
                             className={`w-full h-full object-contain transition-opacity duration-300 ${
                                 imageLoaded ? "opacity-100" : "opacity-0"
                             }`}
@@ -505,11 +507,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
                 {/* Mobile Gesture Hint */}
                 <div className="mt-4 text-center text-[11px] font-medium text-slate-500 sm:hidden flex items-center justify-center gap-2">
-                    <span>← Przesuń: Nie znam</span>
-                    <span>•</span>
-                    <span>Dotknij: Obrót</span>
-                    <span>•</span>
-                    <span>Znam: Przesuń →</span>
+                    <span>{r.mobileSwipeHint}</span>
                 </div>
             </div>
 
@@ -523,7 +521,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/10">↓</kbd>
                     <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/10">S</kbd>
                 </span>
-                <span>{answerShown ? "Pokaż pytanie (Obróć)" : "Pokaż odpowiedź (Obróć)"}</span>
+                <span>{answerShown ? r.flipShowQuestion : r.flipShowAnswer}</span>
             </button>
 
             {/* Mobile Big Flip Action Bar (Shown when answer is not yet revealed) */}
@@ -534,7 +532,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                         onClick={flipCard}
                         className="w-full h-13 rounded-2xl font-extrabold text-sm text-white bg-indigo-600 hover:bg-indigo-500 border border-indigo-400/40 shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-98 transition cursor-pointer"
                     >
-                        <span>Pokaż odpowiedź (Dotknij)</span>
+                        <span>{r.mobileTapFlip}</span>
                     </button>
                 </div>
             )}
@@ -542,11 +540,11 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
             {/* Rating Controls (Shown on Desktop always, on Mobile especially after flip) */}
             <div className={`w-full ${!answerShown ? "opacity-75 sm:opacity-100" : ""}`}>
                 <div className="text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3 mt-2 sm:mt-0">
-                    {answerShown ? "Oceń swoją pamięć:" : "Wiesz co to znaczy?"}
+                    {answerShown ? r.rateMemoryPrompt : r.knowWordPrompt}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    {/* Button: Nie znam (Again / Grade 1) */}
+                    {/* Button: Again / Grade 1 */}
                     <button
                         type="button"
                         onClick={() => void rateCard(1)}
@@ -557,14 +555,14 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                             <kbd className="px-1 py-0.5 rounded bg-red-500/10 border border-red-500/20">A</kbd>
                         </span>
                         <span className="text-sm sm:text-base font-black text-red-400 group-hover:text-red-300 transition">
-                            Nie znam
+                            {r.btnAgain}
                         </span>
                         <span className="text-[11px] font-semibold text-slate-400 mt-0.5 tabular-nums">
                             +{labelAgain}
                         </span>
                     </button>
 
-                    {/* Button: Znam (Good / Grade 2) */}
+                    {/* Button: Good / Grade 2 */}
                     <button
                         type="button"
                         onClick={() => void rateCard(2)}
@@ -575,7 +573,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                             <kbd className="px-1 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">D</kbd>
                         </span>
                         <span className="text-sm sm:text-base font-black text-emerald-400 group-hover:text-emerald-300 transition">
-                            Znam
+                            {r.btnGood}
                         </span>
                         <span className="text-[11px] font-semibold text-slate-400 mt-0.5 tabular-nums">
                             +{labelGood}
@@ -586,16 +584,16 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                 {/* Keyboard Shortcuts Hint (Desktop only) */}
                 <div className="hidden sm:flex items-center justify-center gap-4 mt-6 text-[11px] font-medium text-slate-500">
                     <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">W</kbd> wymowa
+                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">W</kbd> {r.shortcutPronounce}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">S / Spacja</kbd> obrót
+                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">S / Spacja</kbd> {r.shortcutFlip}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">A</kbd> nie znam
+                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">A</kbd> {r.shortcutAgain}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">D</kbd> znam
+                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">D</kbd> {r.shortcutGood}
                     </span>
                 </div>
             </div>
