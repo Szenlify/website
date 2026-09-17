@@ -43,7 +43,17 @@ interface NavbarProps {
 
 export default function Navbar({ dict, locale }: NavbarProps) {
     const pathname = usePathname();
-    const { user, isSigningIn, dueWords, signInWithGoogle, signOut } = useAuth();
+    const {
+        user,
+        isSigningIn,
+        dueWords,
+        rawDueCount,
+        viewMode,
+        openReviews,
+        openLanding,
+        signInWithGoogle,
+        signOut,
+    } = useAuth();
 
     const { nav, lang } = dict;
     const guidesLabel = getGuideCatalogCopy(locale).label;
@@ -60,15 +70,34 @@ export default function Navbar({ dict, locale }: NavbarProps) {
             <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
                     <Logo locale={locale} />
-                    <nav className="hidden lg:flex items-center gap-8">
+                    <nav className="hidden lg:flex items-center gap-7">
+                        {user && (
+                            <button
+                                type="button"
+                                onClick={openReviews}
+                                className={`flex items-center gap-2 text-sm font-bold transition-all px-3 py-1.5 rounded-xl cursor-pointer ${
+                                    viewMode === "reviews"
+                                        ? "bg-indigo-600/30 text-indigo-200 border border-indigo-500/50 shadow-sm shadow-indigo-500/20"
+                                        : "text-slate-300 hover:text-white hover:bg-white/5"
+                                }`}
+                            >
+                                <Sparkles className="size-4 text-indigo-400" />
+                                <span>{nav.reviews || "Powtórki"}</span>
+                                <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-mono font-bold tabular-nums">
+                                    {rawDueCount}
+                                </span>
+                            </button>
+                        )}
                         <Link
                             href={getLocalizedSectionHref("features", locale)}
+                            onClick={() => openLanding()}
                             className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
                         >
                             {nav.features}
                         </Link>
                         <Link
                             href={getLocalizedHref("/guides", locale)}
+                            onClick={() => openLanding()}
                             className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
                         >
                             {guidesLabel}
@@ -78,18 +107,21 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                 "how-it-works",
                                 locale,
                             )}
+                            onClick={() => openLanding()}
                             className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
                         >
                             {nav.howItWorks}
                         </Link>
                         <Link
                             href={getLocalizedSectionHref("comparison", locale)}
+                            onClick={() => openLanding()}
                             className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
                         >
                             {nav.comparison}
                         </Link>
                         <Link
                             href={getLocalizedSectionHref("pricing", locale)}
+                            onClick={() => openLanding()}
                             className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
                         >
                             {nav.pricing}
@@ -167,18 +199,26 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                             </button>
                         ) : (
                             <div className="flex items-center gap-2 sm:gap-2.5">
-                                <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-bold text-xs">
+                                {/* Clickable review counter badge to open reviews */}
+                                <button
+                                    type="button"
+                                    onClick={openReviews}
+                                    title="Kliknij, aby przejść do powtórek"
+                                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95"
+                                >
                                     <span className="hidden xs:inline">{nav.reviews || "Powtórki"}</span>
-                                    <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono">
-                                        {dueWords.length}
+                                    <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono font-bold">
+                                        {rawDueCount}
                                     </span>
-                                </div>
+                                </button>
 
                                 <DropdownMenu modal={false}>
                                     <DropdownMenuTrigger asChild>
                                         <button
                                             type="button"
-                                            className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer"
+                                            onClick={openReviews}
+                                            title="Profil użytkownika — kliknij aby otworzyć powtórki"
+                                            className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer active:scale-95"
                                         >
                                             {user.photoURL ? (
                                                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -198,7 +238,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                             <ChevronDown className="size-3 text-slate-400" />
                                         </button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-48">
+                                    <DropdownMenuContent align="end" className="w-52">
                                         <div className="px-3 py-2 border-b border-white/10">
                                             <p className="text-xs font-bold text-white truncate">
                                                 {user.displayName || "Użytkownik"}
@@ -207,6 +247,26 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                                 {user.email}
                                             </p>
                                         </div>
+                                        <DropdownMenuItem
+                                            onClick={openReviews}
+                                            className="text-indigo-300 hover:text-white hover:bg-indigo-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <Sparkles className="size-3.5 text-indigo-400" />
+                                                <span>{nav.reviews || "Powtórki"}</span>
+                                            </div>
+                                            <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] font-mono">
+                                                {rawDueCount}
+                                            </span>
+                                        </DropdownMenuItem>
+                                        {viewMode === "reviews" && (
+                                            <DropdownMenuItem
+                                                onClick={openLanding}
+                                                className="text-slate-300 hover:text-white hover:bg-white/5 cursor-pointer text-xs font-medium py-2"
+                                            >
+                                                <span>Strona główna</span>
+                                            </DropdownMenuItem>
+                                        )}
                                         <DropdownMenuItem
                                             onClick={() => void signOut()}
                                             className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2"
@@ -239,6 +299,23 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                     <Logo locale={locale} />
                                 </div>
                                 <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-4 py-4">
+                                    {user && (
+                                        <SheetClose asChild>
+                                            <button
+                                                type="button"
+                                                onClick={openReviews}
+                                                className="flex items-center justify-between rounded-2xl p-3.5 mb-2 bg-linear-to-r from-indigo-600/40 via-purple-600/30 to-indigo-600/20 border border-indigo-500/40 text-white font-bold text-sm shadow-md shadow-indigo-500/20 active:scale-98 transition text-left cursor-pointer"
+                                            >
+                                                <div className="flex items-center gap-2.5">
+                                                    <Sparkles className="size-4 text-indigo-400" />
+                                                    <span>{nav.reviews || "Powtórki"}</span>
+                                                </div>
+                                                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500 text-white text-xs font-mono font-bold">
+                                                    {rawDueCount} do zrobienia
+                                                </span>
+                                            </button>
+                                        </SheetClose>
+                                    )}
                                     {[
                                         [
                                             getLocalizedSectionHref(
@@ -276,6 +353,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                         <SheetClose key={href} asChild>
                                             <Link
                                                 href={href}
+                                                onClick={() => openLanding()}
                                                 className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white"
                                             >
                                                 <span>{label}</span>
@@ -379,28 +457,35 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                             </Button>
                                         ) : (
                                             <div className="flex flex-col gap-2">
-                                                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
-                                                    <div className="flex items-center gap-2">
-                                                        {user.photoURL ? (
-                                                            /* eslint-disable-next-line @next/next/no-img-element */
-                                                            <img
-                                                                src={user.photoURL}
-                                                                alt={user.displayName || "User"}
-                                                                className="size-7 rounded-full border border-indigo-400/40 object-cover"
-                                                            />
-                                                        ) : (
-                                                            <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
-                                                                {(user.displayName || user.email || "U")[0].toUpperCase()}
-                                                            </div>
-                                                        )}
-                                                        <span className="text-xs font-bold text-white max-w-[140px] truncate">
-                                                            {user.displayName || user.email}
+                                                <SheetClose asChild>
+                                                    <button
+                                                        type="button"
+                                                        onClick={openReviews}
+                                                        title="Kliknij, aby otworzyć powtórki"
+                                                        className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/40 transition cursor-pointer text-left active:scale-98"
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            {user.photoURL ? (
+                                                                /* eslint-disable-next-line @next/next/no-img-element */
+                                                                <img
+                                                                    src={user.photoURL}
+                                                                    alt={user.displayName || "User"}
+                                                                    className="size-7 rounded-full border border-indigo-400/40 object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+                                                                    {(user.displayName || user.email || "U")[0].toUpperCase()}
+                                                                </div>
+                                                            )}
+                                                            <span className="text-xs font-bold text-white max-w-[130px] truncate">
+                                                                {user.displayName || user.email}
+                                                            </span>
+                                                        </div>
+                                                        <span className="px-2 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-bold">
+                                                            {rawDueCount} do powtórki
                                                         </span>
-                                                    </div>
-                                                    <span className="px-2 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-bold">
-                                                        {dueWords.length} do powtórki
-                                                    </span>
-                                                </div>
+                                                    </button>
+                                                </SheetClose>
                                                 <SheetClose asChild>
                                                     <Button
                                                         type="button"
