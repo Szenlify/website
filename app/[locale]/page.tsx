@@ -15,6 +15,7 @@ import { getDictionary, isLocale } from "@/lib/i18n";
 import type { CarouselItem } from "@/components/ShowcaseCarousel";
 import { LOCALE_CONFIG } from "@/lib/i18n/types";
 import { getLanguageAlternates } from "@/lib/routing";
+import { getLocalizedPricing } from "@/lib/pricing";
 
 export async function generateMetadata({
     params,
@@ -84,6 +85,8 @@ export default async function LocaleHomePage({
     const baseUrl = "https://lectoroai.com";
     const siteUrl = locale === "en" ? baseUrl : `${baseUrl}/${locale}`;
 
+    const pricingData = getLocalizedPricing(locale);
+
     const structuredData = {
         "@context": "https://schema.org",
         "@graph": [
@@ -109,9 +112,7 @@ export default async function LocaleHomePage({
                 name: "Lectoro AI",
                 url: `${baseUrl}/`,
                 applicationCategory: "EducationalApplication",
-                applicationSubCategory: "Language Learning",
-                operatingSystem: "ChromeOS, Windows, macOS, Linux",
-                browserRequirements: "Requires Google Chrome",
+                operatingSystem: "Chrome",
                 description: dict.meta.homeDesc,
                 featureList: [
                     dict.features.f1.title,
@@ -123,9 +124,9 @@ export default async function LocaleHomePage({
                 ],
                 offers: {
                     "@type": "AggregateOffer",
-                    priceCurrency: "USD",
-                    lowPrice: "0",
-                    highPrice: "19.99",
+                    priceCurrency: pricingData.currency,
+                    lowPrice: String(pricingData.plans.free.amount),
+                    highPrice: String(pricingData.plans.pro.amount),
                     offerCount: "3",
                 },
                 publisher: { "@id": `${baseUrl}/#organization` },
@@ -164,7 +165,7 @@ export default async function LocaleHomePage({
                 <ShowcaseCarousel images={localizedImages} labels={dict.showcase} />
                 <Comparison dict={dict} />
                 <HowItWorks dict={dict} />
-                <Pricing dict={dict} />
+                <Pricing dict={dict} locale={locale} />
                 <Testimonials dict={dict} />
                 <FAQ dict={dict} />
                 <FinalCTA dict={dict} />

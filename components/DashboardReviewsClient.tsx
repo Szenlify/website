@@ -124,7 +124,7 @@ export default function DashboardReviewsClient({
             </div>
 
             {/* Flashcard Review Runner */}
-            <div className="grow flex flex-col justify-center overflow-hidden">
+            <div className="grow min-h-[calc(100dvh-12rem)] flex flex-col justify-start overflow-hidden">
                 <ReviewRunner dict={dict} locale={locale} />
             </div>
         </div>

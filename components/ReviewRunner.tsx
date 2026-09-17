@@ -575,18 +575,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                 <Volume2 className="size-4.5 sm:size-5" />
                             </button>
                         </div>
-
-                        {/* Google Voice Status Indicator */}
-                        {activeVoice && (
-                            <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-indigo-300/80 font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                                <span className="size-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                                <span>
-                                    {/google/i.test(activeVoice.name)
-                                        ? `Chrome ${activeVoice.name}`
-                                        : activeVoice.name}
-                                </span>
-                            </div>
-                        )}
                     </div>
 
                     {/* Context Sentence */}

@@ -142,7 +142,7 @@ export default function HomePage() {
                     <ShowcaseCarousel images={images} labels={en.showcase} />
                     <Comparison dict={en} />
                     <HowItWorks dict={en} />
-                    <Pricing dict={en} />
+                    <Pricing dict={en} locale="en" />
                     <Testimonials dict={en} />
                     <FAQ dict={en} />
                     <FinalCTA dict={en} />

@@ -1,13 +1,16 @@
 import React from "react";
-import type { Dict } from "@/lib/i18n/types";
+import type { Dict, Locale } from "@/lib/i18n/types";
 import { CHROME_STORE_URL } from "@/lib/config";
+import { getLocalizedPricing } from "@/lib/pricing";
 
 interface PricingProps {
     dict: Dict;
+    locale?: Locale;
 }
 
-export default function Pricing({ dict }: PricingProps) {
+export default function Pricing({ dict, locale }: PricingProps) {
     const { pricing } = dict;
+    const localizedPricing = getLocalizedPricing(locale);
 
     return (
         <section
@@ -40,7 +43,7 @@ export default function Pricing({ dict }: PricingProps) {
 
                             <div className="flex items-baseline gap-1 mb-8">
                                 <span className="font-display font-black text-5xl text-white">
-                                    $0
+                                    {localizedPricing.plans.free.formatted}
                                 </span>
                                 <span className="text-sm font-semibold text-slate-400">
                                     {pricing.free.forever}
@@ -107,7 +110,7 @@ export default function Pricing({ dict }: PricingProps) {
 
                             <div className="flex items-baseline gap-1 mb-8">
                                 <span className="font-display font-black text-5xl text-white">
-                                    $7.99
+                                    {localizedPricing.plans.basic.formatted}
                                 </span>
                                 <span className="text-sm font-semibold text-slate-400">
                                     {pricing.basic.mo}
@@ -176,7 +179,7 @@ export default function Pricing({ dict }: PricingProps) {
 
                             <div className="flex items-baseline gap-1 mb-8">
                                 <span className="font-display font-black text-5xl text-white">
-                                    $19.99
+                                    {localizedPricing.plans.pro.formatted}
                                 </span>
                                 <span className="text-sm font-semibold text-slate-400">
                                     {pricing.pro.mo}
