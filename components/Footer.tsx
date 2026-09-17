@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import type { Dict, Locale } from "@/lib/i18n/types";

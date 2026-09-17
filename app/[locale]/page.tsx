@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Hero from "@/components/Hero";
 import Platforms from "@/components/Platforms";
-import Features from "@/components/Features";
+import FeatureShowcase from "@/components/FeatureShowcase";
 import ShowcaseCarousel from "@/components/ShowcaseCarousel";
 import Comparison from "@/components/Comparison";
 import HowItWorks from "@/components/HowItWorks";
@@ -161,7 +161,7 @@ export default async function LocaleHomePage({
             <HomeView dict={dict} locale={locale}>
                 <Hero dict={dict} />
                 <Platforms dict={dict} />
-                <Features dict={dict} />
+                <FeatureShowcase dict={dict} locale={locale} />
                 <ShowcaseCarousel images={localizedImages} labels={dict.showcase} />
                 <Comparison dict={dict} />
                 <HowItWorks dict={dict} />

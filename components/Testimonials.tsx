@@ -1,4 +1,4 @@
-﻿import type { Dict } from "@/lib/i18n/types";
+import type { Dict } from "@/lib/i18n/types";
 import {
     Carousel,
     CarouselContent,

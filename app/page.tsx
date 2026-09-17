@@ -1,7 +1,7 @@
 import Hero from "@/components/Hero";
 import Platforms from "@/components/Platforms";
 import ShowcaseCarousel from "@/components/ShowcaseCarousel";
-import Features from "@/components/Features";
+import FeatureShowcase from "@/components/FeatureShowcase";
 import Comparison from "@/components/Comparison";
 import HowItWorks from "@/components/HowItWorks";
 import Pricing from "@/components/Pricing";
@@ -138,7 +138,7 @@ export default function HomePage() {
                 <HomeView dict={en} locale="en">
                     <Hero dict={en} />
                     <Platforms dict={en} />
-                    <Features dict={en} />
+                    <FeatureShowcase dict={en} locale="en" />
                     <ShowcaseCarousel images={images} labels={en.showcase} />
                     <Comparison dict={en} />
                     <HowItWorks dict={en} />
