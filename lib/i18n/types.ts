@@ -1,14 +1,15 @@
 export const LOCALE_CONFIG = {
     en: { openGraph: "en_US", skipLink: "Skip to content" },
-    pl: { openGraph: "pl_PL", skipLink: "Przejdź do treści" },
-    de: { openGraph: "de_DE", skipLink: "Zum Inhalt springen" },
-    es: { openGraph: "es_ES", skipLink: "Saltar al contenido" },
     ja: { openGraph: "ja_JP", skipLink: "メインコンテンツへ移動" },
+    de: { openGraph: "de_DE", skipLink: "Zum Inhalt springen" },
     ko: { openGraph: "ko_KR", skipLink: "본문으로 이동" },
     fr: { openGraph: "fr_FR", skipLink: "Aller au contenu" },
-    "pt-BR": { openGraph: "pt_BR", skipLink: "Ir para o conteúdo" },
-    "es-MX": { openGraph: "es_MX", skipLink: "Ir al contenido" },
-    hi: { openGraph: "hi_IN", skipLink: "मुख्य सामग्री पर जाएँ" },
+    nl: { openGraph: "nl_NL", skipLink: "Naar inhoud springen" },
+    pl: { openGraph: "pl_PL", skipLink: "Przejdź do treści" },
+    es: { openGraph: "es_ES", skipLink: "Saltar al contenido" },
+    it: { openGraph: "it_IT", skipLink: "Salta al contenuto" },
+    cs: { openGraph: "cs_CZ", skipLink: "Přejít k obsahu" },
+    pt: { openGraph: "pt_PT", skipLink: "Saltar para o conteúdo" },
 } as const;
 
 export type Locale = keyof typeof LOCALE_CONFIG;
@@ -50,19 +51,23 @@ export interface Dict {
         addToChromeFree: string;
         privacyPolicy: string;
         termsOfService: string;
+        signIn: string;
+        signOut: string;
+        reviews: string;
     };
 
     lang: {
         en: string;
-        pl: string;
-        de: string;
-        es: string;
         ja: string;
+        de: string;
         ko: string;
         fr: string;
-        "pt-BR": string;
-        "es-MX": string;
-        hi: string;
+        nl: string;
+        pl: string;
+        es: string;
+        it: string;
+        cs: string;
+        pt: string;
         selectLanguage: string;
     };
 

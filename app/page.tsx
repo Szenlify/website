@@ -11,6 +11,7 @@ import FinalCTA from "@/components/FinalCTA";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import type { CarouselItem } from "@/components/ShowcaseCarousel";
+import HomeView from "@/components/HomeView";
 import { en } from "@/lib/i18n/en";
 
 const structuredData = {
@@ -134,16 +135,18 @@ export default function HomePage() {
             />
             <Navbar dict={en} locale="en" />
             <main id="main-content" className="grow">
-                <Hero dict={en} />
-                <Platforms dict={en} />
-                <Features dict={en} />
-                <ShowcaseCarousel images={images} labels={en.showcase} />
-                <Comparison dict={en} />
-                <HowItWorks dict={en} />
-                <Pricing dict={en} />
-                <Testimonials dict={en} />
-                <FAQ dict={en} />
-                <FinalCTA dict={en} />
+                <HomeView dict={en} locale="en">
+                    <Hero dict={en} />
+                    <Platforms dict={en} />
+                    <Features dict={en} />
+                    <ShowcaseCarousel images={images} labels={en.showcase} />
+                    <Comparison dict={en} />
+                    <HowItWorks dict={en} />
+                    <Pricing dict={en} />
+                    <Testimonials dict={en} />
+                    <FAQ dict={en} />
+                    <FinalCTA dict={en} />
+                </HomeView>
             </main>
             <Footer dict={en} locale="en" />
         </>

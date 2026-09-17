@@ -2,27 +2,29 @@ import "server-only";
 import { notFound } from "next/navigation";
 import type { Dict, Locale } from "./types";
 import { en } from "./en";
-import { pl } from "./pl";
-import { de } from "./de";
-import { es } from "./es";
 import { ja } from "./ja";
+import { de } from "./de";
 import { ko } from "./ko";
 import { fr } from "./fr";
-import { ptBR } from "./pt-BR";
-import { esMX } from "./es-MX";
-import { hi } from "./hi";
+import { nl } from "./nl";
+import { pl } from "./pl";
+import { es } from "./es";
+import { it } from "./it";
+import { cs } from "./cs";
+import { pt } from "./pt";
 
 const dictionaries: Record<Locale, Dict> = {
     en,
-    pl,
-    de,
-    es,
     ja,
+    de,
     ko,
     fr,
-    "pt-BR": ptBR,
-    "es-MX": esMX,
-    hi,
+    nl,
+    pl,
+    es,
+    it,
+    cs,
+    pt,
 };
 
 export function isLocale(value: string): value is Locale {

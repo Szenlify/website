@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import { LOCALE_CONFIG, type Locale } from "@/lib/i18n/types";
+import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -137,7 +138,7 @@ export default async function RootLayout({
                 </div>
 
                 <div className="relative z-10 flex flex-col min-h-screen">
-                    {children}
+                    <AuthProvider>{children}</AuthProvider>
                 </div>
             </body>
         </html>

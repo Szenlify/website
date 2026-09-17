@@ -1,9 +1,9 @@
 import type { Dict } from "./types";
 import { en } from "./en";
 
-export const ptBR: Dict = {
+export const pt: Dict = {
     ...en,
-    locale: "pt-BR",
+    locale: "pt",
 
     nav: {
         features: "Recursos",
@@ -14,21 +14,25 @@ export const ptBR: Dict = {
         faq: "FAQ",
         addToChrome: "Adicionar ao Chrome",
         addToChromeFree: "Adicionar ao Chrome - Grátis",
+        signIn: "Entrar",
+        signOut: "Sair",
+        reviews: "Revisões",
         privacyPolicy: "Política de Privacidade",
         termsOfService: "Termos de Serviço",
     },
 
     lang: {
         en: "English",
-        pl: "Polski",
-        de: "Deutsch",
-        es: "Español",
         ja: "日本語",
+        de: "Deutsch",
         ko: "한국어",
         fr: "Français",
-        "pt-BR": "Português (Brasil)",
-        "es-MX": "Español (México)",
-        hi: "हिन्दी",
+        nl: "Nederlands",
+        pl: "Polski",
+        es: "Español",
+        it: "Italiano",
+        cs: "Čeština",
+        pt: "Português",
         selectLanguage: "Idioma",
     },
 

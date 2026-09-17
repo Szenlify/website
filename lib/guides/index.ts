@@ -2,28 +2,30 @@ import "server-only";
 import { notFound } from "next/navigation";
 import type { Locale } from "@/lib/i18n/types";
 import { enGuides } from "./en";
-import { plGuides } from "./pl";
-import { deGuides } from "./de";
-import { esGuides } from "./es";
 import { jaGuides } from "./ja";
+import { deGuides } from "./de";
 import { koGuides } from "./ko";
 import { frGuides } from "./fr";
-import { ptBRGuides } from "./pt-BR";
-import { esMXGuides } from "./es-MX";
-import { hiGuides } from "./hi";
+import { nlGuides } from "./nl";
+import { plGuides } from "./pl";
+import { esGuides } from "./es";
+import { itGuides } from "./it";
+import { csGuides } from "./cs";
+import { ptGuides } from "./pt";
 import { GUIDE_SLUGS, type GuideContent, type GuideDictionary } from "./types";
 
 const guideDictionaries: Record<Locale, GuideDictionary> = {
     en: enGuides,
-    pl: plGuides,
-    de: deGuides,
-    es: esGuides,
     ja: jaGuides,
+    de: deGuides,
     ko: koGuides,
     fr: frGuides,
-    "pt-BR": ptBRGuides,
-    "es-MX": esMXGuides,
-    hi: hiGuides,
+    nl: nlGuides,
+    pl: plGuides,
+    es: esGuides,
+    it: itGuides,
+    cs: csGuides,
+    pt: ptGuides,
 };
 
 export function isGuideSlug(value: string): value is GuideContent["slug"] {

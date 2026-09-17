@@ -4,15 +4,16 @@ import { en } from "./en";
 const lang = {
     ...en.lang,
     en: "English",
-    pl: "Polski",
-    de: "Deutsch",
-    es: "Espanol",
     ja: "日本語",
+    de: "Deutsch",
     ko: "한국어",
     fr: "Français",
-    "pt-BR": "Português (Brasil)",
-    "es-MX": "Español (México)",
-    hi: "हिन्दी",
+    nl: "Nederlands",
+    pl: "Polski",
+    es: "Español",
+    it: "Italiano",
+    cs: "Čeština",
+    pt: "Português",
     selectLanguage: "Langue",
 };
 
@@ -31,6 +32,9 @@ export const fr: Dict = {
         addToChromeFree: "Ajouter a Chrome - Gratuit",
         privacyPolicy: "Politique de confidentialite",
         termsOfService: "Conditions d'utilisation",
+        signIn: "Se connecter",
+        signOut: "Se déconnecter",
+        reviews: "Révisions",
     },
 
     lang,

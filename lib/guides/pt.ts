@@ -1,8 +1,8 @@
 import type { GuideDictionary } from "./types";
 
-export const ptBRGuides: GuideDictionary = {
+export const ptGuides: GuideDictionary = {
     "learn-language-netflix-youtube": {
-        locale: "pt-BR",
+        locale: "pt",
         slug: "learn-language-netflix-youtube",
         title: "Como Aprender um Idioma com Netflix e YouTube",
         description:
@@ -111,7 +111,7 @@ export const ptBRGuides: GuideDictionary = {
         ctaButton: "Adicionar Lectoro AI ao Chrome",
     },
     "video-flashcards-spaced-repetition": {
-        locale: "pt-BR",
+        locale: "pt",
         slug: "video-flashcards-spaced-repetition",
         title: "Como Criar Flashcards de Video e Revisar com Repeticao Espaçada",
         description:

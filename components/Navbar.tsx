@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,6 +8,7 @@ import {
     Check,
     ChevronDown,
     Globe2,
+    LogOut,
     Menu,
     Sparkles,
 } from "lucide-react";
@@ -27,13 +28,13 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { LOCALES, type Dict, type Locale } from "@/lib/i18n/types";
-import { CHROME_STORE_URL } from "@/lib/config";
 import { getGuideCatalogCopy } from "@/lib/guides/catalog";
 import {
     getLocalizedHref,
     getLocalizedSectionHref,
     switchLocalePathname,
 } from "@/lib/routing";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavbarProps {
     dict: Dict;
@@ -42,6 +43,7 @@ interface NavbarProps {
 
 export default function Navbar({ dict, locale }: NavbarProps) {
     const pathname = usePathname();
+    const { user, dueWords, signInWithGoogle, signOut } = useAuth();
 
     const { nav, lang } = dict;
     const guidesLabel = getGuideCatalogCopy(locale).label;
@@ -55,8 +57,8 @@ export default function Navbar({ dict, locale }: NavbarProps) {
 
     return (
         <>
-            <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/50 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
                     <Logo locale={locale} />
                     <nav className="hidden lg:flex items-center gap-8">
                         <Link
@@ -93,6 +95,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                             {nav.pricing}
                         </Link>
                     </nav>
+
                     <div className="flex items-center gap-3">
                         {/* Language selector (desktop) */}
                         <DropdownMenu modal={false}>
@@ -129,27 +132,89 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                 ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Link
-                            href={CHROME_STORE_URL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-                        >
-                            <svg
-                                height={24}
-                                width={24}
-                                fill="white"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                className="ionicon"
+
+                        {/* Sign in / User Profile (Desktop) */}
+                        {!user ? (
+                            <button
+                                type="button"
+                                onClick={() => void signInWithGoogle()}
+                                className="hidden sm:inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
                             >
-                                <path d="M188.8 255.93a67.2 67.2 0 1 0 67.2-67.18 67.38 67.38 0 0 0-67.2 67.18" />
-                                <path d="M476.75 217.79v.05a207 207 0 0 0-7-28.84h-.11a202 202 0 0 1 7.07 29 203.5 203.5 0 0 0-7.07-29h-155.4c19.05 17 31.36 40.17 31.36 67.05a86.55 86.55 0 0 1-12.31 44.73L231 478.45a2 2 0 0 1 0 .27v.28-.26a224 224 0 0 0 25 1.26c6.84 0 13.61-.39 20.3-1a223 223 0 0 0 29.78-4.74C405.68 451.52 480 362.4 480 255.94a225 225 0 0 0-3.25-38.15" />
-                                <path d="M256 345.5c-33.6 0-61.6-17.91-77.29-44.79L76 123.05l-.14-.24A224 224 0 0 0 207.4 474.55v-.05l77.69-134.6a84.1 84.1 0 0 1-29.09 5.6" />
-                                <path d="m91.29 104.57 77.35 133.25A89.19 89.19 0 0 1 256 166h205.17a246.5 246.5 0 0 0-25.78-43.94l.12.08A245.3 245.3 0 0 1 461.17 166h.17a246 246 0 0 0-25.66-44 2.6 2.6 0 0 1-.35-.26 223.93 223.93 0 0 0-344.19-17.4l.14.24Z" />
-                            </svg>
-                            <span>{nav.addToChrome}</span>
-                        </Link>
+                                <svg className="size-4 shrink-0" viewBox="0 0 24 24">
+                                    <path
+                                        fill="#EA4335"
+                                        d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
+                                    />
+                                    <path
+                                        fill="#4285F4"
+                                        d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
+                                    />
+                                    <path
+                                        fill="#FBBC05"
+                                        d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-2.9z"
+                                    />
+                                    <path
+                                        fill="#34A853"
+                                        d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
+                                    />
+                                </svg>
+                                <span>{nav.signIn || "Zaloguj się"}</span>
+                            </button>
+                        ) : (
+                            <div className="hidden sm:flex items-center gap-2.5">
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-bold text-xs">
+                                    <span>{nav.reviews || "Powtórki"}</span>
+                                    <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono">
+                                        {dueWords.length}
+                                    </span>
+                                </div>
+
+                                <DropdownMenu modal={false}>
+                                    <DropdownMenuTrigger asChild>
+                                        <button
+                                            type="button"
+                                            className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer"
+                                        >
+                                            {user.photoURL ? (
+                                                /* eslint-disable-next-line @next/next/no-img-element */
+                                                <img
+                                                    src={user.photoURL}
+                                                    alt={user.displayName || "User"}
+                                                    className="size-7 rounded-full border border-indigo-400/40 object-cover"
+                                                />
+                                            ) : (
+                                                <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+                                                    {(user.displayName || user.email || "U")[0].toUpperCase()}
+                                                </div>
+                                            )}
+                                            <span className="text-xs font-semibold text-slate-300 max-w-[100px] truncate">
+                                                {user.displayName || user.email}
+                                            </span>
+                                            <ChevronDown className="size-3 text-slate-400" />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-48">
+                                        <div className="px-3 py-2 border-b border-white/10">
+                                            <p className="text-xs font-bold text-white truncate">
+                                                {user.displayName || "Użytkownik"}
+                                            </p>
+                                            <p className="text-[11px] text-slate-400 truncate">
+                                                {user.email}
+                                            </p>
+                                        </div>
+                                        <DropdownMenuItem
+                                            onClick={() => void signOut()}
+                                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2"
+                                        >
+                                            <LogOut className="size-3.5 mr-2" />
+                                            <span>{nav.signOut || "Wyloguj się"}</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        )}
+
+                        {/* Mobile Menu Hamburger */}
                         <Sheet>
                             <SheetTrigger asChild>
                                 <Button
@@ -274,20 +339,73 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                                 </Link>
                                             </SheetClose>
                                         </div>
-                                        <SheetClose asChild>
-                                            <Button
-                                                asChild
-                                                className="h-11 w-full rounded-xl font-bold"
-                                            >
-                                                <Link
-                                                    href={CHROME_STORE_URL}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+
+                                        {/* Mobile Auth Button */}
+                                        {!user ? (
+                                            <SheetClose asChild>
+                                                <Button
+                                                    type="button"
+                                                    onClick={() => void signInWithGoogle()}
+                                                    className="h-11 w-full rounded-xl font-bold flex items-center justify-center gap-2.5 bg-indigo-600 hover:bg-indigo-500 text-white"
                                                 >
-                                                    {nav.addToChromeFree}
-                                                </Link>
-                                            </Button>
-                                        </SheetClose>
+                                                    <svg className="size-4" viewBox="0 0 24 24">
+                                                        <path
+                                                            fill="#EA4335"
+                                                            d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
+                                                        />
+                                                        <path
+                                                            fill="#4285F4"
+                                                            d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
+                                                        />
+                                                        <path
+                                                            fill="#FBBC05"
+                                                            d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-2.9z"
+                                                        />
+                                                        <path
+                                                            fill="#34A853"
+                                                            d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
+                                                        />
+                                                    </svg>
+                                                    <span>{nav.signIn || "Zaloguj się"}</span>
+                                                </Button>
+                                            </SheetClose>
+                                        ) : (
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                                    <div className="flex items-center gap-2">
+                                                        {user.photoURL ? (
+                                                            /* eslint-disable-next-line @next/next/no-img-element */
+                                                            <img
+                                                                src={user.photoURL}
+                                                                alt={user.displayName || "User"}
+                                                                className="size-7 rounded-full border border-indigo-400/40 object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+                                                                {(user.displayName || user.email || "U")[0].toUpperCase()}
+                                                            </div>
+                                                        )}
+                                                        <span className="text-xs font-bold text-white max-w-[140px] truncate">
+                                                            {user.displayName || user.email}
+                                                        </span>
+                                                    </div>
+                                                    <span className="px-2 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-bold">
+                                                        {dueWords.length} do powtórki
+                                                    </span>
+                                                </div>
+                                                <SheetClose asChild>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() => void signOut()}
+                                                        className="h-10 w-full rounded-xl text-xs font-bold text-red-400 border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
+                                                    >
+                                                        <LogOut className="size-3.5 mr-2" />
+                                                        <span>{nav.signOut || "Wyloguj się"}</span>
+                                                    </Button>
+                                                </SheetClose>
+                                            </div>
+                                        )}
                                     </div>
                                 </nav>
                             </SheetContent>

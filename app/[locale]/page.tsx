@@ -10,6 +10,7 @@ import Pricing from "@/components/Pricing";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import FinalCTA from "@/components/FinalCTA";
+import HomeView from "@/components/HomeView";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import type { CarouselItem } from "@/components/ShowcaseCarousel";
 import { LOCALE_CONFIG } from "@/lib/i18n/types";
@@ -156,16 +157,18 @@ export default async function LocaleHomePage({
                     ),
                 }}
             />
-            <Hero dict={dict} />
-            <Platforms dict={dict} />
-            <Features dict={dict} />
-            <ShowcaseCarousel images={localizedImages} labels={dict.showcase} />
-            <Comparison dict={dict} />
-            <HowItWorks dict={dict} />
-            <Pricing dict={dict} />
-            <Testimonials dict={dict} />
-            <FAQ dict={dict} />
-            <FinalCTA dict={dict} />
+            <HomeView dict={dict} locale={locale}>
+                <Hero dict={dict} />
+                <Platforms dict={dict} />
+                <Features dict={dict} />
+                <ShowcaseCarousel images={localizedImages} labels={dict.showcase} />
+                <Comparison dict={dict} />
+                <HowItWorks dict={dict} />
+                <Pricing dict={dict} />
+                <Testimonials dict={dict} />
+                <FAQ dict={dict} />
+                <FinalCTA dict={dict} />
+            </HomeView>
         </>
     );
 }
