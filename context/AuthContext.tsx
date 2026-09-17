@@ -18,9 +18,18 @@ interface AuthContextValue {
     loading: boolean;
     isSigningIn: boolean;
     authError: string | null;
+    wordsError: string | null;
     words: ReviewWord[];
     dueWords: ReviewWord[];
+    rawDueCount: number;
     loadingWords: boolean;
+    viewMode: "reviews" | "landing";
+    isCramMode: boolean;
+    openReviews: () => void;
+    openLanding: () => void;
+    toggleViewMode: () => void;
+    startCramMode: () => void;
+    exitCramMode: () => void;
     signInWithGoogle: () => Promise<void>;
     signOut: () => Promise<void>;
     refreshWords: () => Promise<void>;
@@ -32,9 +41,18 @@ const AuthContext = createContext<AuthContextValue>({
     loading: true,
     isSigningIn: false,
     authError: null,
+    wordsError: null,
     words: [],
     dueWords: [],
+    rawDueCount: 0,
     loadingWords: false,
+    viewMode: "landing",
+    isCramMode: false,
+    openReviews: () => {},
+    openLanding: () => {},
+    toggleViewMode: () => {},
+    startCramMode: () => {},
+    exitCramMode: () => {},
     signInWithGoogle: async () => {},
     signOut: async () => {},
     refreshWords: async () => {},
@@ -46,14 +64,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
     const [isSigningIn, setIsSigningIn] = useState(false);
     const [authError, setAuthError] = useState<string | null>(null);
+    const [wordsError, setWordsError] = useState<string | null>(null);
     const [words, setWords] = useState<ReviewWord[]>([]);
     const [loadingWords, setLoadingWords] = useState(false);
+    const [viewMode, setViewMode] = useState<"reviews" | "landing">("landing");
+    const [isCramMode, setIsCramMode] = useState(false);
 
     const loadWords = useCallback(async (uid: string) => {
         setLoadingWords(true);
+        setWordsError(null);
         try {
             const fetched = await fetchUserWords(uid);
             setWords(fetched);
+        } catch (err: any) {
+            console.error("Error loading user words:", err);
+            setWordsError(err.message || "Błąd pobierania słówek z bazy.");
         } finally {
             setLoadingWords(false);
         }
@@ -64,6 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         void checkRedirectAuth().then((redirectUser) => {
             if (redirectUser) {
                 setUser(redirectUser);
+                setViewMode("reviews");
             }
         });
 
@@ -74,6 +100,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 void loadWords(currentUser.uid);
             } else {
                 setWords([]);
+                setViewMode("landing");
+                setIsCramMode(false);
             }
         });
 
@@ -86,16 +114,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, [user, loadWords]);
 
+    const openReviews = useCallback(() => {
+        setViewMode("reviews");
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, []);
+
+    const openLanding = useCallback(() => {
+        setViewMode("landing");
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, []);
+
+    const toggleViewMode = useCallback(() => {
+        setViewMode((prev) => (prev === "reviews" ? "landing" : "reviews"));
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, []);
+
+    const startCramMode = useCallback(() => {
+        setIsCramMode(true);
+        setViewMode("reviews");
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, []);
+
+    const exitCramMode = useCallback(() => {
+        setIsCramMode(false);
+    }, []);
+
     const signInWithGoogle = useCallback(async () => {
         setAuthError(null);
         setIsSigningIn(true);
         try {
-            await loginWithGoogle();
+            const loggedIn = await loginWithGoogle();
+            if (loggedIn) {
+                setUser(loggedIn);
+                setViewMode("reviews");
+            }
         } catch (error: any) {
             console.error("Google sign in error:", error);
-            const msg = error.code
-                ? `Błąd logowania (${error.code}): ${error.message}`
-                : `Nie udało się zalogować: ${error.message || error}`;
+            const msg = error.message || String(error);
             setAuthError(msg);
             alert(msg);
             throw error;
@@ -109,6 +172,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await logoutUser();
             setUser(null);
             setWords([]);
+            setViewMode("landing");
+            setIsCramMode(false);
         } catch (error) {
             console.error("Sign out error:", error);
             throw error;
@@ -127,7 +192,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     const now = Date.now();
-    const dueWords = words.filter((w) => SRS.isDue(w, now));
+    const rawDueWords = words.filter((w) => SRS.isDue(w, now));
+    const rawDueCount = rawDueWords.length;
+    // In cram mode, all words are presented for review; otherwise only due words
+    const dueWords = isCramMode ? words : rawDueWords;
 
     return (
         <AuthContext.Provider
@@ -136,9 +204,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 loading,
                 isSigningIn,
                 authError,
+                wordsError,
                 words,
                 dueWords,
+                rawDueCount,
                 loadingWords,
+                viewMode,
+                isCramMode,
+                openReviews,
+                openLanding,
+                toggleViewMode,
+                startCramMode,
+                exitCramMode,
                 signInWithGoogle,
                 signOut,
                 refreshWords,

@@ -40,6 +40,13 @@ export async function loginWithGoogle(): Promise<User | null> {
         return result.user;
     } catch (error: any) {
         console.warn("signInWithPopup error, testing fallback:", error);
+
+        if (error.code === "auth/unauthorized-domain") {
+            const host = typeof window !== "undefined" ? window.location.hostname : "Vercel";
+            error.message = `Domena "${host}" nie jest autoryzowana w Firebase! Aby logowanie działało na Vercel: przejdź do Firebase Console (projekt: extension-eng) -> Authentication -> Ustawienia (Settings) -> Autoryzowane domeny (Authorized domains) i kliknij "Dodaj domenę" wpisując: ${host}`;
+            throw error;
+        }
+
         // If popup is blocked by browser or on mobile, fallback to redirect
         if (
             error.code === "auth/popup-blocked" ||
@@ -56,8 +63,12 @@ export async function checkRedirectAuth(): Promise<User | null> {
     try {
         const result = await getRedirectResult(auth);
         return result?.user ?? null;
-    } catch (error) {
+    } catch (error: any) {
         console.error("checkRedirectAuth error:", error);
+        if (error.code === "auth/unauthorized-domain") {
+            const host = typeof window !== "undefined" ? window.location.hostname : "Vercel";
+            alert(`Domena "${host}" nie jest autoryzowana w Firebase! Dodaj "${host}" w Firebase Console -> Authentication -> Authorized domains.`);
+        }
         return null;
     }
 }
@@ -73,12 +84,17 @@ export async function fetchUserWords(uid: string): Promise<ReviewWord[]> {
         const snapshot = await getDocs(wordsRef);
         const words: ReviewWord[] = [];
 
+        console.info(`[Lectoro Firebase] Found ${snapshot.size} words in users/${uid}/words`);
+
         snapshot.forEach((docSnap) => {
             const data = docSnap.data();
+            const original = String(data.original || data.word || "").trim();
+            const translated = String(data.translated || data.translation || "").trim();
+
             const word: ReviewWord = {
                 id: data.id || docSnap.id,
-                original: String(data.original || ""),
-                translated: String(data.translated || ""),
+                original,
+                translated,
                 sentence: String(data.sentence || ""),
                 sentenceTranslated: String(data.sentenceTranslated || ""),
                 srcLang: String(data.srcLang || "en"),
@@ -88,7 +104,11 @@ export async function fetchUserWords(uid: string): Promise<ReviewWord[]> {
                 updatedAt: Number(data.updatedAt || 0),
             };
 
-            if (data.sr_reps !== undefined || data.sr_step !== undefined || data.sr_nextReview !== undefined) {
+            if (
+                data.sr_reps !== undefined ||
+                data.sr_step !== undefined ||
+                data.sr_nextReview !== undefined
+            ) {
                 const reps = Number(data.sr_reps ?? data.sr_step ?? 0);
                 word.sr = {
                     reps,
@@ -121,7 +141,7 @@ export async function fetchUserWords(uid: string): Promise<ReviewWord[]> {
         return words;
     } catch (error) {
         console.error("Error fetching user words from Firestore:", error);
-        return [];
+        throw error;
     }
 }
 
