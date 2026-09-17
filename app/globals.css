@@ -547,55 +547,77 @@ h6 {
     }
 }
 
-/* Review & Flashcard animations */
+/* Review & Flashcard animations — Enhanced 3D & Mobile Viewport Lock */
+.review-perspective {
+    perspective: 1200px;
+    -webkit-perspective: 1200px;
+}
+
+.review-flashcard-element {
+    touch-action: none !important;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    overscroll-behavior: none;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform, opacity, box-shadow;
+}
+
 .review-flashcard.qt-flip-out {
-    animation: qtFlipOut 0.15s ease-in forwards;
+    animation: qtFlipOut 0.16s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .review-flashcard.qt-flip-in {
-    animation: qtFlipIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: qtFlipIn 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes qtFlipOut {
-    from {
+    0% {
         transform: rotateY(0deg) scale(1);
         opacity: 1;
+        filter: blur(0px);
     }
-    to {
-        transform: rotateY(90deg) scale(0.94);
-        opacity: 0.15;
+    100% {
+        transform: rotateY(90deg) scale(0.92);
+        opacity: 0.1;
+        filter: blur(2px);
     }
 }
 
 @keyframes qtFlipIn {
-    from {
-        transform: rotateY(-90deg) scale(0.94);
-        opacity: 0.15;
+    0% {
+        transform: rotateY(-90deg) scale(0.92);
+        opacity: 0.1;
+        filter: blur(2px);
     }
-    to {
+    100% {
         transform: rotateY(0deg) scale(1);
         opacity: 1;
+        filter: blur(0px);
     }
 }
 
 .review-flashcard.qt-swipe-left {
-    animation: qtSwipeLeft 0.25s ease-out forwards;
+    animation: qtSwipeLeft 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .review-flashcard.qt-swipe-right {
-    animation: qtSwipeRight 0.25s ease-out forwards;
+    animation: qtSwipeRight 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 @keyframes qtSwipeLeft {
     to {
-        transform: translateX(-160%) rotate(-16deg);
+        transform: translate3d(-150%, 0, 0) rotate(-18deg);
         opacity: 0;
     }
 }
 
 @keyframes qtSwipeRight {
     to {
-        transform: translateX(160%) rotate(16deg);
+        transform: translate3d(150%, 0, 0) rotate(18deg);
         opacity: 0;
     }
 }
@@ -603,15 +625,17 @@ h6 {
 @keyframes speakPulse {
     0%,
     100% {
-        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5), 0 0 15px rgba(99, 102, 241, 0.3);
+        transform: scale(1);
     }
     50% {
-        box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0), 0 0 25px rgba(99, 102, 241, 0.6);
+        transform: scale(1.08);
     }
 }
 
 .review-speak-btn.speaking {
-    animation: speakPulse 0.9s ease infinite;
+    animation: speakPulse 0.85s ease infinite;
 }
 
 @keyframes reviewScreenshotShimmer {
@@ -626,25 +650,42 @@ h6 {
 .review-shimmer {
     background: linear-gradient(
         90deg,
-        rgba(255, 255, 255, 0.03) 25%,
-        rgba(255, 255, 255, 0.09) 50%,
-        rgba(255, 255, 255, 0.03) 75%
+        rgba(255, 255, 255, 0.02) 25%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.02) 75%
     );
     background-size: 200% 100%;
     animation: reviewScreenshotShimmer 1.8s infinite ease-in-out;
 }
 
 @keyframes cardIn {
-    from {
+    0% {
         opacity: 0;
-        transform: translateY(10px) scale(0.98);
+        transform: translate3d(0, 14px, 0) scale(0.96);
     }
-    to {
+    70% {
+        transform: translate3d(0, -2px, 0) scale(1.008);
+    }
+    100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translate3d(0, 0, 0) scale(1);
     }
 }
 
 .card-in {
-    animation: cardIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: cardIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* On mobile, lock review page to 100dvh with zero vertical scroll during swipe */
+@media (max-width: 640px) {
+    body:has([data-reviews-page]) {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        touch-action: none !important;
+        height: 100dvh !important;
+    }
+    body:has([data-reviews-page]) footer {
+        display: none !important;
+    }
+}
+

@@ -59,22 +59,105 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
     const currentCard = queue[currentIndex] || null;
 
+    // Available speech synthesis voices
+    const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+    // Load available voices and listen for changes
+    useEffect(() => {
+        if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+        const updateVoices = () => {
+            const vList = window.speechSynthesis.getVoices();
+            if (vList && vList.length > 0) {
+                setVoices(vList);
+            }
+        };
+
+        updateVoices();
+        window.speechSynthesis.addEventListener("voiceschanged", updateVoices);
+        return () => {
+            window.speechSynthesis.removeEventListener("voiceschanged", updateVoices);
+        };
+    }, []);
+
+    // Pick best voice — Chrome Google voice priority
+    const pickGoogleVoice = useCallback(
+        (targetLang: string): SpeechSynthesisVoice | null => {
+            const voiceList =
+                voices.length > 0
+                    ? voices
+                    : typeof window !== "undefined" && "speechSynthesis" in window
+                    ? window.speechSynthesis.getVoices()
+                    : [];
+
+            if (!voiceList || voiceList.length === 0) return null;
+
+            const base = (targetLang || "en").split("-")[0].toLowerCase();
+            const langVoices = voiceList.filter((v) =>
+                (v.lang || "").toLowerCase().startsWith(base)
+            );
+
+            // 1. Exact Google voice for this language (e.g. "Google US English", "Google polski", "Google Deutsch")
+            const exactGoogle = langVoices.find((v) => /google/i.test(v.name));
+            if (exactGoogle) return exactGoogle;
+
+            // 2. Any voice in list matching language with Google in name
+            const anyGoogle = voiceList.find(
+                (v) => /google/i.test(v.name) && (v.lang || "").toLowerCase().includes(base)
+            );
+            if (anyGoogle) return anyGoogle;
+
+            // 3. Natural or Neural voice
+            const naturalVoice = langVoices.find((v) => /natural|neural|online/i.test(v.name));
+            if (naturalVoice) return naturalVoice;
+
+            // 4. Default language voice
+            return langVoices[0] || null;
+        },
+        [voices]
+    );
+
     // Reset image loaded on card change
     useEffect(() => {
         setImageLoaded(false);
     }, [currentIndex, currentCard?.id]);
 
-    const speakText = useCallback((text: string, lang = "en") => {
-        if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = 0.95;
-        setIsSpeaking(true);
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-        window.speechSynthesis.speak(utterance);
-    }, []);
+    const speakText = useCallback(
+        (text: string, lang = "en") => {
+            if (typeof window === "undefined" || !("speechSynthesis" in window) || !text) return;
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                const voice = pickGoogleVoice(lang);
+
+                if (voice) {
+                    utterance.voice = voice;
+                    utterance.lang = voice.lang;
+                } else {
+                    const bcpMap: Record<string, string> = {
+                        en: "en-US", pl: "pl-PL", de: "de-DE", es: "es-ES",
+                        fr: "fr-FR", it: "it-IT", ja: "ja-JP", ko: "ko-KR",
+                        nl: "nl-NL", pt: "pt-BR", cs: "cs-CZ",
+                    };
+                    const base = lang.split("-")[0].toLowerCase();
+                    utterance.lang = bcpMap[base] || lang;
+                }
+
+                utterance.rate = 0.93;
+                setIsSpeaking(true);
+                utterance.onend = () => setIsSpeaking(false);
+                utterance.onerror = () => setIsSpeaking(false);
+
+                // Chrome fix for speech synthesis pausing
+                window.speechSynthesis.resume();
+                window.speechSynthesis.speak(utterance);
+            } catch (err) {
+                console.warn("[TTS] SpeechSynthesis failed:", err);
+                setIsSpeaking(false);
+            }
+        },
+        [pickGoogleVoice]
+    );
 
     const flipCard = useCallback(() => {
         setIsFlipping(true);
@@ -135,7 +218,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [flipCard, rateCard, currentCard, direction, answerShown, speakText]);
 
-    // Touch handlers for mobile swipe
+    // Touch handlers for mobile swipe — strictly horizontal, zero page scroll
     const handleTouchStart = (e: React.TouchEvent) => {
         setTouchStartX(e.touches[0].clientX);
         setTouchStartY(e.touches[0].clientY);
@@ -145,15 +228,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     const handleTouchMove = (e: React.TouchEvent) => {
         if (touchStartX === null || touchStartY === null) return;
         const currentX = e.touches[0].clientX;
-        const currentY = e.touches[0].clientY;
         const deltaX = currentX - touchStartX;
-        const deltaY = currentY - touchStartY;
-
-        // If user is mostly scrolling vertically, ignore horizontal swipe
-        if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaX) < 15) {
-            return;
-        }
-
         setTouchDeltaX(deltaX);
     };
 
@@ -161,28 +236,48 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         if (touchStartX === null) return;
         setIsDragging(false);
 
-        // Swipe threshold: 65px
-        if (touchDeltaX < -65) {
+        // Swipe threshold: 60px to rate
+        if (touchDeltaX < -60) {
             void rateCard(1);
-        } else if (touchDeltaX > 65) {
+        } else if (touchDeltaX > 60) {
             void rateCard(2);
-        } else if (Math.abs(touchDeltaX) < 8) {
-            // Tap to flip
-            flipCard();
         }
+        // NOTE: Tap does NOT flip the card anymore. Card is only flipped via bottom button.
 
         setTouchStartX(null);
         setTouchStartY(null);
         setTouchDeltaX(0);
     };
 
-    // Calculate rotation and style during touch drag
+    // Calculate rotation, translation, and glow shadow during touch drag
+    const isSwipingLeft = touchDeltaX < -15;
+    const isSwipingRight = touchDeltaX > 15;
+    const swipeIntensity = Math.min(1, Math.abs(touchDeltaX) / 100);
+
+    const dynamicShadow = isDragging && touchDeltaX !== 0
+        ? isSwipingLeft
+            ? `0 20px 50px -10px rgba(239, 68, 68, ${0.3 + swipeIntensity * 0.45}), 0 0 30px -5px rgba(239, 68, 68, ${swipeIntensity * 0.4})`
+            : `0 20px 50px -10px rgba(16, 185, 129, ${0.3 + swipeIntensity * 0.45}), 0 0 30px -5px rgba(16, 185, 129, ${swipeIntensity * 0.4})`
+        : undefined;
+
+    const dynamicBorder = isDragging && touchDeltaX !== 0
+        ? isSwipingLeft
+            ? `rgba(239, 68, 68, ${0.4 + swipeIntensity * 0.6})`
+            : `rgba(16, 185, 129, ${0.4 + swipeIntensity * 0.6})`
+        : undefined;
+
     const cardTransformStyle: React.CSSProperties = isDragging && touchDeltaX !== 0
         ? {
-              transform: `translateX(${touchDeltaX}px) rotate(${touchDeltaX * 0.07}deg)`,
+              transform: `translate3d(${touchDeltaX}px, 0, 0) rotate(${touchDeltaX * 0.08}deg)`,
+              boxShadow: dynamicShadow,
+              borderColor: dynamicBorder,
               transition: "none",
           }
-        : {};
+        : {
+              boxShadow: dynamicShadow,
+              borderColor: dynamicBorder,
+              transition: "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease, border-color 0.25s ease",
+          };
 
     const isNormal = direction === "normal";
     const srcLang = (currentCard?.srcLang || "en").toUpperCase();
@@ -390,11 +485,12 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
     const progressPercent = Math.round((currentIndex / queue.length) * 100);
     const screenshotUrl = resolveImageUrl(currentCard?.screenshot);
+    const activeVoice = pickGoogleVoice(speakLang);
 
     return (
-        <div className="w-full max-w-xl mx-auto px-3 sm:px-6 py-2 sm:py-6 flex flex-col items-center select-none">
+        <div className="w-full max-w-xl mx-auto px-2 sm:px-6 py-1 sm:py-6 h-full sm:h-auto flex flex-col justify-between items-center select-none overflow-hidden touch-none">
             {/* Header & Controls */}
-            <div className="w-full flex items-center justify-between mb-2 sm:mb-3">
+            <div className="w-full flex items-center justify-between mb-1.5 sm:mb-3 shrink-0">
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
@@ -423,177 +519,218 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-4 sm:mb-6">
+            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-2 sm:mb-5 shrink-0">
                 <div
                     className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-teal-400 transition-all duration-300 rounded-full"
                     style={{ width: `${progressPercent}%` }}
                 />
             </div>
 
-            {/* Swipeable & Flippable Flashcard (Desktop & Mobile 1:1 Polish) */}
-            <div
-                className={`relative w-full rounded-2xl sm:rounded-3xl border border-white/12 bg-[#0d101d]/90 backdrop-blur-2xl p-5 sm:p-8 shadow-2xl shadow-black/80 transition-transform duration-200 cursor-pointer overflow-hidden ${
-                    isFlipping ? (answerShown ? "review-flashcard qt-flip-out" : "review-flashcard qt-flip-in") : ""
-                } ${swipeClass} ${isCardEntering ? "card-in" : ""}`}
-                style={cardTransformStyle}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-                onClick={flipCard}
-            >
-                {/* Visual Swipe Badges (Mobile indicator while dragging) */}
-                {isDragging && touchDeltaX < -25 && (
-                    <div
-                        className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-red-600/90 border border-red-400 shadow-xl shadow-red-600/30 pointer-events-none"
-                        style={{ opacity: Math.min(1, Math.abs(touchDeltaX) / 65) }}
-                    >
-                        ✕ {r.badgeAgain}
+            {/* 3D Perspective Flashcard Container */}
+            <div className="w-full review-perspective my-auto py-1">
+                <div
+                    className={`relative w-full rounded-2xl sm:rounded-3xl border border-white/12 bg-linear-to-b from-[#14192d]/95 via-[#0d1020]/95 to-[#090c17]/95 backdrop-blur-2xl p-4 sm:p-7 shadow-2xl shadow-black/80 transition-transform duration-200 select-none touch-none overscroll-none review-flashcard-element cursor-grab active:cursor-grabbing overflow-hidden ${
+                        isFlipping ? (answerShown ? "review-flashcard qt-flip-out" : "review-flashcard qt-flip-in") : ""
+                    } ${swipeClass} ${isCardEntering ? "card-in" : ""}`}
+                    style={cardTransformStyle}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    {/* Visual Swipe Badges (Shown dynamically during touch drag) */}
+                    {isDragging && touchDeltaX < -25 && (
+                        <div
+                            className="absolute top-3.5 right-3.5 z-20 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-red-600 border border-red-400 shadow-xl shadow-red-600/40 pointer-events-none transform scale-105 transition-transform"
+                            style={{ opacity: Math.min(1, Math.abs(touchDeltaX) / 60) }}
+                        >
+                            ✕ {r.badgeAgain}
+                        </div>
+                    )}
+                    {isDragging && touchDeltaX > 25 && (
+                        <div
+                            className="absolute top-3.5 left-3.5 z-20 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-emerald-600 border border-emerald-400 shadow-xl shadow-emerald-600/40 pointer-events-none transform scale-105 transition-transform"
+                            style={{ opacity: Math.min(1, Math.abs(touchDeltaX) / 60) }}
+                        >
+                            ✓ {r.badgeGood}
+                        </div>
+                    )}
+
+                    {/* Question / Word Row with Chrome Google TTS */}
+                    <div className="flex flex-col items-center justify-center mb-2 sm:mb-3">
+                        <div className="flex items-center justify-center gap-3">
+                            <span className={`text-2xl sm:text-4xl font-black tracking-tight text-center ${wordColorClass}`}>
+                                {showWord}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (showWord) speakText(showWord, speakLang);
+                                }}
+                                title={r.listenAudio}
+                                className={`inline-flex items-center justify-center size-9 sm:size-11 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/30 hover:scale-105 active:scale-95 transition cursor-pointer shrink-0 shadow-lg shadow-indigo-500/20 ${
+                                    isSpeaking ? "review-speak-btn speaking" : ""
+                                }`}
+                            >
+                                <Volume2 className="size-4.5 sm:size-5" />
+                            </button>
+                        </div>
+
+                        {/* Google Voice Status Indicator */}
+                        {activeVoice && (
+                            <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-indigo-300/80 font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                                <span className="size-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                                <span>
+                                    {/google/i.test(activeVoice.name)
+                                        ? `Chrome ${activeVoice.name}`
+                                        : activeVoice.name}
+                                </span>
+                            </div>
+                        )}
                     </div>
-                )}
-                {isDragging && touchDeltaX > 25 && (
-                    <div
-                        className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-emerald-600/90 border border-emerald-400 shadow-xl shadow-emerald-600/30 pointer-events-none"
-                        style={{ opacity: Math.min(1, Math.abs(touchDeltaX) / 65) }}
-                    >
-                        ✓ {r.badgeGood}
+
+                    {/* Context Sentence */}
+                    {showSentence && (
+                        <p className="text-center text-slate-300 text-xs sm:text-sm leading-relaxed mb-2 max-w-md mx-auto line-clamp-3 sm:line-clamp-none">
+                            {renderHighlightedSentence()}
+                        </p>
+                    )}
+
+                    {/* Movie Scene Screenshot from Cloudflare R2 */}
+                    {screenshotUrl && (
+                        <div className="mt-2.5 sm:mt-3 relative w-full max-h-[19vh] sm:max-h-[26vh] aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 bg-black/70 flex items-center justify-center shadow-inner mx-auto">
+                            {!imageLoaded && <div className="absolute inset-0 review-shimmer" />}
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={screenshotUrl}
+                                alt={r.movieSnapshotAlt}
+                                className={`max-h-[19vh] sm:max-h-[26vh] w-full h-full object-contain transition-opacity duration-300 ${
+                                    imageLoaded ? "opacity-100" : "opacity-0"
+                                }`}
+                                onLoad={() => setImageLoaded(true)}
+                                onError={(e) => {
+                                    (e.currentTarget.parentElement as HTMLElement)?.classList.add("hidden");
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {/* Mobile Gesture Hint */}
+                    <div className="mt-3 text-center text-[10px] font-medium text-slate-500 sm:hidden flex items-center justify-center gap-1.5">
+                        <span>← Przesuń: {r.btnAgain} • {r.btnGood}: Przesuń →</span>
                     </div>
-                )}
-
-                {/* Question / Word Row */}
-                <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-                    <span className={`text-3xl sm:text-4xl font-extrabold tracking-tight text-center ${wordColorClass}`}>
-                        {showWord}
-                    </span>
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (showWord) speakText(showWord, speakLang);
-                        }}
-                        title={r.listenAudio}
-                        className={`inline-flex items-center justify-center size-10 sm:size-11 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/30 hover:scale-105 active:scale-95 transition cursor-pointer shrink-0 ${
-                            isSpeaking ? "review-speak-btn speaking" : ""
-                        }`}
-                    >
-                        <Volume2 className="size-5" />
-                    </button>
-                </div>
-
-                {/* Context Sentence */}
-                {showSentence && (
-                    <p className="text-center text-slate-300 text-sm sm:text-base leading-relaxed mb-4 max-w-md mx-auto">
-                        {renderHighlightedSentence()}
-                    </p>
-                )}
-
-                {/* Movie Scene Screenshot from Cloudflare R2 */}
-                {screenshotUrl && (
-                    <div className="mt-4 relative w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 bg-black/50 flex items-center justify-center shadow-inner">
-                        {!imageLoaded && <div className="absolute inset-0 review-shimmer" />}
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={screenshotUrl}
-                            alt={r.movieSnapshotAlt}
-                            className={`w-full h-full object-contain transition-opacity duration-300 ${
-                                imageLoaded ? "opacity-100" : "opacity-0"
-                            }`}
-                            onLoad={() => setImageLoaded(true)}
-                            onError={(e) => {
-                                (e.currentTarget.parentElement as HTMLElement)?.classList.add("hidden");
-                            }}
-                        />
-                    </div>
-                )}
-
-                {/* Mobile Gesture Hint */}
-                <div className="mt-4 text-center text-[11px] font-medium text-slate-500 sm:hidden flex items-center justify-center gap-2">
-                    <span>{r.mobileSwipeHint}</span>
                 </div>
             </div>
 
-            {/* Desktop Flip Button */}
-            <button
-                type="button"
-                onClick={flipCard}
-                className="mt-4 mb-5 hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition cursor-pointer active:scale-95"
-            >
-                <span className="inline-flex items-center gap-1 font-mono text-[10px] text-slate-400">
-                    <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/10">↓</kbd>
-                    <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/10">S</kbd>
-                </span>
-                <span>{answerShown ? r.flipShowQuestion : r.flipShowAnswer}</span>
-            </button>
+            {/* Bottom Action Area — Flip Button & Ratings */}
+            <div className="w-full mt-2 sm:mt-4 shrink-0">
+                {!answerShown ? (
+                    <div className="flex flex-col gap-2 sm:gap-2.5 w-full">
+                        {/* Prominent Flip Button */}
+                        <button
+                            type="button"
+                            onClick={flipCard}
+                            className="w-full h-12 sm:h-13 rounded-2xl font-black text-sm sm:text-base text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 border border-indigo-400/40 shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-98 transition cursor-pointer"
+                        >
+                            <RotateCw className="size-4 animate-spin-slow" />
+                            <span>{r.flipShowAnswer}</span>
+                            <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] text-indigo-200/80 bg-white/10 px-2 py-0.5 rounded ml-1">
+                                <kbd className="px-1 py-0.5 rounded bg-white/10">Spacja</kbd> / <kbd className="px-1 py-0.5 rounded bg-white/10">S</kbd> / <kbd className="px-1 py-0.5 rounded bg-white/10">↓</kbd>
+                            </span>
+                        </button>
 
-            {/* Mobile Big Flip Action Bar (Shown when answer is not yet revealed) */}
-            {!answerShown && (
-                <div className="w-full mt-3 sm:hidden">
-                    <button
-                        type="button"
-                        onClick={flipCard}
-                        className="w-full h-13 rounded-2xl font-extrabold text-sm text-white bg-indigo-600 hover:bg-indigo-500 border border-indigo-400/40 shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-98 transition cursor-pointer"
-                    >
-                        <span>{r.mobileTapFlip}</span>
-                    </button>
-                </div>
-            )}
+                        {/* Quick rating shortcuts / hints */}
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                            <button
+                                type="button"
+                                onClick={() => void rateCard(1)}
+                                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/15 text-red-400 text-xs font-bold transition cursor-pointer active:scale-95"
+                            >
+                                <span>✕ {r.btnAgain}</span>
+                                <span className="text-[10px] text-slate-500">+{labelAgain}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => void rateCard(2)}
+                                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-400 text-xs font-bold transition cursor-pointer active:scale-95"
+                            >
+                                <span>✓ {r.btnGood}</span>
+                                <span className="text-[10px] text-slate-500">+{labelGood}</span>
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex flex-col w-full">
+                        <div className="text-center text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
+                            {r.rateMemoryPrompt}
+                        </div>
 
-            {/* Rating Controls (Shown on Desktop always, on Mobile especially after flip) */}
-            <div className={`w-full ${!answerShown ? "opacity-75 sm:opacity-100" : ""}`}>
-                <div className="text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3 mt-2 sm:mt-0">
-                    {answerShown ? r.rateMemoryPrompt : r.knowWordPrompt}
-                </div>
+                        <div className="grid grid-cols-2 gap-2.5 sm:gap-4 w-full">
+                            {/* Button: Again / Grade 1 */}
+                            <button
+                                type="button"
+                                onClick={() => void rateCard(1)}
+                                className="group relative flex flex-col items-center justify-center h-14 sm:h-16 p-2 sm:p-3 rounded-2xl border border-red-500/40 bg-linear-to-b from-red-500/20 to-red-500/10 hover:from-red-500/30 hover:to-red-500/15 hover:border-red-500/60 active:scale-98 transition cursor-pointer shadow-xl shadow-red-950/40"
+                            >
+                                <span className="hidden sm:inline-flex absolute top-2 left-2.5 items-center gap-1 font-mono text-[9px] text-red-400/80">
+                                    <kbd className="px-1 py-0.5 rounded bg-red-500/15 border border-red-500/25">←</kbd>
+                                    <kbd className="px-1 py-0.5 rounded bg-red-500/15 border border-red-500/25">A</kbd>
+                                </span>
+                                <span className="text-sm sm:text-base font-black text-red-400 group-hover:text-red-300 transition">
+                                    ✕ {r.btnAgain}
+                                </span>
+                                <span className="text-[11px] font-semibold text-slate-400 mt-0.5 tabular-nums">
+                                    +{labelAgain}
+                                </span>
+                            </button>
 
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    {/* Button: Again / Grade 1 */}
-                    <button
-                        type="button"
-                        onClick={() => void rateCard(1)}
-                        className="group relative flex flex-col items-center justify-center min-h-[64px] sm:min-h-[76px] p-3 rounded-2xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 hover:border-red-500/50 active:scale-98 transition cursor-pointer shadow-lg shadow-red-950/30"
-                    >
-                        <span className="hidden sm:inline-flex absolute top-2 left-2.5 items-center gap-1 font-mono text-[9px] text-red-400/80">
-                            <kbd className="px-1 py-0.5 rounded bg-red-500/10 border border-red-500/20">←</kbd>
-                            <kbd className="px-1 py-0.5 rounded bg-red-500/10 border border-red-500/20">A</kbd>
-                        </span>
-                        <span className="text-sm sm:text-base font-black text-red-400 group-hover:text-red-300 transition">
-                            {r.btnAgain}
-                        </span>
-                        <span className="text-[11px] font-semibold text-slate-400 mt-0.5 tabular-nums">
-                            +{labelAgain}
-                        </span>
-                    </button>
+                            {/* Button: Good / Grade 2 */}
+                            <button
+                                type="button"
+                                onClick={() => void rateCard(2)}
+                                className="group relative flex flex-col items-center justify-center h-14 sm:h-16 p-2 sm:p-3 rounded-2xl border border-emerald-500/40 bg-linear-to-b from-emerald-500/20 to-emerald-500/10 hover:from-emerald-500/30 hover:to-emerald-500/15 hover:border-emerald-500/60 active:scale-98 transition cursor-pointer shadow-xl shadow-emerald-950/40"
+                            >
+                                <span className="hidden sm:inline-flex absolute top-2 right-2.5 items-center gap-1 font-mono text-[9px] text-emerald-400/80">
+                                    <kbd className="px-1 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/25">→</kbd>
+                                    <kbd className="px-1 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/25">D</kbd>
+                                </span>
+                                <span className="text-sm sm:text-base font-black text-emerald-400 group-hover:text-emerald-300 transition">
+                                    ✓ {r.btnGood}
+                                </span>
+                                <span className="text-[11px] font-semibold text-slate-400 mt-0.5 tabular-nums">
+                                    +{labelGood}
+                                </span>
+                            </button>
+                        </div>
 
-                    {/* Button: Good / Grade 2 */}
-                    <button
-                        type="button"
-                        onClick={() => void rateCard(2)}
-                        className="group relative flex flex-col items-center justify-center min-h-[64px] sm:min-h-[76px] p-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 hover:border-emerald-500/50 active:scale-98 transition cursor-pointer shadow-lg shadow-emerald-950/30"
-                    >
-                        <span className="hidden sm:inline-flex absolute top-2 right-2.5 items-center gap-1 font-mono text-[9px] text-emerald-400/80">
-                            <kbd className="px-1 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">→</kbd>
-                            <kbd className="px-1 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">D</kbd>
-                        </span>
-                        <span className="text-sm sm:text-base font-black text-emerald-400 group-hover:text-emerald-300 transition">
-                            {r.btnGood}
-                        </span>
-                        <span className="text-[11px] font-semibold text-slate-400 mt-0.5 tabular-nums">
-                            +{labelGood}
-                        </span>
-                    </button>
-                </div>
+                        {/* Button to flip back to question */}
+                        <button
+                            type="button"
+                            onClick={flipCard}
+                            className="w-full mt-2 h-9 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-98"
+                        >
+                            <RotateCw className="size-3.5" />
+                            <span>{r.flipShowQuestion}</span>
+                            <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[9px] text-slate-500 ml-1">
+                                <kbd className="px-1 py-0.5 rounded bg-white/10">S</kbd>
+                            </span>
+                        </button>
+                    </div>
+                )}
 
                 {/* Keyboard Shortcuts Hint (Desktop only) */}
-                <div className="hidden sm:flex items-center justify-center gap-4 mt-6 text-[11px] font-medium text-slate-500">
+                <div className="hidden sm:flex items-center justify-center gap-4 mt-4 text-[10px] font-medium text-slate-500">
                     <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">W</kbd> {r.shortcutPronounce}
+                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px]">W</kbd> {r.shortcutPronounce}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">S / Spacja</kbd> {r.shortcutFlip}
+                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px]">S / Spacja</kbd> {r.shortcutFlip}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">A</kbd> {r.shortcutAgain}
+                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px]">A</kbd> {r.shortcutAgain}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">D</kbd> {r.shortcutGood}
+                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px]">D</kbd> {r.shortcutGood}
                     </span>
                 </div>
             </div>

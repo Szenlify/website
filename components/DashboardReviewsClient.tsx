@@ -97,33 +97,36 @@ export default function DashboardReviewsClient({
 
     // Authenticated Reviews View
     return (
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-            {/* Breadcrumbs & User Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-white/10">
-                <nav className="flex items-center gap-2 text-xs text-slate-400" aria-label="Breadcrumb">
+        <div data-reviews-page className="w-full max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-8 h-[calc(100dvh-4.25rem)] sm:h-auto flex flex-col justify-between overflow-hidden">
+            {/* Top Bar / Breadcrumbs (compact on mobile) */}
+            <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-6 pb-1.5 sm:pb-4 border-b border-white/10 shrink-0">
+                <nav className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-slate-400" aria-label="Breadcrumb">
                     <Link
                         href={getLocalizedHref("/", locale)}
                         className="hover:text-white transition flex items-center gap-1"
                     >
-                        <Home className="size-3.5" />
-                        <span>{r.breadcrumbHome}</span>
+                        <Home className="size-3 sm:size-3.5" />
+                        <span className="hidden sm:inline">{r.breadcrumbHome}</span>
                     </Link>
-                    <ChevronRight className="size-3 text-slate-600" />
-                    <span>{r.breadcrumbDashboard}</span>
-                    <ChevronRight className="size-3 text-slate-600" />
-                    <span className="text-indigo-400 font-semibold">{r.breadcrumbReviews}</span>
+                    <ChevronRight className="size-2.5 sm:size-3 text-slate-600 hidden sm:inline" />
+                    <span className="hidden sm:inline">{r.breadcrumbDashboard}</span>
+                    <ChevronRight className="size-2.5 sm:size-3 text-slate-600" />
+                    <span className="text-indigo-400 font-bold">{r.breadcrumbReviews}</span>
                 </nav>
 
-                <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <span>{r.loggedInAs}</span>
-                    <strong className="text-slate-200 font-semibold max-w-[200px] truncate">
+                <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-400">
+                    <span className="hidden sm:inline">{r.loggedInAs}</span>
+                    <div className="size-1.5 sm:size-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <strong className="text-slate-200 font-medium max-w-[140px] sm:max-w-[220px] truncate">
                         {user.displayName || user.email}
                     </strong>
                 </div>
             </div>
 
             {/* Flashcard Review Runner */}
-            <ReviewRunner dict={dict} locale={locale} />
+            <div className="grow flex flex-col justify-center overflow-hidden">
+                <ReviewRunner dict={dict} locale={locale} />
+            </div>
         </div>
     );
 }
