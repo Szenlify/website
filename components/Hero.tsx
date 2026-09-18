@@ -2,164 +2,289 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import type { Dict } from "@/lib/i18n/types";
 import { CHROME_STORE_URL } from "@/lib/config";
-
-interface WordItem {
-    id: "ich" | "glaube" | "wir" | "haben" | "arger";
-    word: string;
-    trans: string;
-    note: string;
-    wordAudio: string;
-    translationAudio: string;
-}
-
-const DEMO_WORDS: Record<WordItem["id"], WordItem> = {
-    ich: {
-        id: "ich",
-        word: "Ich",
-        trans: "I",
-        note: 'A German personal pronoun meaning "I." It is used when the speaker refers to themselves.',
-        wordAudio: "/audio/words/ich.mp3",
-        translationAudio: "/audio/translations/ich.mp3",
-    },
-
-    glaube: {
-        id: "glaube",
-        word: "glaube",
-        trans: "think / believe",
-        note: 'A form of the verb "glauben," meaning "to think" or "to believe." In "Ich glaube," it usually means "I think."',
-        wordAudio: "/audio/words/glaube.mp3",
-        translationAudio: "/audio/translations/glaube.mp3",
-    },
-
-    wir: {
-        id: "wir",
-        word: "wir",
-        trans: "we",
-        note: 'A German personal pronoun meaning "we." It refers to the speaker together with other people.',
-        wordAudio: "/audio/words/wir.mp3",
-        translationAudio: "/audio/translations/wir.mp3",
-    },
-
-    haben: {
-        id: "haben",
-        word: "haben",
-        trans: "have",
-        note: 'The verb "haben" means "to have." Here it follows "wir," so "wir haben" means "we have."',
-        wordAudio: "/audio/words/haben.mp3",
-        translationAudio: "/audio/translations/haben.mp3",
-    },
-
-    arger: {
-        id: "arger",
-        word: "Ärger",
-        trans: "trouble",
-        note: 'A noun meaning "trouble" or "problems." The phrase "Ärger haben" means "to be in trouble."',
-        wordAudio: "/audio/words/arger.mp3",
-        translationAudio: "/audio/translations/arger.mp3",
-    },
-};
 
 interface HeroProps {
     dict: Pick<Dict, "hero">;
 }
 
+interface AIExplainItem {
+    type: "sentence" | "idiom" | "phrasal_verb";
+    title: string;
+    badge?: string;
+    term: string;
+    meaning: string;
+    explanation?: string;
+    audioText: string;
+    audioLang: string;
+    phraseWrapId?: string;
+}
+
+const AI_QUEUE: AIExplainItem[] = [
+    {
+        type: "sentence",
+        title: "Zdanie",
+        badge: "ZDANIE",
+        term: "Honestly, I was over the moon when I heard the news.",
+        meaning:
+            "Szczerze mówiąc, byłem w siódmym niebie, kiedy usłyszałem te wieści.",
+        audioText:
+            "Szczerze mówiąc, byłem w siódmym niebie, kiedy usłyszałem te wieści.",
+        audioLang: "pl-PL",
+    },
+    {
+        type: "idiom",
+        title: "over the moon",
+        badge: "IDIOM",
+        term: "over the moon",
+        meaning: "być w siódmym niebie, niezwykle szczęśliwym",
+        explanation:
+            'Zwrot idiomatyczny oznaczający ogromną radość lub ekscytację. Powszechnie stosowany w języku mówionym po otrzymaniu świetnych wiadomości: <span class="__qt_tts-original-quote">over the moon</span>.',
+        audioText: "over the moon. Być w siódmym niebie, niezwykle szczęśliwym.",
+        audioLang: "en-US",
+        phraseWrapId: "wrap-moon",
+    },
+    {
+        type: "phrasal_verb",
+        title: "heard the news",
+        badge: "CZASOWNIK FRAZOWY",
+        term: "heard the news",
+        meaning: "dowiedzieć się, usłyszeć wieści",
+        explanation:
+            'W tym kontekście oznacza moment otrzymania ważnych informacji. Czasownik nieregularny: <span class="__qt_tts-original-quote">hear – heard – heard</span>.',
+        audioText: "heard the news. Dowiedzieć się, usłyszeć wieści.",
+        audioLang: "en-US",
+        phraseWrapId: "wrap-news",
+    },
+];
+
+interface SubtitleToken {
+    id: string;
+    text: string;
+    clean: string;
+    aiIndex?: number;
+    phraseWrapId?: string;
+}
+
+const SUBTITLE_TOKENS: SubtitleToken[] = [
+    { id: "w1", text: "Honestly,", clean: "Honestly" },
+    { id: "w2", text: "I", clean: "I" },
+    { id: "w3", text: "was", clean: "was" },
+    {
+        id: "w4",
+        text: "over",
+        clean: "over",
+        aiIndex: 1,
+        phraseWrapId: "wrap-moon",
+    },
+    {
+        id: "w5",
+        text: "the",
+        clean: "the",
+        aiIndex: 1,
+        phraseWrapId: "wrap-moon",
+    },
+    {
+        id: "w6",
+        text: "moon",
+        clean: "moon",
+        aiIndex: 1,
+        phraseWrapId: "wrap-moon",
+    },
+    { id: "w7", text: "when", clean: "when" },
+    { id: "w8", text: "I", clean: "I" },
+    {
+        id: "w9",
+        text: "heard",
+        clean: "heard",
+        aiIndex: 2,
+        phraseWrapId: "wrap-news",
+    },
+    {
+        id: "w10",
+        text: "the",
+        clean: "the",
+        aiIndex: 2,
+        phraseWrapId: "wrap-news",
+    },
+    {
+        id: "w11",
+        text: "news.",
+        clean: "news",
+        aiIndex: 2,
+        phraseWrapId: "wrap-news",
+    },
+];
+
 export default function Hero({ dict }: HeroProps) {
     const { hero } = dict;
-    const [selectedWord, setSelectedWord] = useState<WordItem>(
-        DEMO_WORDS.haben,
+
+    // Enter AI Mode State
+    const [isOpen, setIsOpen] = useState(true);
+    const [dataState, setDataState] = useState<"ai-loading" | "ready">("ready");
+    const [activeStep, setActiveStep] = useState(0);
+    const [hoveredSubIdx, setHoveredSubIdx] = useState<number | null>(null);
+    const [hoveredPillIdx, setHoveredPillIdx] = useState<number | null>(null);
+    const [savedIndices, setSavedIndices] = useState<Set<number>>(new Set());
+    const [aiSavedIndices, setAiSavedIndices] = useState<Set<number>>(
+        new Set(),
     );
-    const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
-    const [activeAudio, setActiveAudio] = useState<{
-        id: string;
-        type: "word" | "explanation";
-    } | null>(null);
-    const currentAudioRef = React.useRef<HTMLAudioElement | null>(null);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+    const [isProBadge, setIsProBadge] = useState(true);
+    const [revealKey, setRevealKey] = useState(0);
 
-    const stopCurrentAudio = () => {
-        if (currentAudioRef.current) {
-            currentAudioRef.current.pause();
-            currentAudioRef.current.currentTime = 0;
-            currentAudioRef.current = null;
+    const speechTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Audio TTS player
+    const handleSpeak = useCallback((text: string, lang = "en-US") => {
+        if (typeof window === "undefined") return;
+
+        if (speechTimerRef.current) {
+            clearTimeout(speechTimerRef.current);
         }
-        if (typeof window !== "undefined" && "speechSynthesis" in window) {
-            window.speechSynthesis.cancel();
-        }
-        setActiveAudio(null);
-    };
 
-    const playAudioWithFallback = (
-        audioFileUrl: string,
-        fallbackText: string,
-        fallbackLang: string,
-        id: string,
-        type: "word" | "explanation",
-    ) => {
-        stopCurrentAudio();
-        setActiveAudio({ id, type });
-
-        const audio = new Audio(audioFileUrl);
-        currentAudioRef.current = audio;
-
-        const triggerFallback = () => {
-            currentAudioRef.current = null;
-            if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        if ("speechSynthesis" in window) {
+            try {
                 window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(fallbackText);
-                utterance.lang = fallbackLang;
-                utterance.rate = 0.95;
-                utterance.onend = () => setActiveAudio(null);
-                utterance.onerror = () => setActiveAudio(null);
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.92;
+                setIsSpeaking(true);
+                utterance.onend = () => setIsSpeaking(false);
+                utterance.onerror = () => setIsSpeaking(false);
                 window.speechSynthesis.speak(utterance);
-            } else {
-                setActiveAudio(null);
+
+                // Fallback timeout
+                speechTimerRef.current = setTimeout(() => {
+                    setIsSpeaking(false);
+                }, 3500);
+            } catch {
+                setIsSpeaking(false);
+            }
+        } else {
+            setIsSpeaking(true);
+            speechTimerRef.current = setTimeout(() => {
+                setIsSpeaking(false);
+            }, 1800);
+        }
+    }, []);
+
+    // Trigger Enter AI analysis with realistic shimmer
+    const triggerAnalysis = useCallback(
+        (targetIndex = 0) => {
+            setIsPaywallOpen(false);
+            setDataState("ai-loading");
+            setIsOpen(true);
+            setActiveStep(targetIndex);
+
+            setTimeout(() => {
+                setDataState("ready");
+                setRevealKey((prev) => prev + 1);
+            }, 550);
+        },
+        [],
+    );
+
+    // Next step
+    const handleNext = useCallback(() => {
+        setActiveStep((curr) => {
+            const next = Math.min(curr + 1, AI_QUEUE.length - 1);
+            return next;
+        });
+    }, []);
+
+    // Prev step
+    const handlePrev = useCallback(() => {
+        setActiveStep((curr) => {
+            const prev = Math.max(curr - 1, 0);
+            return prev;
+        });
+    }, []);
+
+    // Save word / flashcard (Z)
+    const handleSave = useCallback(() => {
+        setSavedIndices((prev) => {
+            const next = new Set(prev);
+            next.add(activeStep);
+            return next;
+        });
+    }, [activeStep]);
+
+    // Save AI sentence flashcard
+    const handleAiSave = useCallback(() => {
+        setAiSavedIndices((prev) => {
+            const next = new Set(prev);
+            next.add(activeStep);
+            return next;
+        });
+    }, [activeStep]);
+
+    // Toggle Paywall Modal Demo
+    const handleTogglePaywall = useCallback(() => {
+        setIsPaywallOpen((prev) => !prev);
+    }, []);
+
+    // Global keyboard shortcuts (Enter, Q, A, D, Z, Escape, W)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore when user typing in real input
+            const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+            if (tag === "input" || tag === "textarea" || tag === "select") {
+                return;
+            }
+
+            const code = e.code;
+            const key = e.key.toLowerCase();
+
+            if (code === "Enter" || code === "NumpadEnter" || key === "q") {
+                e.preventDefault();
+                if (!isOpen) {
+                    triggerAnalysis(0);
+                } else {
+                    setIsOpen(false);
+                }
+            } else if (code === "Escape" || key === "w") {
+                if (isOpen || isPaywallOpen) {
+                    e.preventDefault();
+                    setIsOpen(false);
+                    setIsPaywallOpen(false);
+                }
+            } else if (code === "KeyD" || code === "ArrowRight") {
+                if (isOpen && !isPaywallOpen) {
+                    e.preventDefault();
+                    handleNext();
+                }
+            } else if (code === "KeyA" || code === "ArrowLeft") {
+                if (isOpen && !isPaywallOpen) {
+                    e.preventDefault();
+                    handlePrev();
+                }
+            } else if (code === "KeyZ" || key === "v") {
+                if (isOpen && !isPaywallOpen) {
+                    e.preventDefault();
+                    handleSave();
+                }
             }
         };
 
-        audio.onended = () => {
-            setActiveAudio(null);
-            currentAudioRef.current = null;
-        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [
+        isOpen,
+        isPaywallOpen,
+        triggerAnalysis,
+        handleNext,
+        handlePrev,
+        handleSave,
+    ]);
 
-        audio.onerror = () => {
-            // Audio not added to folder yet -> seamless fallback
-            triggerFallback();
-        };
-
-        audio.play().catch(() => {
-            triggerFallback();
-        });
-    };
-
-    const handlePlayWordAudio = (item: WordItem) => {
-        playAudioWithFallback(
-            item.wordAudio,
-            item.word,
-            "de-DE",
-            item.id,
-            "word",
-        );
-    };
-
-    const handlePlayExplanationAudio = (item: WordItem) => {
-        const speechText = `${item.trans}. ${item.note}`;
-        playAudioWithFallback(
-            item.translationAudio,
-            speechText,
-            "en-US",
-            item.id,
-            "explanation",
-        );
-    };
-
-    const handleSaveFlashcard = () => {
-        setSavedSuccess(true);
-        setTimeout(() => {
-            setSavedSuccess(false);
-        }, 2500);
-    };
+    const currentItem = AI_QUEUE[activeStep];
+    const isSentence = currentItem.type === "sentence";
+    const isSaved = savedIndices.has(activeStep);
+    const isAiSaved = aiSavedIndices.has(activeStep);
 
     return (
         <section className="relative pt-20 pb-16 text-center overflow-hidden">
@@ -228,26 +353,20 @@ export default function Hero({ dict }: HeroProps) {
 
                 {/* Trust signals */}
                 <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs sm:text-sm text-slate-400 font-medium">
-                    {/* <div className="flex items-center gap-1.5 text-amber-400 font-bold">
-            <span>★★★★★</span>
-            <span className="text-white font-bold">4.9/5</span>
-            <span className="text-slate-400 font-normal">(1,280+ ratings)</span>
-          </div> */}
-                    {/* <span>•</span> */}
                     <span>{hero.noCard}</span>
                     <span>•</span>
                     <span>{hero.builtFor}</span>
                 </div>
             </div>
 
-            {/* Interactive Hero Showcase & Drop-In Slot for AI Video Recording */}
+            {/* Interactive Hero Showcase: Tryb Enter AI 1-do-1 z Enter.md */}
             <div
                 className="max-w-5xl mx-auto mt-8 sm:mt-12"
                 id="demo"
                 translate="no"
             >
                 <div className="relative group">
-                    {/* Glow effect behind container */}
+                    {/* Ambient Glow behind player */}
                     <div className="absolute -inset-4 bg-linear-to-r from-indigo-500/30 via-purple-500/20 to-cyan-500/30 rounded-[28px] blur-2xl opacity-75 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
 
                     {/* Main Player Simulator Frame */}
@@ -283,30 +402,41 @@ export default function Hero({ dict }: HeroProps) {
                                 </span>
                             </div>
 
-                            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 shrink-0">
-                                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                                <span className="hidden sm:inline">
-                                    LectoroAI
-                                </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => triggerAnalysis(activeStep)}
+                                    className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-500/15 border border-purple-500/30 text-[11px] font-semibold text-purple-300 hover:bg-purple-500/25 transition cursor-pointer"
+                                    title="Wciśnij Enter na klawiaturze, aby uruchomić analizę"
+                                >
+                                    <span>✨ Re-Analyze</span>
+                                    <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[9px] font-mono border border-white/20 text-white">
+                                        Enter
+                                    </kbd>
+                                </button>
+
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 shrink-0 pl-1">
+                                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                                    <span className="hidden sm:inline">
+                                        Lectoro AI
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* 
-              ================================================================================
-              HERO AI VIDEO RECORDING SLOT:
-              - To use your own AI video recording (MP4/WebM), replace the background scene 
-                below with a <video autoPlay loop muted playsInline src="/your-ai-video.mp4" className="absolute inset-0 w-full h-full object-cover z-[1]" />
-              - The interactive dual-subtitles and AI popover overlay will sit right on top!
-              ================================================================================
-            */}
-                        <div className="ai-video-slot relative bg-linear-to-b from-[#1b2141] via-[#0d1226] to-[#080a14] p-6 sm:p-8">
-                            {/* Backdrop Cinematic linear Overlay */}
+                        {/* Video Viewport Area */}
+                        <div
+                            className="ai-video-slot relative bg-linear-to-b from-[#1b2141] via-[#0d1226] to-[#080a14] p-6 sm:p-8 min-h-[440px] sm:min-h-[500px]"
+                            data-lectoro-ai-active="true"
+                        >
+                            {/* Backdrop Cinematic Linear Overlay */}
                             <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/20 to-black/85 z-2 pointer-events-none"></div>
 
+                            {/* Background Movie Frame */}
                             <div className="absolute h-full w-full top-0 left-0">
                                 <Image
                                     src="/hero.png"
-                                    alt=""
+                                    alt="Lectoro AI Netflix player scene"
                                     fill
                                     priority
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1024px"
@@ -314,174 +444,606 @@ export default function Hero({ dict }: HeroProps) {
                                 />
                             </div>
 
-                            {/* Lectoro Active Mode Watermark */}
-                            <div className="relative z-10 flex items-center gap-2 px-3 py-1.5 bg-slate-900/80 backdrop-blur-md border border-indigo-500/30 rounded-lg text-xs font-bold text-white w-fit shadow-md">
-                                <svg
-                                    className="w-3.5 h-3.5 text-cyan-400 fill-current"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                                <span>Lectoro Subtitles Mode</span>
-                            </div>
+                            {/* Pause Indicator overlay during AI inspection */}
+                            {isOpen && (
+                                <div className="absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-medium text-slate-300">
+                                    <span className="w-1.5 h-3 inline-flex gap-0.5 items-center justify-center">
+                                        <span className="w-0.5 h-2.5 bg-amber-400 rounded-full"></span>
+                                        <span className="w-0.5 h-2.5 bg-amber-400 rounded-full"></span>
+                                    </span>
+                                    <span>AI Paused</span>
+                                </div>
+                            )}
 
-                            {/* Subtitles & Interactive Popover Area */}
-                            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 w-full max-w-2xl mx-auto text-center pt-8 pb-4">
-                                {/* Popover Tooltip matching exact Extension layout & styles */}
+                            {/* ═══════════════════════════════════════════════════════════════
+                                1:1 ENTER AI TRANSLATION OVERLAY POPUP (Enter.md Section 4 & 6)
+                                ═══════════════════════════════════════════════════════════════ */}
+                            {isOpen && (
                                 <div
-                                    className="__qt_sentence_translation"
+                                    key={revealKey}
                                     id="__qt_sentence_translation"
+                                    className="__qt_sub-overlay __qt_ai-explain-overlay __qt_translation-reveal"
+                                    data-state={dataState}
                                 >
-                                    <div className="__qt_header">
-                                        <span>DE → EN</span>
-                                    </div>
-                                    <div className="__qt_body">
-                                        {/* DE Row (Original Word + Audio Pronunciation) */}
-                                        <div className="__qt_row">
-                                            <span
-                                                className="__qt_label"
-                                                title="Source language: German"
-                                            >
-                                                DE
-                                            </span>
-                                            <span className="__qt_text __qt_original">
-                                                {selectedWord.word}
-                                            </span>
-                                            <span className="__qt_word-actions">
+                                    {dataState === "ai-loading" ? (
+                                        <span className="ai-loader-label">
+                                            ✨ Analyzing…
+                                        </span>
+                                    ) : isPaywallOpen ? (
+                                        /* ═══════════════════════════════════════════════════════════════
+                                           IN-VIDEO PAYWALL MODAL PREVIEW (Enter.md Section 6.9)
+                                           ═══════════════════════════════════════════════════════════════ */
+                                        <div className="__qt_translation-copy">
+                                            <div className="__qt_paywall-header">
+                                                <div className="__qt_paywall-badge-title">
+                                                    <span className="__qt_paywall-icon">
+                                                        ✦
+                                                    </span>
+                                                    <span>
+                                                        Odblokuj Lectoro PRO AI
+                                                    </span>
+                                                </div>
                                                 <button
                                                     type="button"
-                                                    className={`__qt_speak ${activeAudio?.id === selectedWord.id && activeAudio?.type === "word" ? "speaking" : ""}`}
+                                                    className="__qt_paywall-close-btn"
                                                     onClick={() =>
-                                                        handlePlayWordAudio(
-                                                            selectedWord,
-                                                        )
+                                                        setIsPaywallOpen(false)
                                                     }
-                                                    title="Play German pronunciation"
-                                                    aria-label="Play German pronunciation"
+                                                    title="Wróć do analizy (Esc)"
                                                 >
-                                                    <svg
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                                                    </svg>
+                                                    ✕
                                                 </button>
-                                            </span>
-                                        </div>
-
-                                        {/* EN Row (Translation + Read Translation & AI Explanation) */}
-                                        <div className="__qt_row">
-                                            <span
-                                                className="__qt_label"
-                                                title="Translation language: English"
-                                            >
-                                                EN
-                                            </span>
-                                            <span className="__qt_text __qt_translated">
-                                                {selectedWord.trans}
-                                            </span>
-                                            <span className="__qt_word-actions">
-                                                <button
-                                                    type="button"
-                                                    className={`__qt_speak ${activeAudio?.id === selectedWord.id && activeAudio?.type === "explanation" ? "speaking" : ""}`}
-                                                    onClick={() =>
-                                                        handlePlayExplanationAudio(
-                                                            selectedWord,
-                                                        )
-                                                    }
-                                                    title="Play English translation and AI explanation"
-                                                    aria-label="Play English translation and AI explanation"
-                                                >
-                                                    <svg
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                                                    </svg>
-                                                </button>
-                                            </span>
-                                        </div>
-
-                                        {/* AI Result Block */}
-                                        <div className="__qt_ai-result">
-                                            <div className="__qt_ai-label">
-                                                ✨ AI Explanation:
                                             </div>
-                                            <div className="__qt_ai-text">
-                                                {selectedWord.note}
+
+                                            <div className="__qt_paywall-body">
+                                                <div className="__qt_paywall-card">
+                                                    <div className="__qt_paywall-status-banner">
+                                                    <span className="__qt_paywall-check">
+                                                        ✓
+                                                    </span>
+                                                    <div className="__qt_paywall-status-text">
+                                                        <strong>
+                                                            Darmowy limit: 15/15
+                                                            wykorzystany
+                                                        </strong>
+                                                        <span>
+                                                            Aktywuj Pro, aby
+                                                            kontynuować naukę
+                                                            bez ograniczeń.
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="__qt_paywall-offer-title">
+                                                    Korzyści nielimitowanego
+                                                    konta Pro:
+                                                </div>
+                                                <ul className="__qt_paywall-perks-list">
+                                                    <li>
+                                                        <span className="__qt_paywall-spark">
+                                                            ✦
+                                                        </span>
+                                                        <span>
+                                                            Błyskawiczne
+                                                            wyjaśnienia idiomów
+                                                            i slangu z Gemini
+                                                            Flash
+                                                        </span>
+                                                    </li>
+                                                    <li>
+                                                        <span className="__qt_paywall-spark">
+                                                            ✦
+                                                        </span>
+                                                        <span>
+                                                            Natywny lektor TTS
+                                                            Google dla każdego
+                                                            słówka i zwrotu
+                                                        </span>
+                                                    </li>
+                                                    <li>
+                                                        <span className="__qt_paywall-spark">
+                                                            ✦
+                                                        </span>
+                                                        <span>
+                                                            Automatyczny zapis
+                                                            do talii powtórek
+                                                            SRS (klawisz Z)
+                                                        </span>
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </div>
+
+                                        <div className="__qt_paywall-footer">
+                                            <button
+                                                type="button"
+                                                className="__qt_paywall-btn-ghost"
+                                                onClick={() =>
+                                                    setIsPaywallOpen(false)
+                                                }
+                                            >
+                                                Wróć do analizy
+                                            </button>
+                                            <a
+                                                href={CHROME_STORE_URL}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="__qt_paywall-btn-primary"
+                                            >
+                                                Wypróbuj Pro za darmo
+                                            </a>
+                                        </div>
                                     </div>
-                                    <div className="__qt_save-footer">
-                                        <button
-                                            type="button"
-                                            className={`__qt_ai-explain-save-btn ${savedSuccess ? "saved" : ""}`}
-                                            onClick={handleSaveFlashcard}
-                                            title="Save word for review"
-                                        >
-                                            <span>
-                                                {savedSuccess
-                                                    ? "Saved to Deck!"
-                                                    : "Save"}
+                                ) : (
+                                    /* ═══════════════════════════════════════════════════════════════
+                                       STANDARD ENTER AI EXPLANATION POPUP (Enter.md Section 4 & 6.5)
+                                       ═══════════════════════════════════════════════════════════════ */
+                                    <div className="__qt_translation-copy">
+                                        {/* 1. Header with Ribbon, Credit Pill and Navigation Group */}
+                                        <div className="__qt_header">
+                                            <div
+                                                className="__qt_ai-queue-ribbon"
+                                                role="tablist"
+                                                aria-label="Breakdown items"
+                                            >
+                                                {AI_QUEUE.map((item, idx) => {
+                                                    const isActive =
+                                                        idx === activeStep;
+                                                    const isQueued =
+                                                        idx !== activeStep;
+                                                    const isHighlighted =
+                                                        hoveredSubIdx === idx;
+                                                    const icon =
+                                                        item.type === "sentence"
+                                                            ? "💬"
+                                                            : "✨";
+
+                                                    return (
+                                                        <button
+                                                            key={idx}
+                                                            type="button"
+                                                            role="tab"
+                                                            aria-selected={
+                                                                isActive
+                                                            }
+                                                            className={`__qt_ai-queue-pill ${
+                                                                isActive
+                                                                    ? "active"
+                                                                    : ""
+                                                            } ${
+                                                                isQueued
+                                                                    ? "__qt_ai-pill-upcoming"
+                                                                    : ""
+                                                            } ${
+                                                                isHighlighted
+                                                                    ? "__qt_pill-highlight"
+                                                                    : ""
+                                                            }`}
+                                                            onClick={() =>
+                                                                setActiveStep(
+                                                                    idx,
+                                                                )
+                                                            }
+                                                            onMouseEnter={() =>
+                                                                setHoveredPillIdx(
+                                                                    idx,
+                                                                )
+                                                            }
+                                                            onMouseLeave={() =>
+                                                                setHoveredPillIdx(
+                                                                    null,
+                                                                )
+                                                            }
+                                                            title={item.title}
+                                                        >
+                                                            <span className="__qt_pill-icon">
+                                                                {icon}
+                                                            </span>
+                                                            <span>
+                                                                {item.title}
+                                                            </span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {/* AI Credit Pill */}
+                                            <span
+                                                className={`__qt_ai-credit-pill ${
+                                                    isProBadge ? "is-pro" : ""
+                                                }`}
+                                                onClick={handleTogglePaywall}
+                                                title="Kliknij, aby podejrzeć status limitu i In-Video Paywall"
+                                            >
+                                                {isProBadge
+                                                    ? "✦ PRO AI"
+                                                    : "✦ AI 14/15"}
                                             </span>
-                                        </button>
-                                    </div>
-                                </div>
 
-                                {/* Dual Subtitle Box with Speaker Icon next to every word */}
-                                <div className="inline-block px-1 py-4">
-                                    <div className="font-display text-xl sm:text-3xl font-extrabold text-white mb-1.5 tracking-tight flex items-center justify-center flex-wrap gap-1">
-                                        {(
-                                            [
-                                                "ich",
-                                                "glaube",
-                                                "wir",
-                                                "haben",
-                                                "arger",
-                                            ] as const
-                                        ).map((wordKey) => {
-                                            const item = DEMO_WORDS[wordKey];
-                                            const isSelected =
-                                                selectedWord.id === item.id;
-
-                                            return (
+                                            {/* Navigation Group (Prev / Counter / Next) */}
+                                            <div className="__qt_ai-nav-group">
                                                 <button
                                                     type="button"
-                                                    key={item.id}
-                                                    className={`clickable-word ${isSelected ? "active" : ""}`}
-                                                    onClick={() => {
-                                                        setSelectedWord(item);
-                                                    }}
-                                                    aria-pressed={isSelected}
+                                                    className="__qt_ai-nav-btn __qt_ai-prev-btn"
+                                                    onClick={handlePrev}
+                                                    disabled={activeStep === 0}
+                                                    title="Poprzedni etap (← / A)"
                                                 >
-                                                    <span>{item.word}</span>
+                                                    ◀
                                                 </button>
-                                            );
-                                        })}
+                                                <span className="__qt_ai-step-counter">
+                                                    {activeStep + 1}/
+                                                    {AI_QUEUE.length}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    className="__qt_ai-nav-btn __qt_ai-next-btn"
+                                                    onClick={handleNext}
+                                                    disabled={
+                                                        activeStep >=
+                                                        AI_QUEUE.length - 1
+                                                    }
+                                                    title="Następny etap (→ / D)"
+                                                >
+                                                    ▶
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* 2. Body Card (Sentence vs Idiom/Phrasal Verb) */}
+                                        <div className="__qt_body">
+                                            <div
+                                                className="__qt_ai-term-card"
+                                                data-type={currentItem.type}
+                                            >
+                                                {isSentence ? (
+                                                    <div className="__qt_ai-term-title-wrap __qt_ai-sentence-wrap">
+                                                        <div className="__qt_ai-term-meaning">
+                                                            {
+                                                                currentItem.meaning
+                                                            }
+                                                        </div>
+                                                        <span className="__qt_word-actions">
+                                                            <button
+                                                                type="button"
+                                                                className={`__qt_speak ${
+                                                                    isSpeaking
+                                                                        ? "speaking"
+                                                                        : ""
+                                                                }`}
+                                                                onClick={() =>
+                                                                    handleSpeak(
+                                                                        currentItem.audioText,
+                                                                        currentItem.audioLang,
+                                                                    )
+                                                                }
+                                                                title="Odsłuchaj lektora TTS"
+                                                                aria-label="Odsłuchaj lektora TTS"
+                                                            >
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="14"
+                                                                    height="14"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="2"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                >
+                                                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                                                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                                                                </svg>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <div className="__qt_ai-term-header">
+                                                            {currentItem.badge && (
+                                                                <span className="__qt_ai-badge">
+                                                                    {
+                                                                        currentItem.badge
+                                                                    }
+                                                                </span>
+                                                            )}
+                                                            <div className="__qt_ai-term-title-wrap">
+                                                                <span className="__qt_ai-term">
+                                                                    {
+                                                                        currentItem.term
+                                                                    }
+                                                                </span>
+                                                                <span className="__qt_word-actions">
+                                                                    <button
+                                                                        type="button"
+                                                                        className={`__qt_speak ${
+                                                                            isSpeaking
+                                                                                ? "speaking"
+                                                                                : ""
+                                                                        }`}
+                                                                        onClick={() =>
+                                                                            handleSpeak(
+                                                                                currentItem.audioText,
+                                                                                currentItem.audioLang,
+                                                                            )
+                                                                        }
+                                                                        title="Odsłuchaj wymowę lektora"
+                                                                        aria-label="Odsłuchaj wymowę lektora"
+                                                                    >
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="14"
+                                                                            height="14"
+                                                                            viewBox="0 0 24 24"
+                                                                            fill="none"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth="2"
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                        >
+                                                                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                                                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                                                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {currentItem.meaning && (
+                                                            <div className="__qt_ai-term-meaning">
+                                                                {
+                                                                    currentItem.meaning
+                                                                }
+                                                            </div>
+                                                        )}
+
+                                                        {currentItem.explanation && (
+                                                            <div
+                                                                className="__qt_ai-term-explanation"
+                                                                dangerouslySetInnerHTML={{
+                                                                    __html: currentItem.explanation,
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* 3. Action Footer (Save & AI Sentence) */}
+                                        <div className="__qt_save-footer">
+                                            <button
+                                                type="button"
+                                                className={`__qt_save-word-btn __qt_save-footer-btn ${
+                                                    isSaved ? "saved" : ""
+                                                }`}
+                                                onClick={handleSave}
+                                                disabled={isSaved}
+                                                title="Zapisz do codziennych powtórek fiszek (Z)"
+                                            >
+                                                {isSaved ? (
+                                                    <>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="12"
+                                                            height="12"
+                                                            viewBox="0 0 24 24"
+                                                            fill="#4ecdc4"
+                                                            stroke="#4ecdc4"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                                                        </svg>
+                                                        <span>Saved!</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="12"
+                                                            height="12"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                                                        </svg>
+                                                        <span>Save</span>
+                                                        <kbd className="__qt_key-hint">
+                                                            Z
+                                                        </kbd>
+                                                    </>
+                                                )}
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className={`__qt_save-ai-btn __qt_save-footer-btn ${
+                                                    isAiSaved ? "saved" : ""
+                                                }`}
+                                                onClick={handleAiSave}
+                                                disabled={isAiSaved}
+                                                title="Wygeneruj inteligentne zdanie kontekstowe do powtórki"
+                                            >
+                                                {isAiSaved ? (
+                                                    <>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="12"
+                                                            height="12"
+                                                            viewBox="0 0 24 24"
+                                                            fill="#a78bfa"
+                                                            stroke="#a78bfa"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                                            <path d="M2 17l10 5 10-5" />
+                                                            <path d="M2 12l10 5 10-5" />
+                                                        </svg>
+                                                        <span>
+                                                            Saved to Review!
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="12"
+                                                            height="12"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                                            <path d="M2 17l10 5 10-5" />
+                                                            <path d="M2 12l10 5 10-5" />
+                                                        </svg>
+                                                        <span>AI Sentence</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="text-sm sm:text-base font-medium text-slate-400">
-                                        I think we&apos;re in trouble.
-                                    </div>
-                                </div>
+                                )}
                             </div>
+                        )}
 
-                            {/* Player Bottom Control Bar */}
-                            <div className="relative z-10 flex items-center justify-between px-4 py-2.5 bg-slate-900/90 border border-white/10 rounded-xl">
-                                <div className="flex items-center gap-3">
+                        {/* ═══════════════════════════════════════════════════════════════
+                            VIDEO SUBTITLE OVERLAY (Enter.md Section 6.8 & Section 1-3)
+                            ═══════════════════════════════════════════════════════════════ */}
+                        <div
+                            id="__qt_custom_subtitles_layer"
+                            className="px-4 select-none"
+                        >
+                            <div className="max-w-3xl mx-auto flex items-center justify-center flex-wrap gap-x-1 sm:gap-x-1.5 gap-y-1">
+                                {/* Word 1-3: "Honestly, I was" */}
+                                {SUBTITLE_TOKENS.slice(0, 3).map((token) => (
                                     <span
-                                        className="text-white"
-                                        aria-hidden="true"
+                                        key={token.id}
+                                        className="__qt_sub-word"
+                                        onClick={() => triggerAnalysis(0)}
+                                        title="Kliknij, aby otworzyć tłumaczenie całego zdania"
                                     >
+                                        {token.text}
+                                    </span>
+                                ))}
+
+                                {/* Idiom phrase: "over the moon" (wrapped into __qt_ai-sub-wrap) */}
+                                <span
+                                    className={`__qt_ai-sub-wrap ${
+                                        isOpen && activeStep === 1
+                                            ? "__qt_ai-sub-active"
+                                            : isOpen
+                                              ? "__qt_ai-sub-upcoming"
+                                              : ""
+                                    } ${
+                                        hoveredPillIdx === 1
+                                            ? "brightness-125"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (!isOpen) triggerAnalysis(1);
+                                        else setActiveStep(1);
+                                    }}
+                                    onMouseEnter={() => setHoveredSubIdx(1)}
+                                    onMouseLeave={() => setHoveredSubIdx(null)}
+                                    title="Idiom: 'over the moon' (kliknij, aby wyjaśnić)"
+                                >
+                                    {SUBTITLE_TOKENS.slice(3, 6).map(
+                                        (token) => (
+                                            <span
+                                                key={token.id}
+                                                className="__qt_sub-word"
+                                            >
+                                                {token.text}
+                                            </span>
+                                        ),
+                                    )}
+                                </span>
+
+                                {/* Word 7-8: "when I" */}
+                                {SUBTITLE_TOKENS.slice(6, 8).map((token) => (
+                                    <span
+                                        key={token.id}
+                                        className="__qt_sub-word"
+                                        onClick={() => triggerAnalysis(0)}
+                                        title="Kliknij, aby otworzyć tłumaczenie zdania"
+                                    >
+                                        {token.text}
+                                    </span>
+                                ))}
+
+                                {/* Phrasal verb: "heard the news." (wrapped into __qt_ai-sub-wrap) */}
+                                <span
+                                    className={`__qt_ai-sub-wrap ${
+                                        isOpen && activeStep === 2
+                                            ? "__qt_ai-sub-active"
+                                            : isOpen
+                                              ? "__qt_ai-sub-upcoming"
+                                              : ""
+                                    } ${
+                                        hoveredPillIdx === 2
+                                            ? "brightness-125"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (!isOpen) triggerAnalysis(2);
+                                        else setActiveStep(2);
+                                    }}
+                                    onMouseEnter={() => setHoveredSubIdx(2)}
+                                    onMouseLeave={() => setHoveredSubIdx(null)}
+                                    title="Zwrot: 'heard the news' (kliknij, aby wyjaśnić)"
+                                >
+                                    {SUBTITLE_TOKENS.slice(8, 11).map(
+                                        (token) => (
+                                            <span
+                                                key={token.id}
+                                                className="__qt_sub-word"
+                                            >
+                                                {token.text}
+                                            </span>
+                                        ),
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Player Bottom Control Bar */}
+                        <div className="relative z-10 flex items-center mt-12 justify-between px-4 py-2.5 bg-slate-900/90 border border-white/10 rounded-xl mt-auto">
+                            <div className="flex items-center gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (isOpen) setIsOpen(false);
+                                        else triggerAnalysis(0);
+                                    }}
+                                    className="text-white hover:text-cyan-400 transition cursor-pointer"
+                                    aria-label={
+                                        isOpen ? "Wznów odtwarzanie" : "Pauza"
+                                    }
+                                    title={
+                                        isOpen ? "Wznów film" : "Zatrzymaj film"
+                                    }
+                                >
+                                    {isOpen ? (
+                                        <svg
+                                            className="w-4 h-4 fill-current"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                        </svg>
+                                    ) : (
                                         <svg
                                             className="w-4 h-4 fill-current"
                                             viewBox="0 0 24 24"
@@ -499,33 +1061,107 @@ export default function Hero({ dict }: HeroProps) {
                                                 height="16"
                                             ></rect>
                                         </svg>
-                                    </span>
-                                    <span className="text-xs font-mono text-slate-400">
-                                        14:28 / 42:15
-                                    </span>
-                                </div>
-                                <div className="flex-1 mx-4 sm:mx-6 h-1.5 bg-white/10 rounded-full overflow-hidden cursor-pointer">
-                                    <div className="w-[45%] h-full bg-linear-to-r from-indigo-500 to-cyan-400 rounded-full"></div>
-                                </div>
-                                <div className="flex items-center gap-3 text-xs text-slate-300">
-                                    <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">
-                                        DE ⇄ EN
-                                    </span>
-                                    <svg
-                                        className="w-4 h-4 text-slate-400 hover:text-white cursor-pointer"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                    >
-                                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-                                    </svg>
-                                </div>
+                                    )}
+                                </button>
+                                <span className="text-xs font-mono text-slate-400">
+                                    14:28 / 42:15
+                                </span>
                             </div>
+                            <div className="flex-1 mx-4 sm:mx-6 h-1.5 bg-white/10 rounded-full overflow-hidden cursor-pointer">
+                                <div className="w-[45%] h-full bg-linear-to-r from-indigo-500 to-cyan-400 rounded-full"></div>
+                            </div>
+                            <div className="flex items-center gap-3 text-xs text-slate-300">
+                                <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">
+                                    EN ⇄ PL
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsProBadge((p) => !p)}
+                                    className="text-[10px] text-slate-400 hover:text-amber-300 transition"
+                                    title="Przełącz status konta PRO / Free"
+                                >
+                                    {isProBadge ? "PRO" : "FREE"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Interactive Shortcuts Guidance Bar under the Simulator */}
+                    <div className="mt-4 px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md flex flex-wrap items-center justify-between gap-3 text-xs text-slate-300">
+                        <div className="flex items-center gap-1.5 font-medium text-slate-400">
+                            <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+                            <span className="hidden sm:inline">
+                                Użyj klawiatury lub przycisków
+                            </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (!isOpen) triggerAnalysis(0);
+                                    else setIsOpen(false);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition cursor-pointer active:scale-95"
+                            >
+                                <kbd className="px-1.5 py-0.5 rounded bg-black/50 text-[10px] font-mono border border-white/20 text-cyan-300">
+                                    Enter
+                                </kbd>
+                                <span>{isOpen ? "Zamknij" : "Analiza AI"}</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handlePrev}
+                                disabled={!isOpen || activeStep === 0}
+                                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 disabled:opacity-30 transition cursor-pointer"
+                            >
+                                <kbd className="px-1.5 py-0.5 rounded bg-black/50 text-[10px] font-mono border border-white/20 text-slate-300">
+                                    A
+                                </kbd>
+                                <span>Wstecz</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handleNext}
+                                disabled={
+                                    !isOpen || activeStep >= AI_QUEUE.length - 1
+                                }
+                                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 disabled:opacity-30 transition cursor-pointer"
+                            >
+                                <kbd className="px-1.5 py-0.5 rounded bg-black/50 text-[10px] font-mono border border-white/20 text-slate-300">
+                                    D
+                                </kbd>
+                                <span>Dalej</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handleSave}
+                                disabled={!isOpen || isSaved}
+                                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-teal-300 disabled:opacity-30 transition cursor-pointer"
+                            >
+                                <kbd className="px-1.5 py-0.5 rounded bg-black/50 text-[10px] font-mono border border-white/20 text-teal-300">
+                                    Z
+                                </kbd>
+                                <span>Zapisz</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handleTogglePaywall}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 transition cursor-pointer"
+                                title="Zobacz wygląd okna Paywall z sekcji 6.9"
+                            >
+                                <span className="text-xs">✦</span>
+                                <span>Paywall Demo</span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
     );
 }

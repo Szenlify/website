@@ -1,199 +1,348 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+# Dokumentacja Funkcji i Trybu `Enter` (AI Sentence Explanation) w Lectoro
 
-:root {
-    --bg-dark: #070913;
-    --bg-surface: #0e1222;
-    --bg-card: #141a32;
-    --bg-card-hover: #1c2445;
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-focus: rgba(99, 102, 241, 0.4);
+Dokumentacja techniczna, architektoniczna i wizualna funkcji **Enter** w projekcie Lectoro. Opisuje zachowanie, cykl życia, przepływ danych, strukturę DOM oraz **dokładnie przepisane style CSS** odpowiedzialne za prezentację dymka analizy AI oraz podświetlenia napisów.
 
-    --primary: #6366f1;
-    --primary-light: #818cf8;
-    --primary-dark: #4f46e5;
-    --primary-glow: rgba(99, 102, 241, 0.35);
-    --accent-cyan: #06b6d4;
-    --accent-purple: #a855f7;
-    --accent-amber: #f59e0b;
-    --accent-emerald: #10b981;
-    --accent-rose: #f43f5e;
+---
 
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
+## 1. Czym jest funkcja `Enter`?
 
-    --font-display: "Plus Jakarta Sans", sans-serif;
-    --font-body: "Inter", sans-serif;
-    --font-mono: "JetBrains Mono", monospace;
+W rozszerzeniu Lectoro podczas oglądania wideo z napisami (Netflix, YouTube, odtwarzacze HTML5), wciśnięcie klawisza **`Enter`** (lub alternatywnie **`NumpadEnter`**, **`Q`** / **`q`**) uruchamia **tryb głębokiego wyjaśnienia zdania przez AI** (*AI Deep Sentence Explanation*).
 
-    --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 22px;
-    --radius-xl: 32px;
+Funkcja ta zatrzymuje odtwarzanie filmu, pobiera bieżący napis (wraz z kontekstem sąsiednich linii) i odpytuje model sztucznej inteligencji (Google Gemini Flash) za pośrednictwem bezpiecznego proxy Firebase. W odpowiedzi generowane jest:
+1. **Naturalne, pełne tłumaczenie całego zdania** w języku ojczystym użytkownika (etap 1/N).
+2. **Rozbicie na kluczowe elementy (breakdown)**: idiomy, czasowniki frazowe (*phrasal verbs*), slang, kolokacje oraz trudne słownictwo wyodrębnione ze zdania wraz z ich kontekstowym znaczeniem i wyjaśnieniem gramatycznym/użycia (etapy 2..N).
+3. **Synchronizacja wizualna z napisami filmu**: słowa odpowiadające elementom z kolejki zostają w locie podświetlone na fioletowo w napisach wideo, a aktualnie omawiany zwrot – na neonowy gradient turkusu i fioletu.
+4. **Inteligentny lektor (TTS)**: automatyczne odczytanie wymowy w odpowiednich językach (np. najpierw termin w języku obcym, potem wyjaśnienie w języku ojczystym) z automatycznym lub ręcznym przechodzeniem do kolejnych kroków.
+5. **Zapis do powtórek**: możliwość bezpośredniego dodania całego zdania lub pojedynczego idiomu/słowa do bazy powtórek (fiszki / SRS / Anki) za pomocą klawisza **`Z`** lub przycisku w stopce.
+
+---
+
+## 2. Skróty klawiszowe powiązane z trybem Enter
+
+Obsługiwane w plikach [`video/universal-video-controller.js`](file:///Users/kondziu/Desktop/Softileo/Lectoro/video/universal-video-controller.js) oraz [`video/subtitle-overlay.js`](file:///Users/kondziu/Desktop/Softileo/Lectoro/video/subtitle-overlay.js):
+
+| Klawisz | Akcja w odtwarzaczu | Akcja w otwartym dymku Enter AI |
+| :--- | :--- | :--- |
+| **`Enter`** / **`NumpadEnter`** | Otwiera dymek analizy AI (`handleAIExplain`) | Zamyka dymek i wznawia wideo (`closeAiTooltip`) |
+| **`Q`** / **`q`** | Otwiera dymek analizy AI | Zamyka dymek i wznawia wideo |
+| **`Escape`** / **`W`** / **`ArrowUp`** | Zamyka aktywne dymki | Zamyka dymek i wznawia wideo |
+| **`D`** / **`ArrowRight`** | Skok wideo w przód | Przejście do **następnego elementu** w kolejce AI (`nextAiExplainItem`) |
+| **`A`** / **`ArrowLeft`** | Skok wideo w tył | Przejście do **poprzedniego elementu** w kolejce AI (`prevAiExplainItem`) |
+| **`Z`** / **`V`** | Zapis słowa | Zapis aktualnie wyświetlanego elementu AI do powtórek (`saveCurrentAiExplainItem`) |
+| **Kliknięcie słowa na napisach** | Tłumaczenie pojedynczego słowa | Przejście bezpośrednio do tego słowa w kolejce AI |
+| **Kliknięcie pigułki (pill) we wstążce** | — | Skok do wybranego etapu analizy |
+
+---
+
+## 3. Co dzieje się w funkcji `handleAIExplain(video)`? (Krok po kroku)
+
+Główna logika funkcji znajduje się w pliku [`video/subtitle-overlay.js`](file:///Users/kondziu/Desktop/Softileo/Lectoro/video/subtitle-overlay.js#L2875-L3016).
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Użytkownik (Klawisz Enter)
+    participant C as Universal Video Controller
+    participant SO as Subtitle Overlay (handleAIExplain)
+    participant QT as Core QT Engine
+    participant TS as Shared Translator Service
+    participant GP as Gemini Proxy / Firebase Functions
+    participant TTS as Shared TTS Service
+    participant DOM as Warstwa Napisów i Nakładka UI
+
+    U->>C: Wciśnięcie Enter / Q
+    C->>SO: overlay.handleAIExplain(video)
+    SO->>SO: Pobranie aktywnego tekstu napisów
+    SO->>DOM: Zatrzymanie filmu (pause), dodanie data-lectoro-ai-active="true"
+    SO->>DOM: showAiShimmer() (pokazanie dymka "✨ Analyzing…")
+    SO->>TS: explainSentence(text, targetLang, context, { sourceLang })
+    TS->>GP: Zapytanie JSON do Gemini Flash przez Cloud Function
+    GP-->>TS: Odpowiedź: { translation, explanation, badge, items: [...] }
+    TS-->>SO: Znormalizowany obiekt z tłumaczeniem i idiomami/słówkami
+    SO->>SO: Zbudowanie aiExplainQueue = [sentenceItem, ...breakdownItems]
+    SO->>DOM: updateSubtitleVideoHighlights() (fioletowe i turkusowe podświetlenie w wideo)
+    SO->>DOM: revealOverlayContent() (dwufazowa animacja powiększania + conic-gradient sweep)
+    SO->>TTS: speakAiExplainItem() (wymowa audio)
+    Note over SO,TTS: Po zakończeniu lektora: opcjonalny auto-advance do kolejnego słowa
+```
+
+### Szczegółowy przebieg kodu:
+
+1. **Weryfikacja tekstu napisów**:
+   - Funkcja sprawdza `activeText || registry?.getCurrentText()`. Jeżeli na ekranie nie ma aktualnie żadnego tekstu napisu, wykonanie zostaje przerwane.
+2. **Zarządzanie współbieżnością (`requestId`)**:
+   - Zwiększany jest licznik `++aiExplainRequestId`.
+   - Zdefiniowany zostaje predykat:
+     ```javascript
+     const isCurrent = () => aiTooltipActive && requestId === aiExplainRequestId;
+     ```
+     Jeśli użytkownik zamknie dymek i otworzy go ponownie zanim nadejdzie odpowiedź sieciowa, stare zapytanie zostanie zignorowane.
+3. **Czyszczenie innych trybów i pauza wideo**:
+   - Wywołanie `cleanupReading()` i `closeSubTooltip({ resumeVideo: false })`.
+   - Jeśli aktywny był tryb czytania lub chmury słów, przywracana jest oryginalna warstwa napisów (`restoreOriginal()`).
+   - Ustawienie flagi `aiTooltipActive = true`.
+   - Nadanie atrybutu `document.body.setAttribute("data-lectoro-ai-active", "true")` — wyłącza to standardowy niebieski hover dla słów niebędących częścią analizy AI.
+   - Wstrzymanie odtwarzania wideo (`pauseIfPlaying(video)`).
+   - Ukrycie podręcznych tooltipów słownikowych (`QT.hideTooltip()`).
+4. **Zmierzenie pozycji i pobranie kredytów AI**:
+   - Zapis geometrii napisów przez `captureSubtitleLayout()` do `aiExplainLayout`.
+   - Asynchroniczne sprawdzenie kredytów w pamięci podręcznej: `GeminiProxy.getCachedUsage()`.
+   - Sformatowanie odznaki konta:
+     - Dla subskrypcji płatnej: `✦ PRO AI`.
+     - Dla darmowej: `✦ AI {pozostało}/{limit}` (np. `✦ AI 14/15`).
+     - Domyślnie: `✦ AI Free`.
+5. **Wyświetlenie animacji ładowania (Shimmer Loader)**:
+   - Wywołanie `showAiShimmer(aiExplainLayout)`, które tworzy element `#_qt_sentence_translation` z klasami `__qt_sub-overlay` i `__qt_ai-explain-overlay`, atrybutem `data-state="ai-loading"` oraz tekstem:
+     ```html
+     <span class="ai-loader-label">✨ Analyzing…</span>
+     ```
+   - Etykieta ta ma animację przepływającego gradientu (`__qt_ai_shimmer`).
+6. **Wywołanie API Gemini**:
+   - Pobierane są języki: język ojczysty (`targetLang = await QT.getTargetLang()`) oraz język nauki (`sourceLang = await SharedTranslatorService.getLearningLang()`).
+   - Pobierany jest kontekst poprzednich/następnych linii napisów: `getActiveSubtitleContext(video, text)`.
+   - Wywołanie `QT.geminiExplainSentence(text, targetLang, context, { sourceLang })`.
+   - Prompt instruuje model Gemini, aby zwrócił JSON o ściśle określonej strukturze:
+     - `translation`: dokładne, jednowierszowe tłumaczenie całego zdania z zachowaniem wszystkich zdań składowych.
+     - `explanation`: zwięzłe wyjaśnienie gramatyczne lub kontekstowe (jeśli potrzebne).
+     - `badge`: zlokalizowana etykieta (np. "Zdanie", "Sentence").
+     - `items`: tablica 0–4 kluczowych pojęć, zawierająca idiomy, czasowniki złożone (`phrasal_verb`), slang i kluczowe słownictwo, w kolejności ich występowania w zdaniu.
+7. **Budowanie kolejki wyjaśnień (`aiExplainQueue`)**:
+   - Pierwszym elementem (`index 0`) **zawsze** jest tłumaczenie całego zdania (`type: "sentence"`).
+   - Kolejnymi elementami są poszczególne zwroty z `items`:
+     ```javascript
+     aiExplainQueue = breakdownItems.length > 0
+         ? [sentenceItem, ...breakdownItems]
+         : [sentenceItem];
+     ```
+   - Inicjalizacja indeksu: `aiExplainIndex = 0` i wywołanie `showAiExplainItem(0)`.
+8. **Prezentacja kroku (`showAiExplainItem`)**:
+   - Anulowanie bieżącej mowy TTS (`SharedTtsService.cancel()`).
+   - Rejestracja globalnego listenera klawiszy `ensureAiExplainKeydownListener()` (dla klawiszy A, D, Z, W, Escape).
+   - **Podświetlenie słów w odtwarzaczu (`updateSubtitleVideoHighlights()`)**:
+     - Wszystkie nadchodzące i poprzednie pozycje z kolejki otrzymują klasę `__qt_ai-sub-queued` / `__qt_ai-sub-upcoming` (miękki fiolet).
+     - Aktualnie omawiana pozycja otrzymuje klasę `__qt_ai-sub-active` (neonowy gradient turkusowo-fioletowy).
+     - Słowa wielowyrazowe są łączone wspólnym wrapperem `__qt_ai-sub-wrap` z zachowaniem ciągłości tła (`box-decoration-break: clone`).
+   - Wyrenderowanie zawartości HTML przez `renderAiExplainContent(clampedIndex)`.
+   - Ujawnienie zawartości z płynną dwufazową animacją wymiarów (`revealOverlayContent`):
+     - `data-state="measuring"` (mierzenie wymiarów w tle),
+     - `data-state="expanding"` (płynna animacja szerokości i wysokości w 0.22s),
+     - `data-state="ready"` z dodaniem klasy `__qt_translation-reveal` — uruchamia to efektowny obrót obramowania `conic-gradient` (`__qt_ai_border_sweep`).
+   - Podpięcie zdarzeń: kliknięcie pigułek wstążki, przycisków poprzedni/następny, przycisku odsłuchu `__qt_speak` oraz przycisków zapisu fiszek `Save (Z)` i `AI Sentence`.
+   - Uruchomienie lektora TTS (`speakAiExplainItem`):
+     - Dla całego zdania: odczytanie tłumaczenia w języku docelowym.
+     - Dla idiomu/słowa: odczytanie oryginalnego terminu w języku nauki, krótka pauza (350 ms), a następnie odczytanie znaczenia i wyjaśnienia w języku docelowym.
+   - Po zakończeniu wypowiedzi TTS: jeśli użytkownik nie nawigował ręcznie (`!aiAutoAdvanceDisabled`), po 2.0s (lub 3.5s bez audio) automatycznie wywoływany jest kolejny krok `showAiExplainItem(aiExplainIndex + 1)`.
+9. **Obsługa błędów i limitu kredytów (In-Video Paywall)**:
+   - Jeśli zapytanie zwróci błąd limitu (`GeminiProxy.isLimitError(err)`), dymek nie wyświetla surowego błędu, lecz przekształca się w **In-Video Paywall Modal** (`showAiPaywallOverlay`).
+   - Wyświetla on elegancką kartę z informacją o wyczerpaniu darmowego limitu, listą zalet subskrypcji Pro, przyciskiem wznowienia wideo oraz przyciskiem przejścia do subskrypcji.
+
+---
+
+## 4. Jak wygląda interfejs? (Struktura wizualna i HTML)
+
+Dymek `Enter` to pływający panel typu **Glassmorphism**, pozycjonowany automatycznie tuż nad (lub pod) aktywnym napisem na ekranie odtwarzacza.
+
+### Hierarchia elementów:
+1. **Pasek nagłówka (`.__qt_header`)**:
+   - **Wstążka zakładek (`.__qt_ai-queue-ribbon`)**: przewijana poziomo lista pigułek reprezentujących każdy krok (💬 Zdanie, ✨ Idiom, ✨ Słowo). Aktywny krok ma turkusowe obramowanie i poświatę; pozostałe są fioletowe.
+   - **Odznaka kredytów (`.__qt_ai-credit-pill`)**: np. `✦ AI 14/15` lub złota `✦ PRO AI`.
+   - **Nawigacja krokowa (`.__qt_ai-nav-group`)**: przycisk `◀`, licznik kroków (np. `1/3`), przycisk `▶`.
+2. **Główna treść (`.__qt_body`)**:
+   - **Gdy krok to całe zdanie (`data-type="sentence"`)**:
+     - Wyraźne, duże tłumaczenie zdania (`.__qt_ai-term-meaning`).
+     - Obok przycisk odtworzenia wymowy lektora (`.__qt_speak`).
+   - **Gdy krok to idiom / phrasal verb / słowo**:
+     - Górna etykieta z odznaką (`.__qt_ai-badge`), np. `IDIOM` lub `CZASOWNIK ZŁOŻONY`.
+     - Wyróżniony oryginalny termin w neonowym turkusie (`.__qt_ai-term`) wraz z przyciskiem lektora.
+     - Przetłumaczone znaczenie w języku polskim (`.__qt_ai-term-meaning`).
+     - Dodatkowa ramka z wyjaśnieniem kontekstowym i gramatycznym (`.__qt_ai-term-explanation`), z żółtym wyróżnieniem cytowanych zwrotów (`.__qt_tts-original-quote`).
+3. **Stopka akcji (`.__qt_save-footer`)**:
+   - Przycisk zapisu do powtórek `Save (Z)` z ikoną zakładki i podpowiedzią klawisza `<kbd>Z</kbd>`. Po zapisaniu zmienia kolor na turkusowy ze stanem `Saved!`.
+   - Przycisk generowania inteligentnego zdania fiszkowego `AI Sentence`.
+
+---
+
+## 5. Dynamiczne skalowanie fontów w JavaScript
+
+Plik [`video/subtitle-overlay.js`](file:///Users/kondziu/Desktop/Softileo/Lectoro/video/subtitle-overlay.js#L3537-L3571) oblicza i wstrzykuje do dymka zestaw zmiennych CSS zależnych od rzeczywistej wysokości czcionki napisów na filmie (`effectiveSource`):
+
+```javascript
+// Enter AI explanation proportional font sizes (scaled percentage-wise to subtitle text)
+const termSize =
+    Math.round(Math.max(13, Math.min(30, effectiveSource * 0.58)) * 10) / 10;
+const meaningSize =
+    Math.round(Math.max(12, Math.min(26, effectiveSource * 0.48)) * 10) / 10;
+const explanationSize =
+    Math.round(Math.max(11, Math.min(20, effectiveSource * 0.40)) * 10) / 10;
+const metaSize =
+    Math.round(Math.max(9, Math.min(15, effectiveSource * 0.30)) * 10) / 10;
+const sentenceTermSize =
+    Math.round(Math.max(13, Math.min(26, effectiveSource * 0.40)) * 10) / 10;
+const sentenceMeaningSize = meaningSize;
+const badgeSize =
+    Math.round(Math.max(7.5, Math.min(10.5, effectiveSource * 0.28)) * 10) / 10;
+
+overlay.style.setProperty("--lectoro-ai-term-font-size", `${termSize}px`);
+overlay.style.setProperty("--lectoro-ai-meaning-font-size", `${meaningSize}px`);
+overlay.style.setProperty("--lectoro-ai-explanation-font-size", `${explanationSize}px`);
+overlay.style.setProperty("--lectoro-ai-badge-font-size", `${badgeSize}px`);
+overlay.style.setProperty("--lectoro-ai-meta-font-size", `${metaSize}px`);
+overlay.style.setProperty("--lectoro-ai-sentence-term-font-size", `${sentenceTermSize}px`);
+overlay.style.setProperty("--lectoro-ai-sentence-meaning-font-size", `${sentenceMeaningSize}px`);
+```
+
+---
+
+## 6. Dokładnie przepisane Style CSS (ze `styles.css`)
+
+Poniżej znajdują się **dokładnie przepisane, oryginalne reguły CSS** z pliku [`styles.css`](file:///Users/kondziu/Desktop/Softileo/Lectoro/styles.css), odpowiedzialne za wygląd dymka Enter AI, animacje, wstążkę kroków, karty, przyciski oraz podświetlenia napisów w odtwarzaczu.
+
+### 6.1. Zmienne bazowe i kontener nakładki dymka
+
+```css
+#__qt_sentence_translation {
+  --lectoro-ai-term-font-size: 15px;
+  --lectoro-ai-meaning-font-size: 15px;
+  --lectoro-ai-explanation-font-size: 12px;
+  --lectoro-ai-badge-font-size: 8px;
+  --lectoro-ai-meta-font-size: 9.5px;
+  --lectoro-ai-sentence-term-font-size: 14px;
+  --lectoro-ai-sentence-meaning-font-size: 15px;
 }
 
-* {
-    box-sizing: border-box;
+#__qt_sentence_translation.__qt_sub-overlay {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  max-width: min(520px, calc(100vw - 24px)) !important;
+  max-height: min(560px, calc(100vh - 48px)) !important;
+  bottom: auto !important;
+  right: auto !important;
+  padding: 0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  background: #0f0f23bf !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
+  backdrop-filter: blur(20px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+  color: #ffffff !important;
+  font:
+    14px/1.5 "Inter",
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif !important;
+  pointer-events: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
+  isolation: isolate !important;
+  transform-origin: 50% 100% !important;
+  animation: __qt_translation_bubble_in 0.2s cubic-bezier(0.34, 1.3, 0.64, 1)
+    both !important;
+  transition:
+    left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    top 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
 }
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 5.5rem;
-    max-width: 100%;
-    overflow-x: clip;
+#__qt_sentence_translation[data-state="measuring"] {
+  width: max-content !important;
+  height: auto !important;
+  max-height: min(560px, calc(100vh - 48px)) !important;
+  bottom: auto !important;
+  right: auto !important;
+  visibility: hidden !important;
+  animation: none !important;
 }
 
-body {
-    width: 100%;
-    max-width: 100%;
-    min-height: 100vh;
-    margin: 0;
-    overflow-x: clip;
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    font-family: var(--font-body);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+#__qt_sentence_translation[data-state="expanding"] {
+  min-width: 0 !important;
+  max-height: min(560px, calc(100vh - 48px)) !important;
+  bottom: auto !important;
+  right: auto !important;
+  border-radius: 16px !important;
+  animation: none !important;
+  transition:
+    width 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-radius 0.16s ease-out !important;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--font-display);
-    letter-spacing: -0.03em;
+#__qt_sentence_translation[data-state="ready"] {
+  animation: none !important;
+  height: auto !important;
+  max-height: min(560px, calc(100vh - 48px)) !important;
+  bottom: auto !important;
+  right: auto !important;
+}
+
+#__qt_sentence_translation .__qt_translation-copy {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  color: inherit !important;
+  font: inherit !important;
+  opacity: 1;
+}
+
+#__qt_sentence_translation[data-state="expanding"] .__qt_translation-copy {
+  opacity: 0 !important;
+  transition: none !important;
+}
+
+#__qt_sentence_translation[data-state="ready"].__qt_translation-reveal
+  .__qt_translation-copy {
+  animation: __qt_translation_copy_reveal 0.13s ease-out both !important;
+}
+
+@keyframes __qt_translation_bubble_in {
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes __qt_translation_copy_reveal {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    html {
-        scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+  #__qt_sentence_translation.__qt_sub-overlay,
+  #__qt_sentence_translation .__qt_translation-copy {
+    animation: none !important;
+    transition: none !important;
+  }
 }
+```
 
-/* Ambient Visual Glow & Cosmic Grid */
-.ambient-glow {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-}
+---
 
-.glow-sphere-1 {
-    position: absolute;
-    top: -160px;
-    left: 25%;
-    width: 750px;
-    height: 750px;
-    background: radial-gradient(
-        circle,
-        rgba(99, 102, 241, 0.18) 0%,
-        rgba(99, 102, 241, 0) 70%
-    );
-    filter: blur(80px);
-}
+### 6.2. Efekt obrotu obramowania (Conic Gradient Sweep)
 
-.glow-sphere-2 {
-    position: absolute;
-    top: 35%;
-    right: -120px;
-    width: 650px;
-    height: 650px;
-    background: radial-gradient(
-        circle,
-        rgba(6, 182, 212, 0.12) 0%,
-        rgba(6, 182, 212, 0) 70%
-    );
-    filter: blur(100px);
-}
-
-.glow-sphere-3 {
-    position: absolute;
-    bottom: 10%;
-    left: -120px;
-    width: 700px;
-    height: 700px;
-    background: radial-gradient(
-        circle,
-        rgba(168, 85, 247, 0.14) 0%,
-        rgba(168, 85, 247, 0) 70%
-    );
-    filter: blur(100px);
-}
-
-.bg-grid-overlay {
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0.03) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            to bottom,
-            rgba(255, 255, 255, 0.03) 1px,
-            transparent 1px
-        );
-    background-size: 64px 64px;
-    mask-image: radial-gradient(
-        ellipse 60% 50% at 50% 0%,
-        #000 70%,
-        transparent 100%
-    );
-    pointer-events: none;
-}
-
-/* Glassmorphism Classes */
-.glass-panel {
-    background: rgba(20, 26, 50, 0.65);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-panel:hover {
-    border-color: rgba(99, 102, 241, 0.35);
-    box-shadow:
-        0 20px 40px -15px rgba(0, 0, 0, 0.6),
-        0 0 30px -10px rgba(99, 102, 241, 0.2);
-}
-
-/* Gradient Text */
-.text-gradient {
-    background: linear-gradient(135deg, #ffffff 30%, #818cf8 70%, #06b6d4 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.text-gradient-purple {
-    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   Lectoro Enter AI Mode (AI Sentence Explanation) — 1:1 z Enter.md
-   ═══════════════════════════════════════════════════════════════ */
-
+```css
 @property --qt-ai-angle {
   syntax: "<angle>";
   inherits: false;
@@ -220,191 +369,15 @@ h6 {
   }
 }
 
-@keyframes __qt_translation_bubble_in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 7px) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
-}
-
-@keyframes __qt_translation_copy_reveal {
-  from {
-    opacity: 0;
-    transform: translateY(2px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes __qt_ai_shimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  100% {
-    background-position: 200% 50%;
-  }
-}
-
-@keyframes __qt_sub_highlight_glow_in {
-  0% {
-    box-shadow:
-      inset 0 0 0 0 rgba(78, 205, 196, 0),
-      0 0 0 rgba(78, 205, 196, 0);
-    opacity: 0.7;
-  }
-
-  50% {
-    box-shadow:
-      inset 0 0 0 1px rgba(78, 205, 196, 0.9),
-      0 0 10px rgba(78, 205, 196, 0.55);
-    opacity: 1;
-  }
-
-  100% {
-    box-shadow:
-      inset 0 0 0 1px #4ecdc4,
-      0 0 8px rgba(78, 205, 196, 0.45);
-    opacity: 1;
-  }
-}
-
-@keyframes __qt_sub_queued_fade_in {
-  0% {
-    box-shadow: inset 0 0 0 0 rgba(168, 85, 247, 0);
-    opacity: 0.5;
-  }
-
-  50% {
-    box-shadow:
-      inset 0 0 0 1px rgba(168, 85, 247, 0.6),
-      0 0 6px rgba(168, 85, 247, 0.3);
-  }
-
-  100% {
-    box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.4);
-    opacity: 1;
-  }
-}
-
-#__qt_sentence_translation {
-  --lectoro-ai-term-font-size: 15px;
-  --lectoro-ai-meaning-font-size: 15px;
-  --lectoro-ai-explanation-font-size: 12px;
-  --lectoro-ai-badge-font-size: 8px;
-  --lectoro-ai-meta-font-size: 9.5px;
-  --lectoro-ai-sentence-term-font-size: 14px;
-  --lectoro-ai-sentence-meaning-font-size: 15px;
-}
-
-#__qt_sentence_translation.__qt_sub-overlay {
-  position: absolute !important;
-  z-index: 40 !important;
-  width: auto !important;
-  height: auto !important;
-  min-width: 320px !important;
-  max-width: min(520px, calc(100% - 24px)) !important;
-  max-height: min(560px, calc(100% - 48px)) !important;
-  bottom: 84px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  right: auto !important;
-  padding: 0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 16px !important;
-  background: #0f0f23bf !important;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
-  backdrop-filter: blur(20px) saturate(1.4) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
-  color: #ffffff !important;
-  font:
-    14px/1.5 "Inter",
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif !important;
-  pointer-events: auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  justify-content: flex-start !important;
-  box-sizing: border-box !important;
-  isolation: isolate !important;
-  transform-origin: 50% 100% !important;
-  animation: __qt_translation_bubble_in 0.2s cubic-bezier(0.34, 1.3, 0.64, 1) both !important;
-  transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
-}
-
-@media (max-width: 640px) {
-  #__qt_sentence_translation.__qt_sub-overlay {
-    bottom: 74px !important;
-    min-width: min(320px, calc(100% - 16px)) !important;
-    max-width: calc(100% - 16px) !important;
-  }
-}
-
-#__qt_sentence_translation[data-state="measuring"] {
-  width: max-content !important;
-  height: auto !important;
-  max-height: min(560px, calc(100vh - 48px)) !important;
-  bottom: auto !important;
-  right: auto !important;
-  visibility: hidden !important;
-  animation: none !important;
-}
-
-#__qt_sentence_translation[data-state="expanding"] {
-  min-width: 0 !important;
-  max-height: min(560px, calc(100vh - 48px)) !important;
-  border-radius: 16px !important;
-  animation: none !important;
-  transition:
-    width 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
-    height 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-radius 0.16s ease-out !important;
-}
-
-#__qt_sentence_translation[data-state="ready"] {
-  height: auto !important;
-  max-height: min(560px, calc(100% - 48px)) !important;
-}
-
-#__qt_sentence_translation .__qt_translation-copy {
-  display: flex !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  color: inherit !important;
-  font: inherit !important;
-  opacity: 1;
-}
-
-#__qt_sentence_translation[data-state="expanding"] .__qt_translation-copy {
-  opacity: 0 !important;
-  transition: none !important;
-}
-
-#__qt_sentence_translation[data-state="ready"].__qt_translation-reveal .__qt_translation-copy {
-  animation: __qt_translation_copy_reveal 0.13s ease-out both !important;
-}
-
 #__qt_sentence_translation.__qt_ai-explain-overlay {
   pointer-events: auto !important;
   cursor: default !important;
   user-select: text !important;
+  height: auto !important;
+  max-height: min(560px, calc(100vh - 48px)) !important;
+  bottom: auto !important;
+  right: auto !important;
+  position: fixed !important;
 }
 
 #__qt_sentence_translation.__qt_ai-explain-overlay::before {
@@ -434,16 +407,25 @@ h6 {
 }
 
 #__qt_sentence_translation.__qt_ai-explain-overlay[data-state="ready"].__qt_translation-reveal::before {
-  animation: __qt_ai_border_sweep 2.2s cubic-bezier(0.35, 1, 0.5, 0.9) 1 forwards;
+  animation: __qt_ai_border_sweep 2.2s cubic-bezier(0.35, 1, 0.5, 0.9) 1
+    forwards;
 }
+```
 
+---
+
+### 6.3. Stan ładowania (Shimmer Loader)
+
+```css
 #__qt_sentence_translation[data-state="ai-loading"],
 #__qt_sentence_translation[data-state="loading"] {
   width: max-content !important;
   height: auto !important;
   max-height: min(560px, calc(100vh - 48px)) !important;
+  bottom: auto !important;
+  right: auto !important;
   min-width: 0 !important;
-  padding: 12px 24px !important;
+  padding: 10px 20px !important;
   border-radius: 16px !important;
   display: flex !important;
   align-items: center !important;
@@ -480,19 +462,33 @@ h6 {
   animation: __qt_ai_shimmer 1.8s linear infinite;
 }
 
-/* Header & Ribbon */
+@keyframes __qt_ai_shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 200% 50%;
+  }
+}
+```
+
+---
+
+### 6.4. Wstążka etapów (Ribbon), pigułki i nawigacja
+
+```css
 #__qt_sentence_translation .__qt_header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  padding: 8px 12px 6px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 8px 12px 4px !important;
 }
 
 #__qt_sentence_translation .__qt_ai-queue-ribbon {
-  display: flex !important;
+  display: none !important;
   align-items: center !important;
   gap: 6px !important;
   padding: 2px 2px !important;
@@ -508,8 +504,6 @@ h6 {
 }
 
 #__qt_sentence_translation .__qt_ai-queue-pill {
-  all: unset;
-  box-sizing: border-box !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
@@ -533,6 +527,7 @@ h6 {
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
+/* Nadchodzące idiomy/słówka w kolejce: lekki bg fioletowego */
 #__qt_sentence_translation .__qt_ai-queue-pill.__qt_ai-pill-upcoming {
   background: rgba(168, 85, 247, 0.16) !important;
   border: 1px solid rgba(168, 85, 247, 0.35) !important;
@@ -545,6 +540,7 @@ h6 {
   color: #ffffff !important;
 }
 
+/* Podświetlenie pigułki we wstążce dymka AI, gdy kursor najeżdża na odpowiadające słowo w napisach */
 #__qt_sentence_translation .__qt_ai-queue-pill.__qt_pill-highlight {
   background: rgba(168, 85, 247, 0.42) !important;
   border-color: #c084fc !important;
@@ -553,6 +549,7 @@ h6 {
   transform: translateY(-1px) scale(1.05) !important;
 }
 
+/* Aktywny krok */
 #__qt_sentence_translation .__qt_ai-queue-pill.active {
   background: linear-gradient(
     135deg,
@@ -569,6 +566,7 @@ h6 {
   line-height: 1 !important;
 }
 
+/* Odznaka kredytów AI */
 #__qt_sentence_translation .__qt_ai-credit-pill {
   display: inline-flex !important;
   align-items: center !important;
@@ -584,13 +582,6 @@ h6 {
   user-select: none !important;
   line-height: 1.3 !important;
   flex-shrink: 0 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-}
-
-#__qt_sentence_translation .__qt_ai-credit-pill:hover {
-  filter: brightness(1.15) !important;
-  transform: scale(1.02) !important;
 }
 
 #__qt_sentence_translation .__qt_ai-credit-pill.is-pro {
@@ -599,6 +590,7 @@ h6 {
   border: 1px solid rgba(234, 179, 8, 0.38) !important;
 }
 
+/* Przyciski nawigacji krokowego przejścia */
 #__qt_sentence_translation .__qt_ai-nav-group {
   display: inline-flex !important;
   align-items: center !important;
@@ -609,8 +601,6 @@ h6 {
 }
 
 #__qt_sentence_translation .__qt_ai-nav-btn {
-  all: unset;
-  box-sizing: border-box !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -644,18 +634,14 @@ h6 {
   padding: 0 4px !important;
   letter-spacing: 0.5px !important;
 }
+```
 
-/* Card Body */
-#__qt_sentence_translation .__qt_body {
-  padding: 12px 14px 10px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 8px !important;
-  text-align: left !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
+---
 
+### 6.5. Prezentacja treści (Karta słowa vs Karta pełnego zdania)
+
+```css
+/* Szczegóły aktywnego idiomu / trudnego słowa */
 #__qt_sentence_translation .__qt_ai-term-card {
   display: flex !important;
   flex-direction: column !important;
@@ -732,11 +718,12 @@ h6 {
   margin-top: 4px !important;
 }
 
+/* Dedykowana hierarchia wizualna dla tłumaczenia pełnego zdania */
 #__qt_sentence_translation .__qt_ai-term-card[data-type="sentence"] {
   gap: 0 !important;
   justify-content: flex-start !important;
   margin: 0 !important;
-  padding: 4px 0 !important;
+  padding: 0 !important;
 }
 
 #__qt_sentence_translation .__qt_ai-sentence-wrap {
@@ -753,11 +740,34 @@ h6 {
   width: auto !important;
   max-width: calc(100% - 36px) !important;
   margin-top: 0 !important;
+}
+
+#__qt_sentence_translation
+  .__qt_ai-term-card[data-type="sentence"]
+  .__qt_ai-term {
+  font-size: var(--lectoro-ai-sentence-term-font-size, 15px) !important;
+  font-weight: 600 !important;
+  color: #00ffea !important;
+  line-height: 1.45 !important;
+  text-align: center !important;
+}
+
+#__qt_sentence_translation
+  .__qt_ai-term-card[data-type="sentence"]
+  .__qt_ai-term-meaning {
   font-size: var(--lectoro-ai-sentence-meaning-font-size, 16px) !important;
   font-weight: 700 !important;
   color: rgba(255, 255, 255, 0.95) !important;
+  text-align: center !important;
+  margin-top: 0 !important;
 }
+```
 
+---
+
+### 6.6. Przycisk lektora audio (TTS) i cytaty w wyjaśnieniach
+
+```css
 #__qt_sentence_translation .__qt_word-actions {
   flex-shrink: 0 !important;
   display: flex !important;
@@ -767,12 +777,10 @@ h6 {
 }
 
 #__qt_sentence_translation .__qt_speak {
-  all: unset;
-  box-sizing: border-box !important;
   flex-shrink: 0 !important;
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
   cursor: pointer !important;
   padding: 4px !important;
   border-radius: 8px !important;
@@ -801,13 +809,20 @@ h6 {
   height: 14px;
 }
 
+/* Wyróżnienie cytowanych słów źródłowych w tekście wyjaśnienia */
 #__qt_sentence_translation .__qt_tts-original-quote,
+#__qt_tooltip .__qt_tts-original-quote,
 .__qt_tts-original-quote {
   color: #ffd000 !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
 }
+```
 
-/* Save Footer */
+---
+
+### 6.7. Stopka zapisu słów i fiszek (`Save` i `AI Sentence`)
+
+```css
 #__qt_sentence_translation .__qt_save-footer {
   display: flex !important;
   gap: 6px !important;
@@ -819,8 +834,6 @@ h6 {
 }
 
 #__qt_sentence_translation .__qt_save-footer-btn {
-  all: unset;
-  box-sizing: border-box !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
@@ -852,6 +865,12 @@ h6 {
   border-color: rgba(78, 205, 196, 0.3) !important;
   background: rgba(78, 205, 196, 0.1) !important;
   pointer-events: none !important;
+}
+
+#__qt_sentence_translation .__qt_save-footer-btn.loading {
+  cursor: wait !important;
+  pointer-events: none !important;
+  opacity: 0.95 !important;
 }
 
 #__qt_sentence_translation .__qt_save-footer-btn svg {
@@ -886,45 +905,25 @@ h6 {
   font-family: inherit !important;
 }
 
-/* Subtitle Highlights in Video (Section 6.8) */
-#__qt_custom_subtitles_layer {
-  position: absolute;
-  bottom: 22px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  text-align: center;
-  z-index: 25;
-  pointer-events: auto;
-  user-select: none;
+#__qt_sentence_translation .__qt_error {
+  color: #fda4af;
+  font-size: 13px;
+  font-weight: 500;
 }
+```
 
-.__qt_sub-word {
-  display: inline-block;
-  padding: 3px 6px;
-  margin: 0 1px;
-  border-radius: 6px;
-  color: #ffffff;
-  font-family: var(--font-display, "Inter", sans-serif);
-  font-size: clamp(17px, 3vw, 25px);
-  font-weight: 800;
-  line-height: 1.35;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+---
 
-.__qt_sub-word:hover {
-  background: rgba(99, 102, 241, 0.35);
-  text-shadow: 0 0 10px rgba(99, 102, 241, 0.7);
-}
+### 6.8. Podświetlanie słów na napisach filmu (Video Subtitle Highlights)
 
+```css
+/* Unified phrase/word wrapper ensuring contiguous background across multi-word idioms */
 .__qt_word-cloud-phrase,
 .__qt_ai-sub-wrap {
   display: inline !important;
   box-decoration-break: clone !important;
   -webkit-box-decoration-break: clone !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   padding: 0 !important;
   margin: 0 !important;
   line-height: inherit !important;
@@ -932,6 +931,7 @@ h6 {
   transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
 }
 
+/* Neutralize individual word borders/backgrounds inside the unified phrase wrapper */
 .__qt_word-cloud-phrase .__qt_sub-word,
 #__qt_custom_subtitles_layer .__qt_word-cloud-phrase .__qt_sub-word:hover,
 #__qt_custom_subtitles_layer .__qt_word-cloud-phrase .__qt_sub-word.__qt_word-hover,
@@ -944,13 +944,14 @@ h6 {
   background: transparent !important;
   box-shadow: none !important;
   border-radius: 0 !important;
-  padding: 2px 4px !important;
+  padding: 0 !important;
   margin: 0 !important;
   color: inherit !important;
   text-shadow: inherit !important;
   transition: color 0.25s ease !important;
 }
 
+/* Active term currently being explained (neon cyan & violet gradient) */
 .__qt_ai-sub-wrap.__qt_ai-sub-active,
 .__qt_ai-sub-active {
   background: linear-gradient(
@@ -962,17 +963,18 @@ h6 {
   text-shadow:
     0 0 8px rgba(78, 205, 196, 0.8),
     0 1px 2px rgba(0, 0, 0, 0.9) !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   box-shadow:
     inset 0 0 0 1px #4ecdc4,
-    0 0 10px rgba(78, 205, 196, 0.45) !important;
-  padding: 1px 3px !important;
-  margin: 0 1px !important;
+    0 0 8px rgba(78, 205, 196, 0.45) !important;
+  padding: 0 !important;
+  margin: 0 !important;
   cursor: pointer !important;
   animation: __qt_sub_highlight_glow_in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both !important;
   transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
 }
 
+/* Queued terms: upcoming and previous idioms/words in the sentence (soft violet) */
 .__qt_ai-sub-wrap.__qt_ai-sub-upcoming,
 .__qt_ai-sub-wrap.__qt_ai-sub-queued,
 .__qt_ai-sub-upcoming,
@@ -982,15 +984,16 @@ h6 {
   text-shadow:
     0 0 8px rgba(168, 85, 247, 0.7),
     0 1px 2px rgba(0, 0, 0, 0.9) !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.4) !important;
-  padding: 1px 3px !important;
-  margin: 0 1px !important;
+  padding: 0 !important;
+  margin: 0 !important;
   cursor: pointer !important;
   animation: __qt_sub_queued_fade_in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both !important;
   transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
 }
 
+/* Dopasowany hover dla podświetlonych terminów fioletowych (queued / upcoming) */
 .__qt_ai-sub-wrap:hover,
 .__qt_ai-sub-wrap.__qt_ai-sub-queued:hover,
 .__qt_ai-sub-wrap.__qt_ai-sub-upcoming:hover,
@@ -1008,6 +1011,7 @@ h6 {
   filter: brightness(1.15) !important;
 }
 
+/* Dopasowany hover dla podświetlonego aktywnego terminu (cyan gradient) */
 .__qt_ai-sub-wrap.__qt_ai-sub-active:hover,
 .__qt_ai-sub-active:hover {
   background: linear-gradient(
@@ -1026,7 +1030,75 @@ h6 {
   filter: brightness(1.15) !important;
 }
 
-/* Paywall In-Video Modal (Section 6.9) */
+/* Wyłączenie fałszywego niebieskiego hovera dla niepodświetlonych słów podczas aktywnego trybu Enter AI */
+body[data-lectoro-ai-active="true"]
+  #__qt_custom_subtitles_layer
+  .__qt_sub-word:not(.__qt_ai-sub-active):not(.__qt_ai-sub-queued):not(
+    .__qt_ai-sub-upcoming
+  ) {
+  cursor: default !important;
+}
+
+body[data-lectoro-ai-active="true"]
+  #__qt_custom_subtitles_layer
+  .__qt_sub-word:not(.__qt_ai-sub-active):not(.__qt_ai-sub-queued):not(
+    .__qt_ai-sub-upcoming
+  ):hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  text-shadow: inherit !important;
+}
+
+/* Soft, non-aggressive entrance animation for active highlighted words */
+@keyframes __qt_sub_highlight_glow_in {
+  0% {
+    box-shadow:
+      inset 0 0 0 0 rgba(78, 205, 196, 0),
+      0 0 0 rgba(78, 205, 196, 0);
+    opacity: 0.7;
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(78, 205, 196, 0.9),
+      0 0 10px rgba(78, 205, 196, 0.55);
+    opacity: 1;
+  }
+
+  100% {
+    box-shadow:
+      inset 0 0 0 1px #4ecdc4,
+      0 0 8px rgba(78, 205, 196, 0.45);
+    opacity: 1;
+  }
+}
+
+/* Smooth fade-in animation for queued (upcoming/previous) words */
+@keyframes __qt_sub_queued_fade_in {
+  0% {
+    box-shadow: inset 0 0 0 0 rgba(168, 85, 247, 0);
+    opacity: 0.5;
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(168, 85, 247, 0.6),
+      0 0 6px rgba(168, 85, 247, 0.3);
+  }
+
+  100% {
+    box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.4);
+    opacity: 1;
+  }
+}
+```
+
+---
+
+### 6.9. Dedykowany Paywall w odtwarzaczu (Gdy limit darmowy zostanie wyczerpany)
+
+```css
 #__qt_sentence_translation .__qt_paywall-header {
   display: flex !important;
   align-items: center !important;
@@ -1171,8 +1243,6 @@ h6 {
 }
 
 #__qt_sentence_translation .__qt_paywall-btn-ghost {
-  all: unset;
-  box-sizing: border-box !important;
   background: rgba(255, 255, 255, 0.06) !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
   color: rgba(255, 255, 255, 0.8) !important;
@@ -1190,8 +1260,6 @@ h6 {
 }
 
 #__qt_sentence_translation .__qt_paywall-btn-primary {
-  all: unset;
-  box-sizing: border-box !important;
   background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
   border: 1px solid rgba(168, 85, 247, 0.4) !important;
   color: #ffffff !important;
@@ -1208,265 +1276,4 @@ h6 {
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5) !important;
 }
-
-.clickable-word {
-    appearance: none;
-    border: 0;
-    background: transparent;
-    color: #ffffff;
-    opacity: 1;
-    font: inherit;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-    padding: 3px 8px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    position: relative;
-    user-select: none;
-}
-
-.clickable-word:hover,
-.clickable-word:focus-visible,
-.clickable-word.active {
-    background: rgba(99, 102, 241, 0.4);
-    color: #ffffff;
-    box-shadow: 0 0 14px rgba(99, 102, 241, 0.6);
-}
-
-.clickable-word:focus-visible {
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
-}
-
-.clickable-word.active::after {
-    content: "";
-    position: absolute;
-    bottom: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 6px;
-    height: 6px;
-    background: var(--accent-cyan);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--accent-cyan);
-}
-
-.word-audio-btn {
-    all: unset;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px 3px;
-    border-radius: 6px;
-    color: rgba(255, 255, 255, 0.55);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.word-audio-btn:hover {
-    color: #4ecdc4;
-    background: rgba(78, 205, 196, 0.2);
-}
-
-.word-audio-btn.speaking {
-    color: #4ecdc4;
-    animation: pulse-audio 0.8s infinite alternate ease-in-out;
-}
-
-@keyframes pulse-audio {
-    0% {
-        transform: scale(1);
-        filter: drop-shadow(0 0 2px #4ecdc4);
-    }
-    100% {
-        transform: scale(1.2);
-        filter: drop-shadow(0 0 8px #4ecdc4);
-    }
-}
-
-@keyframes pulse-dot {
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.4;
-        transform: scale(0.8);
-    }
-}
-
-.badge-dot {
-    animation: pulse-dot 2s infinite ease-in-out;
-}
-
-/* Custom AI Video Slot */
-.ai-video-slot {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 480px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
-    border-radius: 0 0 20px 20px;
-}
-
-@media (max-width: 640px) {
-    .ai-video-slot {
-        min-height: 570px;
-        border-radius: 0;
-    }
-
-    .clickable-word {
-        min-height: 40px;
-        padding: 7px 10px;
-    }
-}
-
-/* Review & Flashcard animations — Enhanced 3D & Mobile Viewport Lock */
-.review-perspective {
-    perspective: 1200px;
-    -webkit-perspective: 1200px;
-}
-
-.review-flashcard-element {
-    touch-action: none !important;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
-    overscroll-behavior: none;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    will-change: transform, opacity, box-shadow;
-}
-
-.review-flashcard.qt-flip-out {
-    animation: qtFlipOut 0.16s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.review-flashcard.qt-flip-in {
-    animation: qtFlipIn 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes qtFlipOut {
-    0% {
-        transform: rotateY(0deg) scale(1);
-        opacity: 1;
-        filter: blur(0px);
-    }
-    100% {
-        transform: rotateY(90deg) scale(0.92);
-        opacity: 0.1;
-        filter: blur(2px);
-    }
-}
-
-@keyframes qtFlipIn {
-    0% {
-        transform: rotateY(-90deg) scale(0.92);
-        opacity: 0.1;
-        filter: blur(2px);
-    }
-    100% {
-        transform: rotateY(0deg) scale(1);
-        opacity: 1;
-        filter: blur(0px);
-    }
-}
-
-.review-flashcard.qt-swipe-left {
-    animation: qtSwipeLeft 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.review-flashcard.qt-swipe-right {
-    animation: qtSwipeRight 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-@keyframes qtSwipeLeft {
-    to {
-        transform: translate3d(-150%, 0, 0) rotate(-18deg);
-        opacity: 0;
-    }
-}
-
-@keyframes qtSwipeRight {
-    to {
-        transform: translate3d(150%, 0, 0) rotate(18deg);
-        opacity: 0;
-    }
-}
-
-@keyframes speakPulse {
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5), 0 0 15px rgba(99, 102, 241, 0.3);
-        transform: scale(1);
-    }
-    50% {
-        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0), 0 0 25px rgba(99, 102, 241, 0.6);
-        transform: scale(1.08);
-    }
-}
-
-.review-speak-btn.speaking {
-    animation: speakPulse 0.85s ease infinite;
-}
-
-@keyframes reviewScreenshotShimmer {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
-}
-
-.review-shimmer {
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.02) 25%,
-        rgba(255, 255, 255, 0.08) 50%,
-        rgba(255, 255, 255, 0.02) 75%
-    );
-    background-size: 200% 100%;
-    animation: reviewScreenshotShimmer 1.8s infinite ease-in-out;
-}
-
-@keyframes cardIn {
-    0% {
-        opacity: 0;
-        transform: translate3d(0, 14px, 0) scale(0.96);
-    }
-    70% {
-        transform: translate3d(0, -2px, 0) scale(1.008);
-    }
-    100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-    }
-}
-
-.card-in {
-    animation: cardIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* On mobile, lock review page to 100dvh with zero vertical scroll during swipe */
-@media (max-width: 640px) {
-    body:has([data-reviews-page]) {
-        overflow: hidden !important;
-        overscroll-behavior: none !important;
-        touch-action: none !important;
-        height: 100dvh !important;
-    }
-    body:has([data-reviews-page]) footer {
-        display: none !important;
-    }
-}
-
+```
