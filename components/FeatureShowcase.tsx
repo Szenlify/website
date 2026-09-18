@@ -32,7 +32,7 @@ export const FEATURE_IMAGE_SLOTS = {
     },
     // 3. Kontekstowe wyjaśnienia AI
     slot3_aiExplanation: {
-        src: "/showcase/4.jpg",
+        src: "/showcase/ai.png",
         windowTitle: "Lectoro AI • Contextual Explanation",
     },
     // 4. Precyzyjne sterowanie klawiaturą i powtarzanie kwestii
@@ -57,7 +57,10 @@ interface FeatureShowcaseProps {
     locale: Locale;
 }
 
-export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) {
+export default function FeatureShowcase({
+    dict,
+    locale,
+}: FeatureShowcaseProps) {
     const isPl = locale === "pl";
 
     return (
@@ -66,7 +69,11 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 text-center">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-xs font-semibold text-indigo-400 mb-4 tracking-wider uppercase">
                     <Sparkles className="size-3.5" />
-                    <span>{isPl ? "Przewodnik po funkcjach i obsłudze" : "Features & How-To Guide"}</span>
+                    <span>
+                        {isPl
+                            ? "Przewodnik po funkcjach i obsłudze"
+                            : "Features & How-To Guide"}
+                    </span>
                 </div>
                 <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight mb-5 max-w-3xl mx-auto">
                     {isPl
@@ -88,7 +95,11 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                     <div className="lg:col-span-6 space-y-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono font-bold">
                             <Film className="size-3.5" />
-                            <span>{isPl ? "01 • PODWÓJNE NAPISY" : "01 • DUAL SUBTITLES"}</span>
+                            <span>
+                                {isPl
+                                    ? "01 • PODWÓJNE NAPISY"
+                                    : "01 • DUAL SUBTITLES"}
+                            </span>
                         </div>
 
                         <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
@@ -101,7 +112,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                         <div className="rounded-xl p-4.5 bg-[#0D101C]/80 border border-white/[0.08] space-y-2">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
                                 <Zap className="size-3.5 text-indigo-400" />
-                                <span>{isPl ? "Co to jest?" : "What is it?"}</span>
+                                <span>
+                                    {isPl ? "Co to jest?" : "What is it?"}
+                                </span>
                             </h4>
                             <p className="text-slate-300 text-sm leading-relaxed">
                                 {isPl
@@ -113,7 +126,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                         {/* Jak używać */}
                         <div className="space-y-3">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                {isPl ? "Jak tego używać krok po kroku:" : "How to use it:"}
+                                {isPl
+                                    ? "Jak tego używać krok po kroku:"
+                                    : "How to use it:"}
                             </h4>
                             <ul className="space-y-2.5 text-sm text-slate-300">
                                 <li className="flex items-start gap-3">
@@ -161,20 +176,28 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                     <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                                 </div>
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
-                                    {FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.windowTitle}
+                                    {
+                                        FEATURE_IMAGE_SLOTS.slot1_dualSubtitles
+                                            .windowTitle
+                                    }
                                 </span>
                             </div>
 
                             {/* Slot na zdjęcie */}
                             <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
-                                    src={FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.windowTitle}
+                                    src={
+                                        FEATURE_IMAGE_SLOTS.slot1_dualSubtitles
+                                            .src
+                                    }
+                                    alt={
+                                        FEATURE_IMAGE_SLOTS.slot1_dualSubtitles
+                                            .windowTitle
+                                    }
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                     className="object-cover"
                                 />
-
                             </div>
                         </div>
                     </div>
@@ -194,19 +217,27 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                     <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                                 </div>
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
-                                    {FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.windowTitle}
-                                </span>         
+                                    {
+                                        FEATURE_IMAGE_SLOTS
+                                            .slot2_dictionaryAudio.windowTitle
+                                    }
+                                </span>
                             </div>
 
                             <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
-                                    src={FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.windowTitle}
+                                    src={
+                                        FEATURE_IMAGE_SLOTS
+                                            .slot2_dictionaryAudio.src
+                                    }
+                                    alt={
+                                        FEATURE_IMAGE_SLOTS
+                                            .slot2_dictionaryAudio.windowTitle
+                                    }
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                     className="object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
                             </div>
                         </div>
                     </div>
@@ -215,7 +246,11 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                     <div className="lg:col-span-6 space-y-6 order-1 lg:order-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono font-bold">
                             <MousePointerClick className="size-3.5" />
-                            <span>{isPl ? "02 • KLIKALNY SŁOWNIK & AUDIO" : "02 • POP-UP DICTIONARY & AUDIO"}</span>
+                            <span>
+                                {isPl
+                                    ? "02 • KLIKALNY SŁOWNIK & AUDIO"
+                                    : "02 • POP-UP DICTIONARY & AUDIO"}
+                            </span>
                         </div>
 
                         <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
@@ -227,7 +262,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                         <div className="rounded-xl p-4.5 bg-[#0D101C]/80 border border-white/[0.08] space-y-2">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
                                 <Zap className="size-3.5 text-cyan-400" />
-                                <span>{isPl ? "Co to jest?" : "What is it?"}</span>
+                                <span>
+                                    {isPl ? "Co to jest?" : "What is it?"}
+                                </span>
                             </h4>
                             <p className="text-slate-300 text-sm leading-relaxed">
                                 {isPl
@@ -238,7 +275,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
 
                         <div className="space-y-3">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                {isPl ? "Jak tego używać w praktyce:" : "How to use it in practice:"}
+                                {isPl
+                                    ? "Jak tego używać w praktyce:"
+                                    : "How to use it in practice:"}
                             </h4>
                             <ul className="space-y-2.5 text-sm text-slate-300">
                                 <li className="flex items-start gap-3">
@@ -277,7 +316,11 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                     <div className="lg:col-span-6 space-y-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono font-bold">
                             <Brain className="size-3.5" />
-                            <span>{isPl ? "03 • WYJAŚNIENIA KONTEKSTOWE AI" : "03 • CONTEXTUAL AI BREAKDOWN"}</span>
+                            <span>
+                                {isPl
+                                    ? "03 • WYJAŚNIENIA KONTEKSTOWE AI"
+                                    : "03 • CONTEXTUAL AI BREAKDOWN"}
+                            </span>
                         </div>
 
                         <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
@@ -289,7 +332,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                         <div className="rounded-xl p-4.5 bg-[#0D101C]/80 border border-white/[0.08] space-y-2">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
                                 <Zap className="size-3.5 text-purple-400" />
-                                <span>{isPl ? "Co to jest?" : "What is it?"}</span>
+                                <span>
+                                    {isPl ? "Co to jest?" : "What is it?"}
+                                </span>
                             </h4>
                             <p className="text-slate-300 text-sm leading-relaxed">
                                 {isPl
@@ -347,19 +392,27 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                     <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                                 </div>
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
-                                    {FEATURE_IMAGE_SLOTS.slot3_aiExplanation.windowTitle}
+                                    {
+                                        FEATURE_IMAGE_SLOTS.slot3_aiExplanation
+                                            .windowTitle
+                                    }
                                 </span>
                             </div>
 
-                            <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
+                            <div className="relative aspect-[16/9] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
-                                    src={FEATURE_IMAGE_SLOTS.slot3_aiExplanation.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot3_aiExplanation.windowTitle}
+                                    src={
+                                        FEATURE_IMAGE_SLOTS.slot3_aiExplanation
+                                            .src
+                                    }
+                                    alt={
+                                        FEATURE_IMAGE_SLOTS.slot3_aiExplanation
+                                            .windowTitle
+                                    }
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                     className="object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
                             </div>
                         </div>
                     </div>
@@ -379,14 +432,23 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                     <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                                 </div>
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
-                                    {FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.windowTitle}
+                                    {
+                                        FEATURE_IMAGE_SLOTS
+                                            .slot4_keyboardShortcuts.windowTitle
+                                    }
                                 </span>
                             </div>
 
                             <div className="relative aspect-[10/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
-                                    src={FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.windowTitle}
+                                    src={
+                                        FEATURE_IMAGE_SLOTS
+                                            .slot4_keyboardShortcuts.src
+                                    }
+                                    alt={
+                                        FEATURE_IMAGE_SLOTS
+                                            .slot4_keyboardShortcuts.windowTitle
+                                    }
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                     className="object-cover"
@@ -401,7 +463,11 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                     <div className="lg:col-span-6 space-y-6 order-1 lg:order-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono font-bold">
                             <Keyboard className="size-3.5" />
-                            <span>{isPl ? "04 • STEROWANIE KLAWIATURĄ" : "04 • KEYBOARD CONTROLS"}</span>
+                            <span>
+                                {isPl
+                                    ? "04 • STEROWANIE KLAWIATURĄ"
+                                    : "04 • KEYBOARD CONTROLS"}
+                            </span>
                         </div>
 
                         <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
@@ -413,7 +479,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                         <div className="rounded-xl p-4.5 bg-[#0D101C]/80 border border-white/[0.08] space-y-2">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
                                 <Zap className="size-3.5 text-amber-400" />
-                                <span>{isPl ? "Co to jest?" : "What is it?"}</span>
+                                <span>
+                                    {isPl ? "Co to jest?" : "What is it?"}
+                                </span>
                             </h4>
                             <p className="text-slate-300 text-sm leading-relaxed">
                                 {isPl
@@ -425,34 +493,50 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                         {/* Wypisane skróty w czytelnych kafelkach kbd */}
                         <div className="space-y-3">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                {isPl ? "Skróty klawiszowe (Hotkeys):" : "Keyboard Shortcuts:"}
+                                {isPl
+                                    ? "Skróty klawiszowe (Hotkeys):"
+                                    : "Keyboard Shortcuts:"}
                             </h4>
                             <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 text-xs">
                                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
                                     <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-indigo-500/40 text-indigo-300 font-mono font-bold shadow-xs">
                                         A
                                     </kbd>
-                                    <span className="text-slate-300">{isPl ? "Poprzedni napis" : "Previous subtitle"}</span>
+                                    <span className="text-slate-300">
+                                        {isPl
+                                            ? "Poprzedni napis"
+                                            : "Previous subtitle"}
+                                    </span>
                                 </div>
                                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
                                     <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-indigo-500/40 text-indigo-300 font-mono font-bold shadow-xs">
                                         S
                                     </kbd>
                                     <span className="text-slate-300 font-semibold text-white">
-                                        {isPl ? "Powtórz napis (Replay)" : "Repeat subtitle"}
+                                        {isPl
+                                            ? "Powtórz napis (Replay)"
+                                            : "Repeat subtitle"}
                                     </span>
                                 </div>
                                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
                                     <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-indigo-500/40 text-indigo-300 font-mono font-bold shadow-xs">
                                         D
                                     </kbd>
-                                    <span className="text-slate-300">{isPl ? "Następny napis" : "Next subtitle"}</span>
+                                    <span className="text-slate-300">
+                                        {isPl
+                                            ? "Następny napis"
+                                            : "Next subtitle"}
+                                    </span>
                                 </div>
                                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
                                     <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-indigo-500/40 text-indigo-300 font-mono font-bold shadow-xs">
                                         Spacja
                                     </kbd>
-                                    <span className="text-slate-300">{isPl ? "Pauza / Odtwórz" : "Play / Pause"}</span>
+                                    <span className="text-slate-300">
+                                        {isPl
+                                            ? "Pauza / Odtwórz"
+                                            : "Play / Pause"}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -466,7 +550,11 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                     <div className="lg:col-span-6 space-y-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold">
                             <Layers className="size-3.5" />
-                            <span>{isPl ? "05 • FISZKI WIDEO & POWTÓRKI SRS" : "05 • VIDEO FLASHCARDS & SRS"}</span>
+                            <span>
+                                {isPl
+                                    ? "05 • FISZKI WIDEO & POWTÓRKI SRS"
+                                    : "05 • VIDEO FLASHCARDS & SRS"}
+                            </span>
                         </div>
 
                         <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
@@ -478,7 +566,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                         <div className="rounded-xl p-4.5 bg-[#0D101C]/80 border border-white/[0.08] space-y-2">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
                                 <Zap className="size-3.5 text-emerald-400" />
-                                <span>{isPl ? "Co to jest?" : "What is it?"}</span>
+                                <span>
+                                    {isPl ? "Co to jest?" : "What is it?"}
+                                </span>
                             </h4>
                             <p className="text-slate-300 text-sm leading-relaxed">
                                 {isPl
@@ -489,7 +579,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
 
                         <div className="space-y-3">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                {isPl ? "Jak działają codzienne powtórki:" : "How daily reviews work:"}
+                                {isPl
+                                    ? "Jak działają codzienne powtórki:"
+                                    : "How daily reviews work:"}
                             </h4>
                             <ul className="space-y-2.5 text-sm text-slate-300">
                                 <li className="flex items-start gap-3">
@@ -530,14 +622,23 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                     <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                                 </div>
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
-                                    {FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.windowTitle}
+                                    {
+                                        FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS
+                                            .windowTitle
+                                    }
                                 </span>
                             </div>
 
                             <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
-                                    src={FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.windowTitle}
+                                    src={
+                                        FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS
+                                            .src
+                                    }
+                                    alt={
+                                        FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS
+                                            .windowTitle
+                                    }
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                     className="object-cover"
@@ -562,14 +663,22 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                     <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                                 </div>
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
-                                    {FEATURE_IMAGE_SLOTS.slot6_webReader.windowTitle}
+                                    {
+                                        FEATURE_IMAGE_SLOTS.slot6_webReader
+                                            .windowTitle
+                                    }
                                 </span>
                             </div>
 
                             <div className="relative aspect-[13/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
-                                    src={FEATURE_IMAGE_SLOTS.slot6_webReader.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot6_webReader.windowTitle}
+                                    src={
+                                        FEATURE_IMAGE_SLOTS.slot6_webReader.src
+                                    }
+                                    alt={
+                                        FEATURE_IMAGE_SLOTS.slot6_webReader
+                                            .windowTitle
+                                    }
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                     className="object-contain"
@@ -583,7 +692,11 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                     <div className="lg:col-span-6 space-y-6 order-1 lg:order-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-bold">
                             <Globe className="size-3.5" />
-                            <span>{isPl ? "06 • CZYTNIK STRON & ARTYKUŁÓW" : "06 • WEB READER MODE"}</span>
+                            <span>
+                                {isPl
+                                    ? "06 • CZYTNIK STRON & ARTYKUŁÓW"
+                                    : "06 • WEB READER MODE"}
+                            </span>
                         </div>
 
                         <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
@@ -595,7 +708,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                         <div className="rounded-xl p-4.5 bg-[#0D101C]/80 border border-white/[0.08] space-y-2">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
                                 <Zap className="size-3.5 text-blue-400" />
-                                <span>{isPl ? "Co to jest?" : "What is it?"}</span>
+                                <span>
+                                    {isPl ? "Co to jest?" : "What is it?"}
+                                </span>
                             </h4>
                             <p className="text-slate-300 text-sm leading-relaxed">
                                 {isPl
@@ -606,7 +721,9 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
 
                         <div className="space-y-3">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                {isPl ? "Jak używać na stronach www:" : "How to use on web pages:"}
+                                {isPl
+                                    ? "Jak używać na stronach www:"
+                                    : "How to use on web pages:"}
                             </h4>
                             <ul className="space-y-2.5 text-sm text-slate-300">
                                 <li className="flex items-start gap-3">

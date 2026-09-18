@@ -46,10 +46,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
     const {
         user,
         isSigningIn,
-        dueWords,
         rawDueCount,
-        viewMode,
-        openReviews,
         openLanding,
         signInWithGoogle,
         signOut,
