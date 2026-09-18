@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import {
     Film,
@@ -8,17 +7,10 @@ import {
     Brain,
     Keyboard,
     Layers,
-    BookOpen,
-    Volume2,
     Check,
     Sparkles,
-    RotateCcw,
-    Play,
     Zap,
     MousePointerClick,
-    Headphones,
-    SlidersHorizontal,
-    Camera,
 } from "lucide-react";
 import type { Dict, Locale } from "@/lib/i18n/types";
 
@@ -30,44 +22,32 @@ import type { Dict, Locale } from "@/lib/i18n/types";
 export const FEATURE_IMAGE_SLOTS = {
     // 1. Podwójne napisy na Netflix i YouTube
     slot1_dualSubtitles: {
-        src: "/showcase/1.jpg",
-        alt: "Podwójne napisy Lectoro AI na filmie wideo",
-        label: "ZDJĘCIE 1: Podwójne napisy na wideo (Netflix / YouTube)",
+        src: "/showcase/dublesub.png",
         windowTitle: "Netflix / YouTube • Dual Subtitles",
     },
     // 2. Interaktywny słownik i wymowa natywnym głosem
     slot2_dictionaryAudio: {
         src: "/showcase/wardog.png",
-        alt: "Wyskakujące okienko słownika z tłumaczeniem słowa i odsłuchem audio",
-        label: "ZDJĘCIE 2: Interaktywny słownik i wymowa audio każdego słówka",
         windowTitle: "Lectoro Pop-up Dictionary & Speech",
     },
     // 3. Kontekstowe wyjaśnienia AI
     slot3_aiExplanation: {
         src: "/showcase/4.jpg",
-        alt: "Wyjaśnienie skomplikowanej frazy, idiomu i gramatyki przez AI",
-        label: "ZDJĘCIE 3: Wyjaśnienie trudnej frazy przez AI w kontekście sceny",
         windowTitle: "Lectoro AI • Contextual Explanation",
     },
     // 4. Precyzyjne sterowanie klawiaturą i powtarzanie kwestii
     slot4_keyboardShortcuts: {
-        src: "/showcase/3.jpg",
-        alt: "Skróty klawiszowe A, S, D i automatyczna pauza na dialogach",
-        label: "ZDJĘCIE 4: Skróty klawiaturowe A/S/D i panel auto-pauzy",
+        src: "/showcase/wsad.png",
         windowTitle: "Playback Controls & Shortcuts (A / S / D)",
     },
     // 5. Fiszki wideo i codzienne powtórki SRS
     slot5_flashcardsSRS: {
         src: "/showcase/5.jpg",
-        alt: "Fiszka do nauki ze zrzutem sceny z filmu i oceną zapamiętania",
-        label: "ZDJĘCIE 5: Fiszka z kadrem z filmu i przyciskami powtórek",
         windowTitle: "SRS Flashcard Review Runner",
     },
     // 6. Czytnik artykułów i tłumaczenie stron WWW
     slot6_webReader: {
         src: "/showcase/2.jpg",
-        alt: "Tłumaczenie zaznaczonego tekstu na dowolnej stronie internetowej",
-        label: "ZDJĘCIE 6: Tłumaczenie artykułów i stron w przeglądarce",
         windowTitle: "Web Reader & Instant Translation",
     },
 } as const;
@@ -183,34 +163,18 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
                                     {FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.windowTitle}
                                 </span>
-                                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                                    Slot 1
-                                </span>
                             </div>
 
                             {/* Slot na zdjęcie */}
                             <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
                                     src={FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.alt}
+                                    alt={FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.windowTitle}
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
-                                    className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                                    className="object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
 
-                                {/* Etykieta podmiany zdjęcia */}
-                                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2.5 rounded-xl bg-[#0D101C]/90 backdrop-blur-md border border-white/[0.1] text-xs text-slate-300">
-                                    <div className="flex items-center gap-2 truncate">
-                                        <Camera className="size-4 text-indigo-400 shrink-0" />
-                                        <span className="truncate font-medium">
-                                            {FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.label}
-                                        </span>
-                                    </div>
-                                    <span className="text-[10px] text-slate-500 font-mono shrink-0 pl-2">
-                                        FEATURE_IMAGE_SLOTS.slot1
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -231,33 +195,18 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                 </div>
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
                                     {FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.windowTitle}
-                                </span>
-                                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                                    Slot 2
-                                </span>
+                                </span>         
                             </div>
 
                             <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
                                     src={FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.alt}
+                                    alt={FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.windowTitle}
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
-                                    className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                                    className="object-cover"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
-
-                                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2.5 rounded-xl bg-[#0D101C]/90 backdrop-blur-md border border-white/[0.1] text-xs text-slate-300">
-                                    <div className="flex items-center gap-2 truncate">
-                                        <Camera className="size-4 text-indigo-400 shrink-0" />
-                                        <span className="truncate font-medium">
-                                            {FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.label}
-                                        </span>
-                                    </div>
-                                    <span className="text-[10px] text-slate-500 font-mono shrink-0 pl-2">
-                                        FEATURE_IMAGE_SLOTS.slot2
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -400,32 +349,17 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
                                     {FEATURE_IMAGE_SLOTS.slot3_aiExplanation.windowTitle}
                                 </span>
-                                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                                    Slot 3
-                                </span>
                             </div>
 
                             <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
                                     src={FEATURE_IMAGE_SLOTS.slot3_aiExplanation.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot3_aiExplanation.alt}
+                                    alt={FEATURE_IMAGE_SLOTS.slot3_aiExplanation.windowTitle}
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
-                                    className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                                    className="object-cover"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
-
-                                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2.5 rounded-xl bg-[#0D101C]/90 backdrop-blur-md border border-white/[0.1] text-xs text-slate-300">
-                                    <div className="flex items-center gap-2 truncate">
-                                        <Camera className="size-4 text-indigo-400 shrink-0" />
-                                        <span className="truncate font-medium">
-                                            {FEATURE_IMAGE_SLOTS.slot3_aiExplanation.label}
-                                        </span>
-                                    </div>
-                                    <span className="text-[10px] text-slate-500 font-mono shrink-0 pl-2">
-                                        FEATURE_IMAGE_SLOTS.slot3
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -447,32 +381,18 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
                                     {FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.windowTitle}
                                 </span>
-                                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                                    Slot 4
-                                </span>
                             </div>
 
-                            <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
+                            <div className="relative aspect-[10/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
                                     src={FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.alt}
+                                    alt={FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.windowTitle}
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
-                                    className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                                    className="object-cover"
+                                    loading="lazy"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
-
-                                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2.5 rounded-xl bg-[#0D101C]/90 backdrop-blur-md border border-white/[0.1] text-xs text-slate-300">
-                                    <div className="flex items-center gap-2 truncate">
-                                        <Camera className="size-4 text-indigo-400 shrink-0" />
-                                        <span className="truncate font-medium">
-                                            {FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.label}
-                                        </span>
-                                    </div>
-                                    <span className="text-[10px] text-slate-500 font-mono shrink-0 pl-2">
-                                        FEATURE_IMAGE_SLOTS.slot4
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -612,32 +532,17 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
                                     {FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.windowTitle}
                                 </span>
-                                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                                    Slot 5
-                                </span>
                             </div>
 
                             <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
                                     src={FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.alt}
+                                    alt={FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.windowTitle}
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
-                                    className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                                    className="object-cover"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
-
-                                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2.5 rounded-xl bg-[#0D101C]/90 backdrop-blur-md border border-white/[0.1] text-xs text-slate-300">
-                                    <div className="flex items-center gap-2 truncate">
-                                        <Camera className="size-4 text-indigo-400 shrink-0" />
-                                        <span className="truncate font-medium">
-                                            {FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.label}
-                                        </span>
-                                    </div>
-                                    <span className="text-[10px] text-slate-500 font-mono shrink-0 pl-2">
-                                        FEATURE_IMAGE_SLOTS.slot5
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -659,32 +564,17 @@ export default function FeatureShowcase({ dict, locale }: FeatureShowcaseProps) 
                                 <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
                                     {FEATURE_IMAGE_SLOTS.slot6_webReader.windowTitle}
                                 </span>
-                                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                                    Slot 6
-                                </span>
                             </div>
 
-                            <div className="relative aspect-[16/10] bg-[#070912] flex items-center justify-center overflow-hidden">
+                            <div className="relative aspect-[13/10] bg-[#070912] flex items-center justify-center overflow-hidden">
                                 <Image
                                     src={FEATURE_IMAGE_SLOTS.slot6_webReader.src}
-                                    alt={FEATURE_IMAGE_SLOTS.slot6_webReader.alt}
+                                    alt={FEATURE_IMAGE_SLOTS.slot6_webReader.windowTitle}
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 50vw"
-                                    className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                                    className="object-contain"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
-
-                                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2.5 rounded-xl bg-[#0D101C]/90 backdrop-blur-md border border-white/[0.1] text-xs text-slate-300">
-                                    <div className="flex items-center gap-2 truncate">
-                                        <Camera className="size-4 text-indigo-400 shrink-0" />
-                                        <span className="truncate font-medium">
-                                            {FEATURE_IMAGE_SLOTS.slot6_webReader.label}
-                                        </span>
-                                    </div>
-                                    <span className="text-[10px] text-slate-500 font-mono shrink-0 pl-2">
-                                        FEATURE_IMAGE_SLOTS.slot6
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
