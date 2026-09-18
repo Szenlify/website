@@ -27,8 +27,8 @@ export const FEATURE_IMAGE_SLOTS = {
     },
     // 2. Interaktywny słownik i wymowa natywnym głosem
     slot2_dictionaryAudio: {
-        src: "/showcase/wardog.png",
-        windowTitle: "Lectoro Pop-up Dictionary & Speech",
+        src: "/showcase/word.png",
+        windowTitle: "LectoroAI Dictionary & Speech",
     },
     // 3. Kontekstowe wyjaśnienia AI
     slot3_aiExplanation: {
