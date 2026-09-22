@@ -2,18 +2,27 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { LOCALES } from "@/lib/i18n/types";
 
+import { detectLocale, LANGUAGE_COOKIE } from "@/lib/i18n/detect-locale";
+
 const NON_EN_LOCALES = LOCALES.filter((locale) => locale !== "en");
 const ALL_LOCALES = LOCALES;
 
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
+    if (pathname === "/api" || pathname.startsWith("/api/") || pathname.startsWith("/_next/")) {
+        return NextResponse.next();
+    }
+
     // Redirect /en/* → /* (canonical English is at root without prefix)
     if (pathname === "/en" || pathname.startsWith("/en/")) {
         const url = request.nextUrl.clone();
         url.pathname =
             pathname === "/en" ? "/" : pathname.slice("/en".length) || "/";
-        return NextResponse.redirect(url, { status: 301 });
+        const response = NextResponse.redirect(url, { status: 307 });
+        response.cookies.set(LANGUAGE_COOKIE, "en", { path: "/", maxAge: 31536000, sameSite: "lax", secure: request.nextUrl.protocol === "https:" });
+        response.headers.set("Cache-Control", "private, no-store");
+        return response;
     }
 
     // Already prefixed with a non-English locale? Pass through.
@@ -36,12 +45,25 @@ export function proxy(request: NextRequest) {
         return NextResponse.next({ request: { headers: requestHeaders } });
     }
 
+    const preferred = detectLocale(request.headers.get("accept-language"), request.cookies.get(LANGUAGE_COOKIE)?.value);
+    if (preferred !== "en") {
+        const target = request.nextUrl.clone();
+        target.pathname = `/${preferred}${pathname === "/" ? "" : pathname}`;
+        const response = NextResponse.redirect(target, { status: 307 });
+        response.headers.set("Vary", "Accept-Language, Cookie");
+        response.headers.set("Cache-Control", "private, no-store");
+        return response;
+    }
+
     // Rewrite root-level paths to /en/* for rendering (browser URL stays the same)
     const url = request.nextUrl.clone();
     url.pathname = `/en${pathname === "/" ? "" : pathname}`;
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-locale", "en");
-    return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+    const response = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+    response.headers.set("Vary", "Accept-Language, Cookie");
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
 }
 
 export const config = {

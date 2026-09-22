@@ -1,5 +1,7 @@
 "use client";
 
+import { LANGUAGE_COOKIE } from "@/lib/i18n/detect-locale";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MouseEvent } from "react";
@@ -59,7 +61,12 @@ export default function Navbar({ dict, locale }: NavbarProps) {
     LANG_OPTIONS.find((l) => l.code === locale)?.label ?? "EN";
 
   const handleLanguageChange = (event: MouseEvent<HTMLAnchorElement>) => {
+    const language = event.currentTarget.dataset.locale;
+    if (language && LOCALES.includes(language as Locale)) {
+      document.cookie = `${LANGUAGE_COOKIE}=${language}; Path=/; Max-Age=31536000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
+    }
     event.currentTarget.hash = window.location.hash;
+    event.currentTarget.search = window.location.search;
   };
 
   return (
@@ -129,6 +136,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                         pathname,
                         option.code as Locale,
                       )}
+                      data-locale={option.code}
                       onClick={handleLanguageChange}
                       className={`flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold transition-colors ${option.code === locale ? "bg-indigo-600/30 text-indigo-300" : "text-slate-300 hover:text-white hover:bg-white/5"}`}
                     >
@@ -335,7 +343,8 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                               pathname,
                               option.code as Locale,
                             )}
-                            onClick={handleLanguageChange}
+                            data-locale={option.code}
+                      onClick={handleLanguageChange}
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${option.code === locale ? "bg-indigo-600/40 text-indigo-200 border border-indigo-500/50" : "bg-white/5 text-slate-300 hover:text-white border border-white/10"}`}
                           >
                             {option.label}
