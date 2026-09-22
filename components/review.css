@@ -1294,3 +1294,35 @@ body:has([data-reviews-page]) { overflow-x: clip; }
 }
 .lectoro-review .review-voice-item:disabled { cursor: not-allowed; opacity: .5; }
 .lectoro-review a.review-voice-upgrade { display: block; text-align: center; text-decoration: none; }
+
+/* Separate transforms: the outer shell handles throws, the inner card flips. */
+.lectoro-review .review-flashcard {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+.lectoro-review .review-flip-scene { perspective: 1200px; width: 100%; }
+.lectoro-review .review-flip-inner {
+    display: grid;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
+    transition: transform 720ms cubic-bezier(.22,.75,.18,1);
+    will-change: transform;
+}
+.lectoro-review .review-flip-inner.is-flipped { transform: rotateY(180deg); }
+.lectoro-review .review-flip-face {
+    grid-area: 1 / 1;
+    min-width: 0;
+    padding: 16px 20px 24px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    background: #0d2630;
+    box-shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 32px rgba(0,0,0,.12);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: rotateY(0deg) translateZ(1px);
+}
+.lectoro-review .review-flip-back { transform: rotateY(180deg) translateZ(1px); }

@@ -33,7 +33,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answerShown, setAnswerShown] = useState(false);
     const [direction, setDirection] = useState<"normal" | "reverse">("normal");
-    const [flipPhase, setFlipPhase] = useState<"" | "qt-flip-out" | "qt-flip-in">("");
+    const [flipPhase, setFlipPhase] = useState<"" | "flipping">("");
     const busy = useRef(false);
     const [saving, setSaving] = useState(false);
     const [actionError, setActionError] = useState("");
@@ -240,12 +240,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         if (busy.current || !currentCard || editing) return;
         busy.current = true;
         setEnteredCard(currentCard.id);
-        setFlipPhase("qt-flip-out");
-        setTimeout(() => {
-            setAnswerShown(prev => !prev);
-            setFlipPhase("qt-flip-in");
-            setTimeout(() => { setFlipPhase(""); busy.current = false; }, 300);
-        }, 150);
+        setFlipPhase("flipping");
+        setAnswerShown(prev => !prev);
+        const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 720;
+        setTimeout(() => { setFlipPhase(""); busy.current = false; }, duration);
     }, [currentCard, editing]);
 
     const rateCard = useCallback(async (grade: 1 | 2) => {
@@ -403,8 +401,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         ? (answerShown ? currentCard?.tgtLang || "pl" : currentCard?.srcLang || "en")
         : (answerShown ? currentCard?.srcLang || "en" : currentCard?.tgtLang || "pl");
 
-    const isOriginalSide = (isNormal && !answerShown) || (!isNormal && answerShown);
-    const wordColorClass = isOriginalSide ? "text-[#4ecdc4]" : "text-[#9ee7b9]";
 
     useEffect(() => {
         if (!currentCard || editing || loadingWords) return;
@@ -421,7 +417,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     const labelGood = currentCard ? SRS.previewLabel(currentCard.sr, 2) : "10 min";
 
     // Highlight the word in sentence
-    const renderHighlightedSentence = () => {
+    const renderHighlightedSentence = (showSentence: string | undefined, showWord: string, original: boolean) => {
         if (!showSentence) return null;
         if (!showWord) return <span>&ldquo;{showSentence}&rdquo;</span>;
 
@@ -433,7 +429,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                 &ldquo;
                 {parts.map((part, i) =>
                     part.toLowerCase() === showWord.toLowerCase() ? (
-                        <span key={i} className={`font-bold underline ${wordColorClass}`}>
+                        <span key={i} className={`font-bold underline ${original ? "text-[#4ecdc4]" : "text-[#9ee7b9]"}`}>
                             {part}
                         </span>
                     ) : (
@@ -605,7 +601,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
     const progressPercent = Math.round((currentIndex / queue.length) * 100);
     const screenshotUrl = resolveImageUrl(currentCard?.screenshot);
-    const speechText = [showWord, showSentence && showSentence.trim().toLowerCase() !== showWord?.trim().toLowerCase() ? showSentence : ""].filter(Boolean).join(". ");
     const chooseVoice = (value: string) => {
         if (["Sulafat", "Algieba"].includes(value) && !premiumVoices.includes(value)) return;
         setVoiceId(value); setVoiceMenu(false);
@@ -663,17 +658,31 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                 <div className="review-edit-actions"><button type="button" className="review-edit-cancel" disabled={saving} onClick={() => setEditing(null)}>{pl ? "Anuluj" : "Cancel"}</button><button className="review-edit-save" disabled={saving}>{pl ? "Zapisz" : "Save"}</button></div>
             </form> : <>
                 <div className="review-card-viewport"><div ref={cardRef} key={currentCard.id} onAnimationEnd={event => { if (event.animationName === "reviewDealIn") setEnteredCard(currentCard.id); }} className={`review-flashcard ${enteredCard !== currentCard.id ? "review-entering" : ""} ${isDragging ? "review-dragging" : ""} ${flipPhase} ${swipeClass}`} style={cardTransformStyle} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onTouchCancel={() => { if (busy.current) return; drag.current.x = 0; setTouchStartX(null); setTouchDeltaX(0); setIsDragging(false); }}>
-                    <div className="review-question">
-                        <div className="review-word-row">
-                            <span className={`review-word ${isOriginalSide ? "__qt_original" : "__qt_translated"}`}>{showWord}</span>
-                            <button type="button" className={`review-speak-btn ${isSpeaking ? "speaking" : ""}`} aria-label={r.listenAudio} title={r.listenAudio} onClick={() => void speakText(speechText, speakLang)}><Volume2 /></button>
-                            <button type="button" className="review-speak-btn review-speak-slow-btn" aria-label={pl ? "Słuchaj wolniej (0,75×)" : "Listen slowly (0.75×)"} title="0.75×" onClick={() => void speakText(speechText, speakLang, .75)}><Turtle /></button>
+                    <div className="review-flip-scene">
+                        <div className={`review-flip-inner ${answerShown ? "is-flipped" : ""}`}>
+                            {([false, true] as const).map(back => {
+                                const original = isNormal !== back;
+                                const word = original ? currentCard.original : currentCard.translated;
+                                const sentence = original ? currentCard.sentence : currentCard.sentenceTranslated;
+                                const language = original ? currentCard.srcLang || "en" : currentCard.tgtLang || "pl";
+                                const text = sentence && sentence.trim().toLowerCase() !== word.trim().toLowerCase() ? `${word}. ${sentence}` : word;
+                                const active = back === answerShown;
+                                return <div key={String(back)} className={`review-flip-face ${back ? "review-flip-back" : "review-flip-front"}`} aria-hidden={!active} inert={!active}>
+                                    <div className="review-question">
+                                        <div className="review-word-row">
+                                            <span className={`review-word ${original ? "__qt_original" : "__qt_translated"}`}>{word}</span>
+                                            <button type="button" className={`review-speak-btn ${isSpeaking && active ? "speaking" : ""}`} aria-label={r.listenAudio} title={r.listenAudio} onClick={() => void speakText(text, language)}><Volume2 /></button>
+                                            <button type="button" className="review-speak-btn review-speak-slow-btn" aria-label={pl ? "Słuchaj wolniej (0,75×)" : "Listen slowly (0.75×)"} title="0.75×" onClick={() => void speakText(text, language, .75)}><Turtle /></button>
+                                        </div>
+                                        {sentence && sentence.trim().toLowerCase() !== word.trim().toLowerCase() && <div className="review-context-row"><span className="review-context">{renderHighlightedSentence(sentence, word, original)}</span></div>}
+                                        {screenshotUrl && <div className="review-screenshot"><div className={`review-screenshot-box ${imageLoaded ? "is-loaded" : ""}`}>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img key={screenshotUrl} className="review-screenshot-img" src={screenshotUrl} alt={r.movieSnapshotAlt} onLoad={() => setImageLoaded(true)} onError={e => e.currentTarget.parentElement?.classList.add("review-image-hidden")} />
+                                        </div></div>}
+                                    </div>
+                                </div>;
+                            })}
                         </div>
-                        {showSentence && showSentence.trim().toLowerCase() !== showWord?.trim().toLowerCase() && <div className="review-context-row"><span className="review-context">{renderHighlightedSentence()}</span></div>}
-                        {screenshotUrl && <div className="review-screenshot"><div className={`review-screenshot-box ${imageLoaded ? "is-loaded" : ""}`}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img key={screenshotUrl} className="review-screenshot-img" src={screenshotUrl} alt={r.movieSnapshotAlt} onLoad={() => setImageLoaded(true)} onError={e => e.currentTarget.parentElement?.classList.add("review-image-hidden")} />
-                        </div></div>}
                     </div>
                 </div>
                 </div>
