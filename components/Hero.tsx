@@ -90,8 +90,8 @@ export default function Hero({ dict }: HeroProps) {
                 <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl sm:rounded-3xl">
                     <video
                         className="block max-h-[80svh] w-full object-contain"
-                        width={2732}
-                        height={1264}
+                        width={1200}
+                        height={600}
                         controls
                         playsInline
                         preload="metadata"
@@ -100,8 +100,9 @@ export default function Hero({ dict }: HeroProps) {
                         muted={true}
                         aria-label={dict.hero.demoCta}
                     >
-                        <source src="/video.mp4" type="video/mp4" />
-                        <a href="/video.mp4">{dict.hero.demoCta}</a>
+                        <source src="/v1.webm" type="video/webm" />
+                        <source src="/v1.mp4" type="video/mp4" />
+                        <a href="/v1.mp4">{dict.hero.demoCta}</a>
                     </video>
                 </div>
             </div>

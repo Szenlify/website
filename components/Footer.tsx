@@ -145,14 +145,8 @@ export default function Footer({ dict, locale }: FooterProps) {
                                     href="mailto:support@lectoroai.com"
                                     className="text-slate-300 hover:text-white transition"
                                 >
-                                    support@lectoroai.com
+                                    lectoroai@gmail.com
                                 </a>
-                            </li>
-                            <li className="text-slate-500 font-mono text-[11px]">
-                                Domain: lectoroai.com
-                            </li>
-                            <li className="text-slate-500 font-mono text-[11px]">
-                                Version 1.0.0 (Manifest V3)
                             </li>
                         </ul>
                     </div>
