@@ -1,0 +1,22 @@
+/* Radix Presence keeps both layers mounted until their exit animation ends. */
+.sheet-drawer[data-state="open"] {
+    animation: sheet-slide-in 420ms cubic-bezier(.22,1,.36,1) both;
+}
+.sheet-drawer[data-state="closed"] {
+    animation: sheet-slide-out 280ms cubic-bezier(.4,0,1,1) both;
+}
+.sheet-backdrop[data-state="open"] { animation: sheet-fade-in 320ms ease both; }
+.sheet-backdrop[data-state="closed"] { animation: sheet-fade-out 280ms ease both; }
+@keyframes sheet-slide-in {
+    from { transform: translate3d(100%,0,0); }
+    to { transform: translate3d(0,0,0); }
+}
+@keyframes sheet-slide-out {
+    from { transform: translate3d(0,0,0); }
+    to { transform: translate3d(100%,0,0); }
+}
+@keyframes sheet-fade-in { from { opacity:0; } to { opacity:1; } }
+@keyframes sheet-fade-out { from { opacity:1; } to { opacity:0; } }
+@media(prefers-reduced-motion:reduce) {
+    .sheet-drawer[data-state], .sheet-backdrop[data-state] { animation-duration:1ms; }
+}

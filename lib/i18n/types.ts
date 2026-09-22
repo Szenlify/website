@@ -1,8 +1,6 @@
 export const LOCALE_CONFIG = {
     en: { openGraph: "en_US", skipLink: "Skip to content" },
-    ja: { openGraph: "ja_JP", skipLink: "メインコンテンツへ移動" },
     de: { openGraph: "de_DE", skipLink: "Zum Inhalt springen" },
-    ko: { openGraph: "ko_KR", skipLink: "본문으로 이동" },
     fr: { openGraph: "fr_FR", skipLink: "Aller au contenu" },
     nl: { openGraph: "nl_NL", skipLink: "Naar inhoud springen" },
     pl: { openGraph: "pl_PL", skipLink: "Przejdź do treści" },
@@ -10,6 +8,8 @@ export const LOCALE_CONFIG = {
     it: { openGraph: "it_IT", skipLink: "Salta al contenuto" },
     cs: { openGraph: "cs_CZ", skipLink: "Přejít k obsahu" },
     pt: { openGraph: "pt_PT", skipLink: "Saltar para o conteúdo" },
+    ja: { openGraph: "ja_JP", skipLink: "メインコンテンツへ移動" },
+    ko: { openGraph: "ko_KR", skipLink: "본문으로 이동" },
 } as const;
 
 export type Locale = keyof typeof LOCALE_CONFIG;

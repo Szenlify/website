@@ -279,12 +279,12 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                   <Menu className="size-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="lg:hidden">
+              <SheetContent className="lg:hidden" aria-describedby={undefined}>
                 <SheetTitle className="sr-only">Navigation</SheetTitle>
                 <div className="border-b border-white/10 p-4 pr-16">
                   <Logo locale={locale} />
                 </div>
-                <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-4 py-4">
+                <nav className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto overscroll-contain px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
                   {user && (
                     <SheetClose asChild>
                       <Link
@@ -335,22 +335,26 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                     <p className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
                       {lang.selectLanguage}
                     </p>
-                    <div className="flex flex-wrap gap-2 px-4 pb-1">
-                      {LANG_OPTIONS.map((option) => (
-                        <SheetClose key={option.code} asChild>
-                          <a
-                            href={switchLocalePathname(
-                              pathname,
-                              option.code as Locale,
-                            )}
-                            data-locale={option.code}
-                      onClick={handleLanguageChange}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${option.code === locale ? "bg-indigo-600/40 text-indigo-200 border border-indigo-500/50" : "bg-white/5 text-slate-300 hover:text-white border border-white/10"}`}
-                          >
-                            {option.label}
-                          </a>
-                        </SheetClose>
-                      ))}
+                    <div className="px-4 pb-4">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button type="button" className="flex min-h-12 w-full items-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-200 outline-none transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-indigo-400" aria-label={lang.selectLanguage}>
+                            <Globe2 aria-hidden="true" className="size-4 text-indigo-300" />
+                            <span className="flex-1 text-left">{currentLangLabel}</span>
+                            <ChevronDown aria-hidden="true" className="size-4 text-slate-400" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" sideOffset={8} collisionPadding={16} className="z-[60] w-[var(--radix-dropdown-menu-trigger-width)] max-h-[min(22rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto overscroll-contain rounded-xl p-1.5">
+                          {LANG_OPTIONS.map(option => (
+                            <DropdownMenuItem key={option.code} asChild>
+                              <a href={switchLocalePathname(pathname, option.code)} data-locale={option.code} onClick={handleLanguageChange} aria-current={option.code === locale ? "true" : undefined} className={`flex min-h-11 items-center justify-between rounded-lg px-3 text-sm ${option.code === locale ? "bg-indigo-500/15 text-indigo-200" : "text-slate-300"}`}>
+                                <span>{option.label}</span>
+                                {option.code === locale && <Check aria-hidden="true" className="size-4 text-indigo-300" />}
+                              </a>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
 
