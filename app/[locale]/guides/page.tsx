@@ -1,3 +1,5 @@
+import "./guides.css";
+import { ArrowUpRight, ArrowRight, Clock3 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -109,7 +111,7 @@ export default async function GuidesPage({
     };
 
     return (
-        <section className="pb-24 pt-10 sm:pt-16">
+        <section className="guides-library">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
@@ -120,10 +122,10 @@ export default async function GuidesPage({
                 }}
             />
 
-            <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="guides-shell">
                 <nav
                     aria-label="Breadcrumb"
-                    className="mb-8 flex items-center gap-2 text-xs text-slate-400"
+                    className="guides-breadcrumb"
                 >
                     <Link
                         href={homeHref}
@@ -132,60 +134,41 @@ export default async function GuidesPage({
                         {dict.privacy.breadcrumbHome}
                     </Link>
                     <span aria-hidden="true">/</span>
-                    <span className="text-indigo-300">{copy.label}</span>
+                    <span aria-current="page">{copy.label}</span>
                 </nav>
 
-                <header className="max-w-4xl">
-                    <p className="text-xs font-bold uppercase text-indigo-300">
-                        {copy.eyebrow}
-                    </p>
-                    <h1 className="mt-4 font-display text-4xl font-extrabold leading-tight text-white sm:text-6xl">
-                        {copy.title}
-                    </h1>
-                    <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300 sm:text-xl">
-                        {copy.description}
-                    </p>
+                <header className="guides-header">
+                    <p className="guides-eyebrow"><span aria-hidden="true" />{copy.eyebrow}</p>
+                    <div className="guides-intro">
+                        <h1>{copy.title}</h1>
+                        <p>{copy.description}</p>
+                    </div>
                 </header>
 
-                <div className="mt-12 grid gap-7 lg:grid-cols-2">
+                <div className="guides-section-label"><span>{copy.label}</span><span className="guides-count">{String(GUIDE_SLUGS.length).padStart(2, "0")}</span></div>
+                <div className="guides-list">
                     {GUIDE_SLUGS.map((slug, index) => {
                         const guide = guides[slug];
-                        const href = getLocalizedHref(
-                            `/guides/${slug}`,
-                            locale,
-                        );
-                        const image =
-                            index === 0 ? "/showcase/1.jpg" : "/showcase/5.jpg";
-
+                        const href = getLocalizedHref(`/guides/${slug}`, locale);
                         return (
-                            <article
-                                key={slug}
-                                className="overflow-hidden rounded-lg border border-white/10 bg-[#0d1120]"
-                            >
-                                <Link href={href} className="group block">
-                                    <Image
-                                        src={image}
-                                        alt={guide.title}
-                                        width={1280}
-                                        height={800}
-                                        loading={index === 0 ? "eager" : "lazy"}
-                                        sizes="(max-width: 1024px) 100vw, 50vw"
-                                        className="aspect-16/10 w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-                                    />
-                                    <div className="p-6 sm:p-8">
-                                        <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
-                                            <span>{guide.eyebrow}</span>
-                                            <span>{guide.readingTime}</span>
-                                        </div>
-                                        <h2 className="mt-4 font-display text-2xl font-bold leading-tight text-white transition group-hover:text-indigo-200">
-                                            {guide.title}
-                                        </h2>
-                                        <p className="mt-4 line-clamp-3 leading-7 text-slate-300">
-                                            {guide.description}
-                                        </p>
-                                        <span className="mt-6 inline-flex text-sm font-bold text-indigo-300">
-                                            {copy.readGuide} →
-                                        </span>
+                            <article key={slug} className="guide-entry">
+                                <Link href={href} className="guide-link">
+                                    <div className="guide-cover">
+                                        <Image
+                                            src={index === 0 ? "/showcase/1.jpg" : "/showcase/5.jpg"}
+                                            alt=""
+                                            width={1280}
+                                            height={800}
+                                            loading={index === 0 ? "eager" : "lazy"}
+                                            sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 1100px) 34vw, 352px"
+                                        />
+                                        <span className="guide-cover-arrow" aria-hidden="true"><ArrowUpRight size={20} /></span>
+                                    </div>
+                                    <div className="guide-copy">
+                                        <div className="guide-meta"><span>{guide.eyebrow}</span><span><Clock3 size={13} aria-hidden="true" />{guide.readingTime}</span></div>
+                                        <h2>{guide.title}</h2>
+                                        <p>{guide.description}</p>
+                                        <span className="guide-read">{copy.readGuide}<ArrowRight size={16} aria-hidden="true" /></span>
                                     </div>
                                 </Link>
                             </article>
