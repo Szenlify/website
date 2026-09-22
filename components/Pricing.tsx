@@ -111,9 +111,8 @@ export default function Pricing({ dict, locale }: PricingProps) {
                 </div>
 
                 <div className="max-w-3xl mx-auto mb-8 text-center space-y-3">
-                    <p className="text-sm text-slate-400">{pl ? "Ceny wyświetlamy dla wybranej wersji językowej. Ostateczną kwotę i walutę potwierdzisz w Stripe przed zakupem. BLIK rozliczany w PLN." : "Prices are shown for the selected language. Confirm the final amount and currency in Stripe before purchase."}</p>
                     {!user && <p className="text-sm text-slate-300">{pl ? "Po wybraniu planu zalogujesz się przez Google, aby przypisać zakup do konta Lectoro." : "After choosing a plan, sign in with Google to link your purchase to your Lectoro account."}</p>}
-                    {user && <button type="button" disabled={!!pending} onClick={() => void checkout()} className="min-h-11 px-4 py-2 text-sm text-indigo-300 underline underline-offset-4 disabled:opacity-50">{pending === "portal" ? (pl ? "Otwieranie…" : "Opening…") : (pl ? "Zarządzaj subskrypcją i fakturami" : "Manage subscription and invoices")}</button>}
+
                     {error && <p role="alert" className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200">{error}</p>}
                 </div>
                 <div ref={plansRef} className="subscription-plans-grid max-w-6xl mx-auto" aria-label={pricing.title} aria-busy={!!pending}>
