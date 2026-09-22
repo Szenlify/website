@@ -97,13 +97,6 @@ export default function Navbar({ dict, locale }: NavbarProps) {
               {nav.howItWorks}
             </Link>
             <Link
-              href={getLocalizedSectionHref("comparison", locale)}
-              onClick={() => openLanding()}
-              className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
-            >
-              {nav.comparison}
-            </Link>
-            <Link
               href={getLocalizedSectionHref("pricing", locale)}
               onClick={() => openLanding()}
               className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
@@ -307,10 +300,6 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                     [
                       getLocalizedSectionHref("how-it-works", locale),
                       nav.howItWorks,
-                    ],
-                    [
-                      getLocalizedSectionHref("comparison", locale),
-                      nav.comparison,
                     ],
                     [getLocalizedSectionHref("pricing", locale), nav.pricing],
                   ].map(([href, label], index) => (

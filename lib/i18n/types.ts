@@ -27,16 +27,6 @@ export interface CompetitorCell {
     isPositive: boolean;
 }
 
-export interface ComparisonRow {
-    category: string;
-    feature: string;
-    description: string;
-    lectoro: CompetitorCell;
-    languageReactor: CompetitorCell;
-    lingopie: CompetitorCell;
-    duolingo: CompetitorCell;
-}
-
 export interface Dict {
     locale: Locale;
 
@@ -44,7 +34,6 @@ export interface Dict {
         features: string;
         liveDemo: string;
         howItWorks: string;
-        comparison: string;
         pricing: string;
         faq: string;
         addToChrome: string;
@@ -107,51 +96,6 @@ export interface Dict {
         f6: { title: string; desc: string; b1: string; b2: string; b3: string };
     };
 
-    showcase: {
-        tag: string;
-        title: string;
-        previous: string;
-        next: string;
-        slideLabel: string;
-        s1: { alt: string; title: string };
-        s2: { alt: string; title: string };
-        s3: { alt: string; title: string };
-        s4: { alt: string; title: string };
-        s5: { alt: string; title: string };
-        s6: { alt: string; title: string };
-        s7: { alt: string; title: string };
-        s8: { alt: string; title: string };
-    };
-
-    comparison: {
-        tag: string;
-        title: string;
-        titleHighlight: string;
-        subtitle: string;
-        disclaimer: string;
-        winnerBadge: string;
-        lectoSubtitle: string;
-        lrSubtitle: string;
-        lingoSubtitle: string;
-        featureCol: string;
-        previousAriaLabel: string;
-        slidesAriaLabel: string;
-        goToAriaLabel: string;
-        nextAriaLabel: string;
-        verdictTag: string;
-        verdictTitle: string;
-        verdictBody: string;
-        verdictCta: string;
-        tabs: {
-            vsLR: string;
-            vsLRbadge: string;
-            vsLingopie: string;
-            vsLingopieBadge: string;
-            vsDuolingo: string;
-            vsDuolingoBadge: string;
-        };
-        rows: ComparisonRow[];
-    };
 
     hiw: {
         tag: string;

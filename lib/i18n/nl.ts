@@ -10,7 +10,6 @@ export const nl: Dict = {
         features: "Functies",
         liveDemo: "Live demo",
         howItWorks: "Hoe het werkt",
-        comparison: "Vergelijking",
         pricing: "Prijzen",
         faq: "Veelgestelde vragen",
         addToChrome: "Toevoegen aan Chrome",

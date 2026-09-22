@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import Hero from "@/components/Hero";
 import Platforms from "@/components/Platforms";
 import FeatureShowcase from "@/components/FeatureShowcase";
-import ShowcaseCarousel from "@/components/ShowcaseCarousel";
-import Comparison from "@/components/Comparison";
 import HowItWorks from "@/components/HowItWorks";
 import Pricing from "@/components/Pricing";
 import Testimonials from "@/components/Testimonials";
@@ -12,7 +10,6 @@ import FAQ from "@/components/FAQ";
 import FinalCTA from "@/components/FinalCTA";
 import HomeView from "@/components/HomeView";
 import { getDictionary, isLocale } from "@/lib/i18n";
-import type { CarouselItem } from "@/components/ShowcaseCarousel";
 import { LOCALE_CONFIG } from "@/lib/i18n/types";
 import { getLanguageAlternates } from "@/lib/routing";
 import { getLocalizedPricing } from "@/lib/pricing";
@@ -69,18 +66,7 @@ export default async function LocaleHomePage({
     if (!isLocale(locale)) notFound();
     const dict = await getDictionary(locale);
 
-    // Build localized carousel images (same src, translated alt+title)
-    const s = dict.showcase;
-    const localizedImages: CarouselItem[] = [
-        { src: "/showcase/1.jpg", alt: s.s1.alt, title: s.s1.title },
-        { src: "/showcase/2.jpg", alt: s.s2.alt, title: s.s2.title },
-        { src: "/showcase/3.jpg", alt: s.s3.alt, title: s.s3.title },
-        { src: "/showcase/4.jpg", alt: s.s4.alt, title: s.s4.title },
-        { src: "/showcase/5.jpg", alt: s.s5.alt, title: s.s5.title },
-        { src: "/showcase/6.jpg", alt: s.s6.alt, title: s.s6.title },
-        { src: "/showcase/wardog.png", alt: s.s7.alt, title: s.s7.title },
-        { src: "/showcase/plex.png", alt: s.s8.alt, title: s.s8.title },
-    ];
+
 
     const baseUrl = "https://lectoroai.com";
     const siteUrl = locale === "en" ? baseUrl : `${baseUrl}/${locale}`;
@@ -162,8 +148,6 @@ export default async function LocaleHomePage({
                 <Hero dict={dict} />
                 <Platforms dict={dict} />
                 <FeatureShowcase dict={dict} locale={locale} />
-                <ShowcaseCarousel images={localizedImages} labels={dict.showcase} />
-                <Comparison dict={dict} />
                 <HowItWorks dict={dict} />
                 <Pricing dict={dict} locale={locale} />
                 <Testimonials dict={dict} />

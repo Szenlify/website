@@ -10,7 +10,6 @@ export const it: Dict = {
         features: "Funzionalità",
         liveDemo: "Demo dal vivo",
         howItWorks: "Come funziona",
-        comparison: "Confronto",
         pricing: "Prezzi",
         faq: "FAQ",
         addToChrome: "Aggiungi a Chrome",
