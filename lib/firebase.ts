@@ -14,6 +14,7 @@ import {
     getDocs,
     doc,
     updateDoc,
+    deleteDoc,
 } from "firebase/firestore";
 import { SRS, type ReviewWord, type SRState } from "./srs";
 
@@ -102,6 +103,7 @@ export async function fetchUserWords(uid: string): Promise<ReviewWord[]> {
                 screenshot: String(data.screenshot || ""),
                 timestamp: Number(data.timestamp || 0),
                 updatedAt: Number(data.updatedAt || 0),
+                ttsCacheInvalidatedAt: Number(data.ttsCacheInvalidatedAt || 0),
             };
 
             if (
@@ -151,8 +153,7 @@ export async function saveWordReviewRating(
     grade: 1 | 2
 ): Promise<SRState> {
     const updatedSr = SRS.update(word.sr, grade, Date.now());
-    word.sr = updatedSr;
-    word.updatedAt = Date.now();
+
 
     try {
         const wordRef = doc(db, "users", uid, "words", word.id);
@@ -164,11 +165,23 @@ export async function saveWordReviewRating(
             sr_lapses: updatedSr.lapses,
             sr_nextReview: updatedSr.nextReview,
             sr_lastReview: updatedSr.lastReview,
-            updatedAt: word.updatedAt,
+            updatedAt: Date.now(),
         });
     } catch (error) {
         console.error("Error updating word review in Firestore:", error);
+        throw error;
     }
 
     return updatedSr;
+}
+
+export async function editReviewWord(uid: string, word: ReviewWord): Promise<void> {
+    await updateDoc(doc(db, "users", uid, "words", word.id), {
+        original: word.original, translated: word.translated,
+        sentence: word.sentence || "", sentenceTranslated: word.sentenceTranslated || "",
+        updatedAt: Date.now(), ttsCacheInvalidatedAt: Date.now(),
+    });
+}
+export async function deleteReviewWord(uid: string, id: string): Promise<void> {
+    await deleteDoc(doc(db, "users", uid, "words", id));
 }

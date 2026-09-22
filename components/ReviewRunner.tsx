@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Volume2, RotateCw, Sparkles, CheckCircle2, AlertCircle, RefreshCw, Layers, ArrowLeft, ArrowRight, Zap, Info } from "lucide-react";
+import { Volume2, Turtle, RotateCw, AlertCircle, RefreshCw, Layers, Zap, Info } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { SRS, resolveImageUrl, type ReviewWord } from "@/lib/srs";
 import type { Dict, Locale } from "@/lib/i18n/types";
+
+import "./review.css";
 
 interface ReviewRunnerProps {
     dict: Dict;
@@ -16,13 +18,14 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         user,
         words,
         dueWords,
-        rawDueCount,
         loadingWords,
         wordsError,
         isCramMode,
         startCramMode,
         exitCramMode,
         recordWordRating,
+        editWord,
+        removeWord,
         refreshWords,
     } = useAuth();
 
@@ -30,10 +33,27 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answerShown, setAnswerShown] = useState(false);
     const [direction, setDirection] = useState<"normal" | "reverse">("normal");
-    const [isFlipping, setIsFlipping] = useState(false);
+    const [flipPhase, setFlipPhase] = useState<"" | "qt-flip-out" | "qt-flip-in">("");
+    const busy = useRef(false);
+    const [saving, setSaving] = useState(false);
+    const [actionError, setActionError] = useState("");
+    const [editing, setEditing] = useState<ReviewWord | null>(null);
+    const [voiceMenu, setVoiceMenu] = useState(false);
+    const [voiceId, setVoiceId] = useState("");
+    const [premiumVoices, setPremiumVoices] = useState<string[]>([]);
+    const [voiceAccessLoading, setVoiceAccessLoading] = useState(true);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const speechRequest = useRef(0);
+    const audioUrl = useRef<string | null>(null);
+    const spokenCard = useRef("");
+    const session = useRef("");
+    const pl = locale === "pl";
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [swipeClass, setSwipeClass] = useState<string>("");
-    const [isCardEntering, setIsCardEntering] = useState(false);
+
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [enteredCard, setEnteredCard] = useState<string | null>(null);
+    const drag = useRef({ x: 0, lastX: 0, time: 0, velocity: 0 });
 
     // Mobile touch tracking
     const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -42,22 +62,53 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
 
-    // Populate queue whenever dueWords or cramMode changes
+    // Snapshot the session: rating updates must not reorder or reset its queue.
     useEffect(() => {
-        if (dueWords.length > 0) {
-            const shuffled = [...dueWords].sort(() => Math.random() - 0.5);
-            setQueue(shuffled);
-            setCurrentIndex(0);
-            setAnswerShown(false);
-            setSwipeClass("");
-            setIsCardEntering(true);
-            setTimeout(() => setIsCardEntering(false), 300);
-        } else {
-            setQueue([]);
-        }
-    }, [dueWords, isCramMode]);
+        if (loadingWords) { session.current = ""; return; }
+        const key = `${user?.uid || ""}:${isCramMode}`;
+        if (session.current === key) return;
+        session.current = key;
+        setQueue([...dueWords].sort(() => Math.random() - 0.5));
+        setCurrentIndex(0);
+        setAnswerShown(false);
+        setSwipeClass("");
+    }, [dueWords, isCramMode, loadingWords, user?.uid]);
+
+    useEffect(() => {
+        try {
+            setDirection(localStorage.getItem("reviewDirection") === "reverse" ? "reverse" : "normal");
+            setVoiceId(localStorage.getItem("reviewVoice") || "");
+        } catch { /* Storage may be unavailable in private browsing. */ }
+        return () => { speechRequest.current++; audioRef.current?.pause(); if (audioUrl.current) URL.revokeObjectURL(audioUrl.current); window.speechSynthesis?.cancel(); };
+    }, []);
 
     const currentCard = queue[currentIndex] || null;
+
+    // Ask the same server that enforces Lectoro plan entitlements. Fail closed.
+    useEffect(() => {
+        const controller = new AbortController();
+        setPremiumVoices([]);
+        setVoiceAccessLoading(true);
+        const checkAccess = async () => {
+            try {
+                if (!user) return;
+                const token = await user.getIdToken();
+                const response = await fetch("https://geminiproxy-gyagzflbra-ew.a.run.app", {
+                    method: "POST", signal: controller.signal,
+                    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "geminiTtsVoices", context: "review" }),
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+                if (!controller.signal.aborted && Array.isArray(data.voices)) {
+                    setPremiumVoices(data.voices.map((voice: { voice_id: string }) => voice.voice_id));
+                }
+            } catch { /* Keep premium locked when entitlement cannot be verified. */ }
+            finally { if (!controller.signal.aborted) setVoiceAccessLoading(false); }
+        };
+        void checkAccess();
+        return () => controller.abort();
+    }, [user, voiceMenu]);
 
     // Available speech synthesis voices
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -123,12 +174,38 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     }, [currentIndex, currentCard?.id]);
 
     const speakText = useCallback(
-        (text: string, lang = "en") => {
+        async (text: string, lang = "en", rate = 1) => {
             if (typeof window === "undefined" || !("speechSynthesis" in window) || !text) return;
             try {
+                const request = ++speechRequest.current;
+                audioRef.current?.pause();
+                if (audioUrl.current) { URL.revokeObjectURL(audioUrl.current); audioUrl.current = null; }
                 window.speechSynthesis.cancel();
+                if (premiumVoices.includes(voiceId) && user && lang === (currentCard?.srcLang || "en")) {
+                    setIsSpeaking(true);
+                    try {
+                        const token = await user.getIdToken();
+                        const response = await fetch("https://geminiproxy-gyagzflbra-ew.a.run.app", {
+                            method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "synthesizeGeminiTts", context: "review", text, language: lang, voiceId, cacheNotBefore: currentCard?.ttsCacheInvalidatedAt || 0 }),
+                        });
+                        if (!response.ok) { const error = await response.json(); throw new Error(error.error || "Audio unavailable"); }
+                        const blob = await response.blob();
+                        if (request !== speechRequest.current) return;
+                        const url = URL.createObjectURL(blob); audioUrl.current = url;
+                        const audio = new Audio(url); audioRef.current = audio; audio.playbackRate = rate;
+                        const cleanup = () => { URL.revokeObjectURL(url); if (audioUrl.current === url) audioUrl.current = null; setIsSpeaking(false); };
+                        audio.onended = cleanup; audio.onerror = cleanup;
+                        await audio.play();
+                        return;
+                    } catch (error) {
+                        if (request !== speechRequest.current) return;
+                        setActionError(error instanceof Error ? error.message : "Audio unavailable");
+                    }
+                }
+                if (request !== speechRequest.current) return;
                 const utterance = new SpeechSynthesisUtterance(text);
-                const voice = pickGoogleVoice(lang);
+                const voice = voices.find(v => v.voiceURI === voiceId) || pickGoogleVoice(lang);
 
                 if (voice) {
                     utterance.voice = voice;
@@ -143,7 +220,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     utterance.lang = bcpMap[base] || lang;
                 }
 
-                utterance.rate = 0.93;
+                utterance.rate = rate;
                 setIsSpeaking(true);
                 utterance.onend = () => setIsSpeaking(false);
                 utterance.onerror = () => setIsSpeaking(false);
@@ -156,41 +233,64 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                 setIsSpeaking(false);
             }
         },
-        [pickGoogleVoice]
+        [pickGoogleVoice, voiceId, voices, user, currentCard?.srcLang, premiumVoices]
     );
 
     const flipCard = useCallback(() => {
-        setIsFlipping(true);
+        if (busy.current || !currentCard || editing) return;
+        busy.current = true;
+        setEnteredCard(currentCard.id);
+        setFlipPhase("qt-flip-out");
         setTimeout(() => {
-            setAnswerShown((prev) => !prev);
-            setIsFlipping(false);
+            setAnswerShown(prev => !prev);
+            setFlipPhase("qt-flip-in");
+            setTimeout(() => { setFlipPhase(""); busy.current = false; }, 300);
         }, 150);
-    }, []);
+    }, [currentCard, editing]);
 
-    const rateCard = useCallback(
-        async (grade: 1 | 2) => {
-            if (!currentCard) return;
-
-            setSwipeClass(grade === 1 ? "qt-swipe-left" : "qt-swipe-right");
-
-            setTimeout(async () => {
-                await recordWordRating(currentCard, grade);
-                setSwipeClass("");
-                setTouchDeltaX(0);
-                setAnswerShown(false);
-                setCurrentIndex((prev) => prev + 1);
-                setIsCardEntering(true);
-                setTimeout(() => setIsCardEntering(false), 300);
-            }, 220);
-        },
-        [currentCard, recordWordRating]
-    );
+    const rateCard = useCallback(async (grade: 1 | 2) => {
+        if (!currentCard || busy.current || editing) return;
+        busy.current = true;
+        setSaving(true);
+        setActionError("");
+        setSwipeClass("review-flying");
+        const card = cardRef.current;
+        const sign = grade === 1 ? -1 : 1;
+        const start = drag.current.x;
+        const destination = sign * (window.innerWidth + (card?.offsetWidth || 480));
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const flight = card?.animate([
+            { transform: `translate3d(${start}px, 0, 0) rotate(${start * .08}deg)`, opacity: 1 },
+            { transform: `translate3d(${destination}px, 60px, 0) rotate(${sign * 32}deg)`, opacity: 1 },
+        ], { duration: reduced ? 1 : Math.max(280, Math.min(480, Math.abs(destination - start) / Math.max(2.5, Math.abs(drag.current.velocity)))), easing: "cubic-bezier(.25,.65,.45,1)", fill: "forwards" });
+        try {
+            // Start the save during the flight, but always finish the flight before swapping cards.
+            const [result] = await Promise.all([
+                recordWordRating(currentCard, grade).then(() => null, error => error),
+                flight?.finished.catch(() => {}),
+            ]);
+            if (result) throw result;
+            speechRequest.current++;
+            audioRef.current?.pause();
+            window.speechSynthesis?.cancel();
+            setIsSpeaking(false);
+            setAnswerShown(false);
+            setCurrentIndex(prev => prev + 1);
+        } catch (error) {
+            flight?.cancel();
+            setActionError(error instanceof Error ? error.message : "Could not save review");
+        } finally {
+            drag.current.x = 0;
+            setIsDragging(false); setSwipeClass(""); setTouchDeltaX(0); setSaving(false); busy.current = false;
+        }
+    }, [currentCard, recordWordRating, editing]);
 
     // Desktop keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (editing || voiceMenu || e.repeat || e.ctrlKey || e.metaKey || e.altKey || (e.target instanceof HTMLElement && e.target.closest("input, textarea, select, [contenteditable=true]"))) return;
 
+            if (e.key === " " && e.target instanceof HTMLElement && e.target.closest("button")) return;
             if (e.key === "ArrowDown" || e.key.toLowerCase() === "s" || e.key === " ") {
                 e.preventDefault();
                 flipCard();
@@ -209,26 +309,34 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     const lang = direction === "normal"
                         ? (answerShown ? currentCard.tgtLang || "pl" : currentCard.srcLang || "en")
                         : (answerShown ? currentCard.srcLang || "en" : currentCard.tgtLang || "pl");
-                    speakText(text, lang);
+                    const sentence = direction === "normal" ? (answerShown ? currentCard.sentenceTranslated : currentCard.sentence) : (answerShown ? currentCard.sentence : currentCard.sentenceTranslated);
+                    void speakText(sentence && sentence.trim().toLowerCase() !== text.trim().toLowerCase() ? `${text}. ${sentence}` : text, lang);
                 }
             }
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [flipCard, rateCard, currentCard, direction, answerShown, speakText]);
+    }, [flipCard, rateCard, currentCard, direction, answerShown, speakText, editing, voiceMenu]);
 
     // Touch handlers for mobile swipe — strictly horizontal, zero page scroll
     const handleTouchStart = (e: React.TouchEvent) => {
+        if (busy.current || (e.target as HTMLElement).closest("button")) return;
+        setEnteredCard(currentCard?.id || null);
+        drag.current = { x: 0, lastX: e.touches[0].clientX, time: performance.now(), velocity: 0 };
         setTouchStartX(e.touches[0].clientX);
         setTouchStartY(e.touches[0].clientY);
         setIsDragging(true);
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        if (touchStartX === null || touchStartY === null) return;
+        if (busy.current || touchStartX === null || touchStartY === null) return;
         const currentX = e.touches[0].clientX;
         const deltaX = currentX - touchStartX;
+        if (Math.abs(deltaX) < 12 && Math.abs(e.touches[0].clientY - touchStartY) > 12) { setTouchStartX(null); setIsDragging(false); setTouchDeltaX(0); return; }
+        const now = performance.now();
+        drag.current.velocity = (currentX - drag.current.lastX) / Math.max(1, now - drag.current.time);
+        drag.current.lastX = currentX; drag.current.time = now; drag.current.x = deltaX;
         setTouchDeltaX(deltaX);
     };
 
@@ -236,22 +344,21 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         if (touchStartX === null) return;
         setIsDragging(false);
 
-        // Swipe threshold: 60px to rate
-        if (touchDeltaX < -60) {
-            void rateCard(1);
-        } else if (touchDeltaX > 60) {
-            void rateCard(2);
+        const x = drag.current.x;
+        const velocity = performance.now() - drag.current.time < 100 ? drag.current.velocity : 0;
+        const threshold = Math.min(100, (cardRef.current?.offsetWidth || 320) * .24);
+        if (Math.abs(x) >= threshold || (Math.abs(x) > 24 && Math.abs(velocity) > .55 && Math.sign(velocity) === Math.sign(x))) {
+            void rateCard(x < 0 ? 1 : 2);
+        } else {
+            drag.current.x = 0;
+            setTouchDeltaX(0);
         }
-        // NOTE: Tap does NOT flip the card anymore. Card is only flipped via bottom button.
-
         setTouchStartX(null);
         setTouchStartY(null);
-        setTouchDeltaX(0);
     };
 
     // Calculate rotation, translation, and glow shadow during touch drag
     const isSwipingLeft = touchDeltaX < -15;
-    const isSwipingRight = touchDeltaX > 15;
     const swipeIntensity = Math.min(1, Math.abs(touchDeltaX) / 100);
 
     const dynamicShadow = isDragging && touchDeltaX !== 0
@@ -266,7 +373,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
             : `rgba(16, 185, 129, ${0.4 + swipeIntensity * 0.6})`
         : undefined;
 
-    const cardTransformStyle: React.CSSProperties = isDragging && touchDeltaX !== 0
+    const cardTransformStyle: React.CSSProperties = isDragging || !!swipeClass
         ? {
               transform: `translate3d(${touchDeltaX}px, 0, 0) rotate(${touchDeltaX * 0.08}deg)`,
               boxShadow: dynamicShadow,
@@ -274,6 +381,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
               transition: "none",
           }
         : {
+              transform: "translate3d(0, 0, 0) rotate(0deg)",
               boxShadow: dynamicShadow,
               borderColor: dynamicBorder,
               transition: "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease, border-color 0.25s ease",
@@ -297,6 +405,16 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
     const isOriginalSide = (isNormal && !answerShown) || (!isNormal && answerShown);
     const wordColorClass = isOriginalSide ? "text-[#4ecdc4]" : "text-[#9ee7b9]";
+
+    useEffect(() => {
+        if (!currentCard || editing || loadingWords) return;
+        const key = `${currentCard.id}:${direction}:${answerShown}`;
+        if (spokenCard.current === key) return;
+        spokenCard.current = key;
+        const text = showSentence && showSentence.trim().toLowerCase() !== showWord?.trim().toLowerCase()
+            ? `${showWord}. ${showSentence}` : showWord || "";
+        void speakText(text, speakLang);
+    }, [currentCard, direction, answerShown, editing, loadingWords, showWord, showSentence, speakLang, speakText]);
 
     // Intervals preview
     const labelAgain = currentCard ? SRS.previewLabel(currentCard.sr, 1) : "1 min";
@@ -403,7 +521,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     }
 
     // 4. All Words Up To Date (words > 0 but dueWords == 0, and not in cramMode)
-    if (dueWords.length === 0 && !isCramMode) {
+    if (queue.length === 0 && dueWords.length === 0 && !isCramMode) {
         return (
             <div className="max-w-lg mx-auto px-4 py-8 flex flex-col items-center text-center">
                 <div className="size-20 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-4xl mb-5 shadow-xl shadow-emerald-500/10">
@@ -483,245 +601,95 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         );
     }
 
+    if (!currentCard) return null;
+
     const progressPercent = Math.round((currentIndex / queue.length) * 100);
     const screenshotUrl = resolveImageUrl(currentCard?.screenshot);
-    const activeVoice = pickGoogleVoice(speakLang);
+    const speechText = [showWord, showSentence && showSentence.trim().toLowerCase() !== showWord?.trim().toLowerCase() ? showSentence : ""].filter(Boolean).join(". ");
+    const chooseVoice = (value: string) => {
+        if (["Sulafat", "Algieba"].includes(value) && !premiumVoices.includes(value)) return;
+        setVoiceId(value); setVoiceMenu(false);
+        try { localStorage.setItem("reviewVoice", value); } catch { /* optional persistence */ }
+    };
+    const saveEdit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!editing || !user || busy.current) return;
+        busy.current = true; setSaving(true); setActionError("");
+        try {
+            const updated = { ...editing, original: editing.original.trim(), translated: editing.translated.trim(), ttsCacheInvalidatedAt: Date.now() };
+            await editWord(updated);
+            setQueue(prev => prev.map(word => word.id === updated.id ? updated : word));
+            setEditing(null);
+        } catch (error) { setActionError(error instanceof Error ? error.message : "Save failed"); }
+        finally { busy.current = false; setSaving(false); }
+    };
+    const removeCard = async () => {
+        if (!user || busy.current || !window.confirm(pl ? "Usunąć tę fiszkę?" : "Delete this flashcard?")) return;
+        busy.current = true; setSaving(true); setActionError("");
+        try { await removeWord(currentCard.id); setCurrentIndex(i => i + 1); setAnswerShown(false); }
+        catch (error) { setActionError(error instanceof Error ? error.message : "Delete failed"); }
+        finally { busy.current = false; setSaving(false); }
+    };
 
     return (
-        <div className="w-full max-w-xl mx-auto px-2 sm:px-6 py-1 sm:py-6 h-full sm:h-auto flex flex-col justify-between items-center select-none overflow-hidden touch-none">
-            {/* Header & Controls */}
-            <div className="w-full flex items-center justify-between mb-1.5 sm:mb-3 shrink-0">
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setDirection((d) => (d === "normal" ? "reverse" : "normal"));
-                            setAnswerShown(false);
-                        }}
-                        title={r.changeDirection}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-400/40 transition cursor-pointer active:scale-95"
-                    >
-                        <span>{direction === "normal" ? srcLang : tgtLang}</span>
-                        <span className="text-indigo-400 font-mono">⇄</span>
-                        <span>{direction === "normal" ? tgtLang : srcLang}</span>
-                    </button>
-
-                    {isCramMode && (
-                        <span className="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                            {r.cramBadge}
-                        </span>
-                    )}
-                </div>
-
-                <div className="px-3 py-1 rounded-full text-xs font-bold text-slate-300 bg-white/5 border border-white/10 tabular-nums">
-                    {currentIndex + 1} / {queue.length}
-                </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-2 sm:mb-5 shrink-0">
-                <div
-                    className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-teal-400 transition-all duration-300 rounded-full"
-                    style={{ width: `${progressPercent}%` }}
-                />
-            </div>
-
-            {/* 3D Perspective Flashcard Container */}
-            <div className="w-full review-perspective my-auto py-1">
-                <div
-                    className={`relative w-full rounded-2xl sm:rounded-3xl border border-white/12 bg-linear-to-b from-[#14192d]/95 via-[#0d1020]/95 to-[#090c17]/95 backdrop-blur-2xl p-4 sm:p-7 shadow-2xl shadow-black/80 transition-transform duration-200 select-none touch-none overscroll-none review-flashcard-element cursor-grab active:cursor-grabbing overflow-hidden ${
-                        isFlipping ? (answerShown ? "review-flashcard qt-flip-out" : "review-flashcard qt-flip-in") : ""
-                    } ${swipeClass} ${isCardEntering ? "card-in" : ""}`}
-                    style={cardTransformStyle}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                >
-                    {/* Visual Swipe Badges (Shown dynamically during touch drag) */}
-                    {isDragging && touchDeltaX < -25 && (
-                        <div
-                            className="absolute top-3.5 right-3.5 z-20 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-red-600 border border-red-400 shadow-xl shadow-red-600/40 pointer-events-none transform scale-105 transition-transform"
-                            style={{ opacity: Math.min(1, Math.abs(touchDeltaX) / 60) }}
-                        >
-                            ✕ {r.badgeAgain}
-                        </div>
-                    )}
-                    {isDragging && touchDeltaX > 25 && (
-                        <div
-                            className="absolute top-3.5 left-3.5 z-20 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-emerald-600 border border-emerald-400 shadow-xl shadow-emerald-600/40 pointer-events-none transform scale-105 transition-transform"
-                            style={{ opacity: Math.min(1, Math.abs(touchDeltaX) / 60) }}
-                        >
-                            ✓ {r.badgeGood}
-                        </div>
-                    )}
-
-                    {/* Question / Word Row with Chrome Google TTS */}
-                    <div className="flex flex-col items-center justify-center mb-2 sm:mb-3">
-                        <div className="flex items-center justify-center gap-3">
-                            <span className={`text-2xl sm:text-4xl font-black tracking-tight text-center ${wordColorClass}`}>
-                                {showWord}
-                            </span>
-                            <button
-                                type="button"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (showWord) speakText(showWord, speakLang);
-                                }}
-                                title={r.listenAudio}
-                                className={`inline-flex items-center justify-center size-9 sm:size-11 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/30 hover:scale-105 active:scale-95 transition cursor-pointer shrink-0 shadow-lg shadow-indigo-500/20 ${
-                                    isSpeaking ? "review-speak-btn speaking" : ""
-                                }`}
-                            >
-                                <Volume2 className="size-4.5 sm:size-5" />
-                            </button>
-                        </div>
+        <section className="lectoro-review" aria-label={r.breadcrumbReviews}>
+          <div className="review-panel">
+            <div className="review-header">
+                <span className="review-icon">🧠</span><span className="review-title">{pl ? "Codzienna powtórka" : "Daily Review"}</span>
+                <span className="review-count" aria-live="polite">{currentIndex + 1}/{queue.length}</span>
+                <button type="button" className="review-dir-btn" title={r.changeDirection} disabled={saving || !!flipPhase} onClick={() => {
+                    const next = direction === "normal" ? "reverse" : "normal";
+                    setDirection(next); setAnswerShown(false);
+                    try { localStorage.setItem("reviewDirection", next); } catch { /* optional persistence */ }
+                }}>{isNormal ? srcLang : tgtLang} <span className="dir-arrow">→</span> {isNormal ? tgtLang : srcLang}</button>
+                <div className="review-voice-picker">
+                    <button type="button" className="review-voice-btn" aria-expanded={voiceMenu} aria-controls="review-voice-menu" onClick={() => setVoiceMenu(v => !v)}><Volume2 /><span>{pl ? "Głos" : "Voice"}</span><span className={`review-voice-ai-badge ${premiumVoices.length ? "" : "is-locked"}`}>AI</span><span aria-hidden="true">⌄</span></button>
+                    <div id="review-voice-menu" className="review-voice-menu" hidden={!voiceMenu} onKeyDown={e => { if (e.key === "Escape") setVoiceMenu(false); }}>
+                        <div className="review-voice-menu-head"><strong>{pl ? "Głos powtórek" : "Review voice"}</strong><button className="review-voice-close" type="button" aria-label={pl ? "Zamknij" : "Close"} onClick={() => setVoiceMenu(false)}>×</button></div>
+                        <button type="button" className="review-voice-system" onClick={() => chooseVoice("")}>🔊 {pl ? "Głos systemowy" : "System voice"} {!voiceId && "✓"}</button>
+                        <label className="review-voice-option-copy">{pl ? "Głos przeglądarki" : "Browser voice"}<select className="w-full bg-slate-900 text-white p-2 rounded" value={voices.some(v => v.voiceURI === voiceId) ? voiceId : ""} onChange={e => chooseVoice(e.target.value)}><option value="">{pl ? "Automatyczny" : "Automatic"}</option>{voices.map(v => <option key={v.voiceURI} value={v.voiceURI}>{v.name} ({v.lang})</option>)}</select></label>
+                        <div className="review-voice-el-head"><span>Gemini TTS</span><span className="review-voice-premium">PREMIUM</span></div>
+                        <div className="review-voice-list">{["Sulafat", "Algieba"].map(name => <button type="button" className={`review-voice-item ${voiceId === name ? "active" : ""}`} key={name} disabled={!premiumVoices.includes(name)} onClick={() => chooseVoice(name)}><span className="review-voice-avatar el">{name === "Sulafat" ? "👩" : "👨"}</span><span>{name}</span>{!premiumVoices.includes(name) ? <span aria-label={pl ? "Zablokowane" : "Locked"}>🔒</span> : voiceId === name && <span className="review-voice-check">✓</span>}</button>)}</div>
+                        {!premiumVoices.length && <div className="review-voice-teaser"><p>{voiceAccessLoading ? (pl ? "Sprawdzanie planu…" : "Checking your plan…") : (pl ? "Naturalne głosy AI dostępne w planach BASIC i PRO." : "Natural AI voices are available with BASIC and PRO.")}</p>{!voiceAccessLoading && <a className="review-voice-upgrade" href={`${locale === "en" ? "/" : `/${locale}`}#pricing`}>{pl ? "Odblokuj głosy Gemini TTS" : "Unlock Gemini TTS voices"}</a>}</div>}
                     </div>
-
-                    {/* Context Sentence */}
-                    {showSentence && (
-                        <p className="text-center text-slate-300 text-xs sm:text-sm leading-relaxed mb-2 max-w-md mx-auto line-clamp-3 sm:line-clamp-none">
-                            {renderHighlightedSentence()}
-                        </p>
-                    )}
-
-                    {/* Movie Scene Screenshot from Cloudflare R2 */}
-                    {screenshotUrl && (
-                        <div className="mt-2.5 sm:mt-3 relative w-full max-h-[19vh] sm:max-h-[26vh] aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 bg-black/70 flex items-center justify-center shadow-inner mx-auto">
-                            {!imageLoaded && <div className="absolute inset-0 review-shimmer" />}
+                </div>
+            </div>
+            <div className="review-progress" role="progressbar" aria-valuenow={currentIndex} aria-valuemin={0} aria-valuemax={queue.length} aria-label={r.breadcrumbReviews}><div className="review-progress-bar" style={{ width: `${progressPercent}%` }} /></div>
+            {isCramMode && <button className="review-dir-btn" type="button" onClick={exitCramMode}>{r.cramBadge} ×</button>}
+            {actionError && <p className="review-error" role="alert">{actionError}</p>}
+            <div className="review-card">
+            {editing ? <form className="review-edit-form" onSubmit={saveEdit}>
+                {([['original', pl ? 'Oryginał' : 'Original'], ['translated', pl ? 'Tłumaczenie' : 'Translation'], ['sentence', pl ? 'Zdanie' : 'Sentence'], ['sentenceTranslated', pl ? 'Tłumaczenie zdania' : 'Sentence translation']] as const).map(([key, label]) => <label key={key}>{label}<input autoFocus={key === 'original'} required={key === 'original' || key === 'translated'} value={editing[key] || ""} onChange={e => setEditing({ ...editing, [key]: e.target.value })} /></label>)}
+                <div className="review-edit-actions"><button type="button" className="review-edit-cancel" disabled={saving} onClick={() => setEditing(null)}>{pl ? "Anuluj" : "Cancel"}</button><button className="review-edit-save" disabled={saving}>{pl ? "Zapisz" : "Save"}</button></div>
+            </form> : <>
+                <div className="review-card-viewport"><div ref={cardRef} key={currentCard.id} onAnimationEnd={event => { if (event.animationName === "reviewDealIn") setEnteredCard(currentCard.id); }} className={`review-flashcard ${enteredCard !== currentCard.id ? "review-entering" : ""} ${isDragging ? "review-dragging" : ""} ${flipPhase} ${swipeClass}`} style={cardTransformStyle} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onTouchCancel={() => { if (busy.current) return; drag.current.x = 0; setTouchStartX(null); setTouchDeltaX(0); setIsDragging(false); }}>
+                    <div className="review-question">
+                        <div className="review-word-row">
+                            <span className={`review-word ${isOriginalSide ? "__qt_original" : "__qt_translated"}`}>{showWord}</span>
+                            <button type="button" className={`review-speak-btn ${isSpeaking ? "speaking" : ""}`} aria-label={r.listenAudio} title={r.listenAudio} onClick={() => void speakText(speechText, speakLang)}><Volume2 /></button>
+                            <button type="button" className="review-speak-btn review-speak-slow-btn" aria-label={pl ? "Słuchaj wolniej (0,75×)" : "Listen slowly (0.75×)"} title="0.75×" onClick={() => void speakText(speechText, speakLang, .75)}><Turtle /></button>
+                        </div>
+                        {showSentence && showSentence.trim().toLowerCase() !== showWord?.trim().toLowerCase() && <div className="review-context-row"><span className="review-context">{renderHighlightedSentence()}</span></div>}
+                        {screenshotUrl && <div className="review-screenshot"><div className={`review-screenshot-box ${imageLoaded ? "is-loaded" : ""}`}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={screenshotUrl}
-                                alt={r.movieSnapshotAlt}
-                                className={`max-h-[19vh] sm:max-h-[26vh] w-full h-full object-contain transition-opacity duration-300 ${
-                                    imageLoaded ? "opacity-100" : "opacity-0"
-                                }`}
-                                onLoad={() => setImageLoaded(true)}
-                                onError={(e) => {
-                                    (e.currentTarget.parentElement as HTMLElement)?.classList.add("hidden");
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {/* Mobile Gesture Hint */}
-                    <div className="mt-3 text-center text-[10px] font-medium text-slate-500 sm:hidden flex items-center justify-center gap-1.5">
-                        <span>← Przesuń: {r.btnAgain} • {r.btnGood}: Przesuń →</span>
+                            <img key={screenshotUrl} className="review-screenshot-img" src={screenshotUrl} alt={r.movieSnapshotAlt} onLoad={() => setImageLoaded(true)} onError={e => e.currentTarget.parentElement?.classList.add("review-image-hidden")} />
+                        </div></div>}
                     </div>
                 </div>
-            </div>
-
-            {/* Bottom Action Area — Flip Button & Ratings */}
-            <div className="w-full mt-2 sm:mt-4 shrink-0">
-                {!answerShown ? (
-                    <div className="flex flex-col gap-2 sm:gap-2.5 w-full">
-                        {/* Prominent Flip Button */}
-                        <button
-                            type="button"
-                            onClick={flipCard}
-                            className="w-full h-12 sm:h-13 rounded-2xl font-black text-sm sm:text-base text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 border border-indigo-400/40 shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-98 transition cursor-pointer"
-                        >
-                            <RotateCw className="size-4 animate-spin-slow" />
-                            <span>{r.flipShowAnswer}</span>
-                            <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] text-indigo-200/80 bg-white/10 px-2 py-0.5 rounded ml-1">
-                                <kbd className="px-1 py-0.5 rounded bg-white/10">Spacja</kbd> / <kbd className="px-1 py-0.5 rounded bg-white/10">S</kbd> / <kbd className="px-1 py-0.5 rounded bg-white/10">↓</kbd>
-                            </span>
-                        </button>
-
-                        {/* Quick rating shortcuts / hints */}
-                        <div className="grid grid-cols-2 gap-2 sm:gap-3 opacity-60 hover:opacity-100 transition-opacity">
-                            <button
-                                type="button"
-                                onClick={() => void rateCard(1)}
-                                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/15 text-red-400 text-xs font-bold transition cursor-pointer active:scale-95"
-                            >
-                                <span>✕ {r.btnAgain}</span>
-                                <span className="text-[10px] text-slate-500">+{labelAgain}</span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => void rateCard(2)}
-                                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-400 text-xs font-bold transition cursor-pointer active:scale-95"
-                            >
-                                <span>✓ {r.btnGood}</span>
-                                <span className="text-[10px] text-slate-500">+{labelGood}</span>
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex flex-col w-full">
-                        <div className="text-center text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-                            {r.rateMemoryPrompt}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2.5 sm:gap-4 w-full">
-                            {/* Button: Again / Grade 1 */}
-                            <button
-                                type="button"
-                                onClick={() => void rateCard(1)}
-                                className="group relative flex flex-col items-center justify-center h-14 sm:h-16 p-2 sm:p-3 rounded-2xl border border-red-500/40 bg-linear-to-b from-red-500/20 to-red-500/10 hover:from-red-500/30 hover:to-red-500/15 hover:border-red-500/60 active:scale-98 transition cursor-pointer shadow-xl shadow-red-950/40"
-                            >
-                                <span className="hidden sm:inline-flex absolute top-2 left-2.5 items-center gap-1 font-mono text-[9px] text-red-400/80">
-                                    <kbd className="px-1 py-0.5 rounded bg-red-500/15 border border-red-500/25">←</kbd>
-                                    <kbd className="px-1 py-0.5 rounded bg-red-500/15 border border-red-500/25">A</kbd>
-                                </span>
-                                <span className="text-sm sm:text-base font-black text-red-400 group-hover:text-red-300 transition">
-                                    ✕ {r.btnAgain}
-                                </span>
-                                <span className="text-[11px] font-semibold text-slate-400 mt-0.5 tabular-nums">
-                                    +{labelAgain}
-                                </span>
-                            </button>
-
-                            {/* Button: Good / Grade 2 */}
-                            <button
-                                type="button"
-                                onClick={() => void rateCard(2)}
-                                className="group relative flex flex-col items-center justify-center h-14 sm:h-16 p-2 sm:p-3 rounded-2xl border border-emerald-500/40 bg-linear-to-b from-emerald-500/20 to-emerald-500/10 hover:from-emerald-500/30 hover:to-emerald-500/15 hover:border-emerald-500/60 active:scale-98 transition cursor-pointer shadow-xl shadow-emerald-950/40"
-                            >
-                                <span className="hidden sm:inline-flex absolute top-2 right-2.5 items-center gap-1 font-mono text-[9px] text-emerald-400/80">
-                                    <kbd className="px-1 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/25">→</kbd>
-                                    <kbd className="px-1 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/25">D</kbd>
-                                </span>
-                                <span className="text-sm sm:text-base font-black text-emerald-400 group-hover:text-emerald-300 transition">
-                                    ✓ {r.btnGood}
-                                </span>
-                                <span className="text-[11px] font-semibold text-slate-400 mt-0.5 tabular-nums">
-                                    +{labelGood}
-                                </span>
-                            </button>
-                        </div>
-
-                        {/* Button to flip back to question */}
-                        <button
-                            type="button"
-                            onClick={flipCard}
-                            className="w-full mt-2 h-9 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-98"
-                        >
-                            <RotateCw className="size-3.5" />
-                            <span>{r.flipShowQuestion}</span>
-                            <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[9px] text-slate-500 ml-1">
-                                <kbd className="px-1 py-0.5 rounded bg-white/10">S</kbd>
-                            </span>
-                        </button>
-                    </div>
-                )}
-
-                {/* Keyboard Shortcuts Hint (Desktop only) */}
-                <div className="hidden sm:flex items-center justify-center gap-4 mt-4 text-[10px] font-medium text-slate-500">
-                    <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px]">W</kbd> {r.shortcutPronounce}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px]">S / Spacja</kbd> {r.shortcutFlip}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px]">A</kbd> {r.shortcutAgain}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px]">D</kbd> {r.shortcutGood}
-                    </span>
                 </div>
+                <button type="button" className={`review-flip-btn ${swipeClass ? "qt-fade-out" : ""}`} disabled={saving || !!flipPhase} onClick={flipCard}><span className="review-flip-keys"><kbd>↓</kbd> <kbd>S</kbd></span><span>{answerShown ? r.flipShowQuestion : r.flipShowAnswer}</span></button>
+                <div className={`review-controls ${swipeClass ? "qt-fade-out" : ""}`}>
+                    <div className="review-rating"><div className="review-rating-label">{pl ? "Czy znasz odpowiedź?" : "Did you know the answer?"}</div>
+                        <div className="review-rating-buttons review-rating-buttons-2">
+                            {([1, 2] as const).map(grade => <button type="button" className={`review-rate-btn ${grade === 1 ? "rate-no" : "rate-yes"}`} key={grade} disabled={saving || !!flipPhase} onClick={() => void rateCard(grade)}><span className="rate-key-pair"><kbd>{grade === 1 ? "←" : "→"}</kbd> <kbd>{grade === 1 ? "A" : "D"}</kbd></span><span className="rate-copy"><span className="rate-label">{grade === 1 ? (pl ? "Nie znam" : "Don't know") : (pl ? "Znam" : "Know")}</span><span className="review-next-info">{grade === 1 ? labelAgain : labelGood}</span></span></button>)}
+                        </div>
+                    </div>
+                    <div className="review-shortcuts"><span><span className="shortcut-keys"><kbd>↑</kbd> <kbd>W</kbd></span>{r.shortcutPronounce}</span><span><span className="shortcut-keys"><kbd>↓</kbd> <kbd>S</kbd></span>{r.shortcutFlip}</span></div>
+                    <div className="review-actions-row"><button type="button" className="review-edit-btn" disabled={saving || !!flipPhase} onClick={() => setEditing({ ...currentCard })}>✏️ {pl ? "Edytuj" : "Edit"}</button><button type="button" className="review-delete-btn" disabled={saving || !!flipPhase} onClick={() => void removeCard()}>🗑 {pl ? "Usuń" : "Delete"}</button></div>
+                </div>
+            </>}
             </div>
-        </div>
+          </div>
+        </section>
     );
 }

@@ -10,6 +10,8 @@ import {
     fetchUserWords,
     saveWordReviewRating,
     checkRedirectAuth,
+    editReviewWord,
+    deleteReviewWord,
 } from "@/lib/firebase";
 import { SRS, type ReviewWord } from "@/lib/srs";
 
@@ -33,6 +35,8 @@ interface AuthContextValue {
     signInWithGoogle: () => Promise<void>;
     signOut: () => Promise<void>;
     refreshWords: () => Promise<void>;
+    editWord: (word: ReviewWord) => Promise<void>;
+    removeWord: (id: string) => Promise<void>;
     recordWordRating: (word: ReviewWord, grade: 1 | 2) => Promise<void>;
 }
 
@@ -57,6 +61,8 @@ const AuthContext = createContext<AuthContextValue>({
     signOut: async () => {},
     refreshWords: async () => {},
     recordWordRating: async () => {},
+    editWord: async () => {},
+    removeWord: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -182,7 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const recordWordRating = useCallback(
         async (word: ReviewWord, grade: 1 | 2) => {
-            if (!user?.uid) return;
+            if (!user?.uid) throw new Error("Please sign in");
             const updatedSr = await saveWordReviewRating(user.uid, word, grade);
             setWords((prev) =>
                 prev.map((w) => (w.id === word.id ? { ...w, sr: updatedSr, updatedAt: Date.now() } : w))
@@ -190,6 +196,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         [user]
     );
+
+    const editWord = useCallback(async (word: ReviewWord) => {
+        if (!user) throw new Error("Please sign in");
+        await editReviewWord(user.uid, word);
+        setWords(previous => previous.map(item => item.id === word.id ? word : item));
+    }, [user]);
+    const removeWord = useCallback(async (id: string) => {
+        if (!user) throw new Error("Please sign in");
+        await deleteReviewWord(user.uid, id);
+        setWords(previous => previous.filter(item => item.id !== id));
+    }, [user]);
 
     const now = Date.now();
     const rawDueWords = words.filter((w) => SRS.isDue(w, now));
@@ -220,6 +237,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 signOut,
                 refreshWords,
                 recordWordRating,
+                editWord,
+                removeWord,
             }}
         >
             {children}

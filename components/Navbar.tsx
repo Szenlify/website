@@ -4,510 +4,460 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MouseEvent } from "react";
 import {
-    BookOpen,
-    Check,
-    ChevronDown,
-    Globe2,
-    LogOut,
-    Menu,
-    Sparkles,
+  BookOpen,
+  Check,
+  ChevronDown,
+  Globe2,
+  LogOut,
+  Menu,
+  Sparkles,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetTitle,
-    SheetTrigger,
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { LOCALES, type Dict, type Locale } from "@/lib/i18n/types";
 import { getGuideCatalogCopy } from "@/lib/guides/catalog";
 import {
-    getLocalizedHref,
-    getLocalizedSectionHref,
-    switchLocalePathname,
+  getLocalizedHref,
+  getLocalizedSectionHref,
+  switchLocalePathname,
 } from "@/lib/routing";
 import { useAuth } from "@/context/AuthContext";
 
 interface NavbarProps {
-    dict: Dict;
-    locale: Locale;
+  dict: Dict;
+  locale: Locale;
 }
 
 export default function Navbar({ dict, locale }: NavbarProps) {
-    const pathname = usePathname();
-    const {
-        user,
-        isSigningIn,
-        dueWords,
-        rawDueCount,
-        viewMode,
-        openReviews,
-        openLanding,
-        signInWithGoogle,
-        signOut,
-    } = useAuth();
+  const pathname = usePathname();
+  const {
+    user,
+    isSigningIn,
+    rawDueCount,
+    openLanding,
+    signInWithGoogle,
+    signOut,
+  } = useAuth();
 
-    const { nav, lang } = dict;
-    const guidesLabel = getGuideCatalogCopy(locale).label;
-    const LANG_OPTIONS = LOCALES.map((code) => ({ code, label: lang[code] }));
-    const currentLangLabel =
-        LANG_OPTIONS.find((l) => l.code === locale)?.label ?? "EN";
+  const { nav, lang } = dict;
+  const guidesLabel = getGuideCatalogCopy(locale).label;
+  const LANG_OPTIONS = LOCALES.map((code) => ({ code, label: lang[code] }));
+  const currentLangLabel =
+    LANG_OPTIONS.find((l) => l.code === locale)?.label ?? "EN";
 
-    const handleLanguageChange = (event: MouseEvent<HTMLAnchorElement>) => {
-        event.currentTarget.hash = window.location.hash;
-    };
+  const handleLanguageChange = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.currentTarget.hash = window.location.hash;
+  };
 
-    return (
-        <>
-            <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-                    <Logo locale={locale} />
-                    <nav className="hidden lg:flex items-center gap-7">
-                        {user && (
-                            <Link
-                                href={getLocalizedHref("/dashboard/reviews", locale)}
-                                className={`flex items-center gap-2 text-sm font-bold transition-all px-3 py-1.5 rounded-xl cursor-pointer ${
-                                    pathname.includes("/dashboard/reviews")
-                                        ? "bg-indigo-600/30 text-indigo-200 border border-indigo-500/50 shadow-sm shadow-indigo-500/20"
-                                        : "text-slate-300 hover:text-white hover:bg-white/5"
-                                }`}
-                            >
-                                <Sparkles className="size-4 text-indigo-400" />
-                                <span>{nav.reviews || "Powtórki"}</span>
-                                <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-mono font-bold tabular-nums">
-                                    {rawDueCount}
-                                </span>
-                            </Link>
-                        )}
-                        <Link
-                            href={getLocalizedSectionHref("features", locale)}
-                            onClick={() => openLanding()}
-                            className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
-                        >
-                            {nav.features}
-                        </Link>
-                        <Link
-                            href={getLocalizedHref("/guides", locale)}
-                            onClick={() => openLanding()}
-                            className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
-                        >
-                            {guidesLabel}
-                        </Link>
-                        <Link
-                            href={getLocalizedSectionHref(
-                                "how-it-works",
-                                locale,
-                            )}
-                            onClick={() => openLanding()}
-                            className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
-                        >
-                            {nav.howItWorks}
-                        </Link>
-                        <Link
-                            href={getLocalizedSectionHref("comparison", locale)}
-                            onClick={() => openLanding()}
-                            className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
-                        >
-                            {nav.comparison}
-                        </Link>
-                        <Link
-                            href={getLocalizedSectionHref("pricing", locale)}
-                            onClick={() => openLanding()}
-                            className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
-                        >
-                            {nav.pricing}
-                        </Link>
-                    </nav>
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+          <Logo locale={locale} />
+          <nav className="hidden lg:flex items-center gap-7">
+            <Link
+              href={getLocalizedSectionHref("features", locale)}
+              onClick={() => openLanding()}
+              className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
+            >
+              {nav.features}
+            </Link>
+            <Link
+              href={getLocalizedHref("/guides", locale)}
+              onClick={() => openLanding()}
+              className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
+            >
+              {guidesLabel}
+            </Link>
+            <Link
+              href={getLocalizedSectionHref("how-it-works", locale)}
+              onClick={() => openLanding()}
+              className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
+            >
+              {nav.howItWorks}
+            </Link>
+            <Link
+              href={getLocalizedSectionHref("comparison", locale)}
+              onClick={() => openLanding()}
+              className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
+            >
+              {nav.comparison}
+            </Link>
+            <Link
+              href={getLocalizedSectionHref("pricing", locale)}
+              onClick={() => openLanding()}
+              className="text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200"
+            >
+              {nav.pricing}
+            </Link>
+          </nav>
 
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        {/* Language selector (desktop) */}
-                        <DropdownMenu modal={false}>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    aria-label={lang.selectLanguage}
-                                    className="group hidden gap-1.5 rounded-lg text-xs font-bold text-slate-300 lg:inline-flex"
-                                >
-                                    <Globe2 className="size-3.5" />
-                                    <span>{currentLangLabel}</span>
-                                    <ChevronDown className="size-3 transition-transform group-data-[state=open]:rotate-180" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-36">
-                                {LANG_OPTIONS.map((option) => (
-                                    <DropdownMenuItem key={option.code} asChild>
-                                        <a
-                                            key={option.code}
-                                            href={switchLocalePathname(
-                                                pathname,
-                                                option.code as Locale,
-                                            )}
-                                            onClick={handleLanguageChange}
-                                            className={`flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold transition-colors ${option.code === locale ? "bg-indigo-600/30 text-indigo-300" : "text-slate-300 hover:text-white hover:bg-white/5"}`}
-                                        >
-                                            <span>{option.label}</span>
-                                            {option.code === locale && (
-                                                <Check className="size-3 text-indigo-400" />
-                                            )}
-                                        </a>
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Language selector (desktop) */}
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label={lang.selectLanguage}
+                  className="group hidden gap-1.5 rounded-lg text-xs font-bold text-slate-300 lg:inline-flex"
+                >
+                  <Globe2 className="size-3.5" />
+                  <span>{currentLangLabel}</span>
+                  <ChevronDown className="size-3 transition-transform group-data-[state=open]:rotate-180" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-36">
+                {LANG_OPTIONS.map((option) => (
+                  <DropdownMenuItem key={option.code} asChild>
+                    <a
+                      key={option.code}
+                      href={switchLocalePathname(
+                        pathname,
+                        option.code as Locale,
+                      )}
+                      onClick={handleLanguageChange}
+                      className={`flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold transition-colors ${option.code === locale ? "bg-indigo-600/30 text-indigo-300" : "text-slate-300 hover:text-white hover:bg-white/5"}`}
+                    >
+                      <span>{option.label}</span>
+                      {option.code === locale && (
+                        <Check className="size-3 text-indigo-400" />
+                      )}
+                    </a>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-                        {/* Sign in / User Profile */}
-                        {!user ? (
-                            <button
-                                type="button"
-                                disabled={isSigningIn}
-                                onClick={() => void signInWithGoogle()}
-                                className="inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-50"
-                            >
-                                {isSigningIn ? (
-                                    <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-                                ) : (
-                                    <svg className="size-4 shrink-0" viewBox="0 0 24 24">
-                                        <path
-                                            fill="#EA4335"
-                                            d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-                                        />
-                                        <path
-                                            fill="#4285F4"
-                                            d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-                                        />
-                                        <path
-                                            fill="#FBBC05"
-                                            d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-2.9z"
-                                        />
-                                        <path
-                                            fill="#34A853"
-                                            d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
-                                        />
-                                    </svg>
-                                )}
-                                <span>{isSigningIn ? "Logowanie..." : (nav.signIn || "Zaloguj się")}</span>
-                            </button>
-                        ) : (
-                            <div className="flex items-center gap-2 sm:gap-2.5">
-                                {/* Clickable review counter badge to open reviews */}
-                                <Link
-                                    href={getLocalizedHref("/dashboard/reviews", locale)}
-                                    title={nav.reviews || "Powtórki"}
-                                    className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95 ${
-                                        pathname.includes("/dashboard/reviews") ? "ring-2 ring-indigo-500/50" : ""
-                                    }`}
-                                >
-                                    <span className="hidden xs:inline">{nav.reviews || "Powtórki"}</span>
-                                    <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono font-bold">
-                                        {rawDueCount}
-                                    </span>
-                                </Link>
+            {/* Sign in / User Profile */}
+            {!user ? (
+              <button
+                type="button"
+                disabled={isSigningIn}
+                onClick={() => void signInWithGoogle()}
+                className="inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-50"
+              >
+                {isSigningIn ? (
+                  <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+                ) : (
+                  <svg className="size-4 shrink-0" viewBox="0 0 24 24">
+                    <path
+                      fill="#EA4335"
+                      d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
+                    />
+                    <path
+                      fill="#4285F4"
+                      d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-2.9z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
+                    />
+                  </svg>
+                )}
+                <span>
+                  {isSigningIn ? "Logowanie..." : nav.signIn || "Zaloguj się"}
+                </span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 sm:gap-2.5">
+                {/* Clickable review counter badge to open reviews */}
+                <Link
+                  href={getLocalizedHref("/dashboard/reviews", locale)}
+                  title={nav.reviews || "Powtórki"}
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95 ${
+                    pathname.includes("/dashboard/reviews")
+                      ? "ring-2 ring-indigo-500/50"
+                      : ""
+                  }`}
+                >
+                  <span className="hidden xs:inline">
+                    {nav.reviews || "Powtórki"}
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono font-bold">
+                    {rawDueCount}
+                  </span>
+                </Link>
 
-                                <DropdownMenu modal={false}>
-                                    <DropdownMenuTrigger asChild>
-                                        <button
-                                            type="button"
-                                            title="Profil użytkownika"
-                                            className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer active:scale-95"
-                                        >
-                                            {user.photoURL ? (
-                                                /* eslint-disable-next-line @next/next/no-img-element */
-                                                <img
-                                                    src={user.photoURL}
-                                                    alt={user.displayName || "User"}
-                                                    className="size-7 rounded-full border border-indigo-400/40 object-cover"
-                                                />
-                                            ) : (
-                                                <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
-                                                    {(user.displayName || user.email || "U")[0].toUpperCase()}
-                                                </div>
-                                            )}
-                                            <span className="hidden md:inline text-xs font-semibold text-slate-300 max-w-[100px] truncate">
-                                                {user.displayName || user.email}
-                                            </span>
-                                            <ChevronDown className="size-3 text-slate-400" />
-                                        </button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-52">
-                                        <div className="px-3 py-2 border-b border-white/10">
-                                            <p className="text-xs font-bold text-white truncate">
-                                                {user.displayName || "Użytkownik"}
-                                            </p>
-                                            <p className="text-[11px] text-slate-400 truncate">
-                                                {user.email}
-                                            </p>
-                                        </div>
-                                        <DropdownMenuItem asChild>
-                                            <Link
-                                                href={getLocalizedHref("/dashboard/reviews", locale)}
-                                                className="text-indigo-300 hover:text-white hover:bg-indigo-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between w-full"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <Sparkles className="size-3.5 text-indigo-400" />
-                                                    <span>{nav.reviews || "Powtórki"}</span>
-                                                </div>
-                                                <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] font-mono">
-                                                    {rawDueCount}
-                                                </span>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        {pathname.includes("/dashboard/reviews") && (
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href={getLocalizedHref("/", locale)}
-                                                    className="text-slate-300 hover:text-white hover:bg-white/5 cursor-pointer text-xs font-medium py-2 w-full"
-                                                >
-                                                    <span>{dict.reviews?.backToHome || "Strona główna"}</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                        )}
-                                        <DropdownMenuItem
-                                            onClick={() => void signOut()}
-                                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2"
-                                        >
-                                            <LogOut className="size-3.5 mr-2" />
-                                            <span>{nav.signOut || "Wyloguj się"}</span>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
-                        )}
-
-                        {/* Mobile Menu Hamburger */}
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="rounded-xl text-slate-300 lg:hidden"
-                                    aria-label="Toggle Navigation Menu"
-                                >
-                                    <Menu className="size-5" />
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent className="lg:hidden">
-                                <SheetTitle className="sr-only">
-                                    Navigation
-                                </SheetTitle>
-                                <div className="border-b border-white/10 p-4 pr-16">
-                                    <Logo locale={locale} />
-                                </div>
-                                <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-4 py-4">
-                                    {user && (
-                                        <SheetClose asChild>
-                                            <Link
-                                                href={getLocalizedHref("/dashboard/reviews", locale)}
-                                                className="flex items-center justify-between rounded-2xl p-3.5 mb-2 bg-linear-to-r from-indigo-600/40 via-purple-600/30 to-indigo-600/20 border border-indigo-500/40 text-white font-bold text-sm shadow-md shadow-indigo-500/20 active:scale-98 transition text-left cursor-pointer"
-                                            >
-                                                <div className="flex items-center gap-2.5">
-                                                    <Sparkles className="size-4 text-indigo-400" />
-                                                    <span>{nav.reviews || "Powtórki"}</span>
-                                                </div>
-                                                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500 text-white text-xs font-mono font-bold">
-                                                    {rawDueCount}
-                                                </span>
-                                            </Link>
-                                        </SheetClose>
-                                    )}
-                                    {[
-                                        [
-                                            getLocalizedSectionHref(
-                                                "features",
-                                                locale,
-                                            ),
-                                            nav.features,
-                                        ],
-                                        [
-                                            getLocalizedHref("/guides", locale),
-                                            guidesLabel,
-                                        ],
-                                        [
-                                            getLocalizedSectionHref(
-                                                "how-it-works",
-                                                locale,
-                                            ),
-                                            nav.howItWorks,
-                                        ],
-                                        [
-                                            getLocalizedSectionHref(
-                                                "comparison",
-                                                locale,
-                                            ),
-                                            nav.comparison,
-                                        ],
-                                        [
-                                            getLocalizedSectionHref(
-                                                "pricing",
-                                                locale,
-                                            ),
-                                            nav.pricing,
-                                        ],
-                                    ].map(([href, label], index) => (
-                                        <SheetClose key={href} asChild>
-                                            <Link
-                                                href={href}
-                                                onClick={() => openLanding()}
-                                                className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white"
-                                            >
-                                                <span>{label}</span>
-                                                {index === 0 && (
-                                                    <Sparkles className="size-3.5 text-indigo-400" />
-                                                )}
-                                                {index === 1 && (
-                                                    <BookOpen className="size-3.5 text-indigo-400" />
-                                                )}
-                                            </Link>
-                                        </SheetClose>
-                                    ))}
-
-                                    <div className="mt-1 border-t border-white/10 pt-2">
-                                        <p className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                                            {lang.selectLanguage}
-                                        </p>
-                                        <div className="flex flex-wrap gap-2 px-4 pb-1">
-                                            {LANG_OPTIONS.map((option) => (
-                                                <SheetClose
-                                                    key={option.code}
-                                                    asChild
-                                                >
-                                                    <a
-                                                        href={switchLocalePathname(
-                                                            pathname,
-                                                            option.code as Locale,
-                                                        )}
-                                                        onClick={
-                                                            handleLanguageChange
-                                                        }
-                                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${option.code === locale ? "bg-indigo-600/40 text-indigo-200 border border-indigo-500/50" : "bg-white/5 text-slate-300 hover:text-white border border-white/10"}`}
-                                                    >
-                                                        {option.label}
-                                                    </a>
-                                                </SheetClose>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-auto flex flex-col gap-3 border-t border-white/10 pt-4">
-                                        <div className="flex items-center justify-around">
-                                            <SheetClose asChild>
-                                                <Link
-                                                    href={getLocalizedHref(
-                                                        "/privacy",
-                                                        locale,
-                                                    )}
-                                                    className="text-xs font-medium text-slate-400 hover:text-white"
-                                                >
-                                                    {nav.privacyPolicy}
-                                                </Link>
-                                            </SheetClose>
-                                            <span className="text-slate-600">
-                                                •
-                                            </span>
-                                            <SheetClose asChild>
-                                                <Link
-                                                    href={getLocalizedHref(
-                                                        "/terms",
-                                                        locale,
-                                                    )}
-                                                    className="text-xs font-medium text-slate-400 hover:text-white"
-                                                >
-                                                    {nav.termsOfService}
-                                                </Link>
-                                            </SheetClose>
-                                        </div>
-
-                                        {/* Mobile Auth Button */}
-                                        {!user ? (
-                                            <Button
-                                                type="button"
-                                                disabled={isSigningIn}
-                                                onClick={() => void signInWithGoogle()}
-                                                className="h-11 w-full rounded-xl font-bold flex items-center justify-center gap-2.5 bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer"
-                                            >
-                                                {isSigningIn ? (
-                                                    <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-                                                ) : (
-                                                    <svg className="size-4" viewBox="0 0 24 24">
-                                                        <path
-                                                            fill="#EA4335"
-                                                            d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-                                                        />
-                                                        <path
-                                                            fill="#4285F4"
-                                                            d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-                                                        />
-                                                        <path
-                                                            fill="#FBBC05"
-                                                            d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-2.9z"
-                                                        />
-                                                        <path
-                                                            fill="#34A853"
-                                                            d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
-                                                        />
-                                                    </svg>
-                                                )}
-                                                <span>{isSigningIn ? "Logowanie..." : (nav.signIn || "Zaloguj się")}</span>
-                                            </Button>
-                                        ) : (
-                                            <div className="flex flex-col gap-2">
-                                                <SheetClose asChild>
-                                                    <Link
-                                                        href={getLocalizedHref("/dashboard/reviews", locale)}
-                                                        title={nav.reviews || "Powtórki"}
-                                                        className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/40 transition cursor-pointer text-left active:scale-98"
-                                                    >
-                                                        <div className="flex items-center gap-2">
-                                                            {user.photoURL ? (
-                                                                /* eslint-disable-next-line @next/next/no-img-element */
-                                                                <img
-                                                                    src={user.photoURL}
-                                                                    alt={user.displayName || "User"}
-                                                                    className="size-7 rounded-full border border-indigo-400/40 object-cover"
-                                                                />
-                                                            ) : (
-                                                                <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
-                                                                    {(user.displayName || user.email || "U")[0].toUpperCase()}
-                                                                </div>
-                                                            )}
-                                                            <span className="text-xs font-bold text-white max-w-[130px] truncate">
-                                                                {user.displayName || user.email}
-                                                            </span>
-                                                        </div>
-                                                        <span className="px-2 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-bold">
-                                                            {rawDueCount}
-                                                        </span>
-                                                    </Link>
-                                                </SheetClose>
-                                                <SheetClose asChild>
-                                                    <Button
-                                                        type="button"
-                                                        variant="outline"
-                                                        onClick={() => void signOut()}
-                                                        className="h-10 w-full rounded-xl text-xs font-bold text-red-400 border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
-                                                    >
-                                                        <LogOut className="size-3.5 mr-2" />
-                                                        <span>{nav.signOut || "Wyloguj się"}</span>
-                                                    </Button>
-                                                </SheetClose>
-                                            </div>
-                                        )}
-                                    </div>
-                                </nav>
-                            </SheetContent>
-                        </Sheet>
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      title="Profil użytkownika"
+                      className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer active:scale-95"
+                    >
+                      {user.photoURL ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={user.photoURL}
+                          alt={user.displayName || "User"}
+                          className="size-7 rounded-full border border-indigo-400/40 object-cover"
+                        />
+                      ) : (
+                        <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+                          {(user.displayName ||
+                            user.email ||
+                            "U")[0].toUpperCase()}
+                        </div>
+                      )}
+                      <span className="hidden md:inline text-xs font-semibold text-slate-300 max-w-[100px] truncate">
+                        {user.displayName || user.email}
+                      </span>
+                      <ChevronDown className="size-3 text-slate-400" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-52">
+                    <div className="px-3 py-2 border-b border-white/10">
+                      <p className="text-xs font-bold text-white truncate">
+                        {user.displayName || "Użytkownik"}
+                      </p>
+                      <p className="text-[11px] text-slate-400 truncate">
+                        {user.email}
+                      </p>
                     </div>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={getLocalizedHref("/dashboard/reviews", locale)}
+                        className="text-indigo-300 hover:text-white hover:bg-indigo-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between w-full"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="size-3.5 text-indigo-400" />
+                          <span>{nav.reviews || "Powtórki"}</span>
+                        </div>
+                        <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] font-mono">
+                          {rawDueCount}
+                        </span>
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      onClick={() => void signOut()}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2"
+                    >
+                      <LogOut className="size-3.5 mr-2" />
+                      <span>{nav.signOut || "Wyloguj się"}</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+
+            {/* Mobile Menu Hamburger */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-xl text-slate-300 lg:hidden"
+                  aria-label="Toggle Navigation Menu"
+                >
+                  <Menu className="size-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="lg:hidden">
+                <SheetTitle className="sr-only">Navigation</SheetTitle>
+                <div className="border-b border-white/10 p-4 pr-16">
+                  <Logo locale={locale} />
                 </div>
-            </header>
-            <div className="h-17 lg:h-19" aria-hidden="true" />
-        </>
-    );
+                <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-4 py-4">
+                  {user && (
+                    <SheetClose asChild>
+                      <Link
+                        href={getLocalizedHref("/dashboard/reviews", locale)}
+                        className="flex items-center justify-between rounded-2xl p-3.5 mb-2 bg-linear-to-r from-indigo-600/40 via-purple-600/30 to-indigo-600/20 border border-indigo-500/40 text-white font-bold text-sm shadow-md shadow-indigo-500/20 active:scale-98 transition text-left cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <Sparkles className="size-4 text-indigo-400" />
+                          <span>{nav.reviews || "Powtórki"}</span>
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded-full bg-indigo-500 text-white text-xs font-mono font-bold">
+                          {rawDueCount}
+                        </span>
+                      </Link>
+                    </SheetClose>
+                  )}
+                  {[
+                    [getLocalizedSectionHref("features", locale), nav.features],
+                    [getLocalizedHref("/guides", locale), guidesLabel],
+                    [
+                      getLocalizedSectionHref("how-it-works", locale),
+                      nav.howItWorks,
+                    ],
+                    [
+                      getLocalizedSectionHref("comparison", locale),
+                      nav.comparison,
+                    ],
+                    [getLocalizedSectionHref("pricing", locale), nav.pricing],
+                  ].map(([href, label], index) => (
+                    <SheetClose key={href} asChild>
+                      <Link
+                        href={href}
+                        onClick={() => openLanding()}
+                        className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white"
+                      >
+                        <span>{label}</span>
+                        {index === 0 && (
+                          <Sparkles className="size-3.5 text-indigo-400" />
+                        )}
+                        {index === 1 && (
+                          <BookOpen className="size-3.5 text-indigo-400" />
+                        )}
+                      </Link>
+                    </SheetClose>
+                  ))}
+
+                  <div className="mt-1 border-t border-white/10 pt-2">
+                    <p className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                      {lang.selectLanguage}
+                    </p>
+                    <div className="flex flex-wrap gap-2 px-4 pb-1">
+                      {LANG_OPTIONS.map((option) => (
+                        <SheetClose key={option.code} asChild>
+                          <a
+                            href={switchLocalePathname(
+                              pathname,
+                              option.code as Locale,
+                            )}
+                            onClick={handleLanguageChange}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${option.code === locale ? "bg-indigo-600/40 text-indigo-200 border border-indigo-500/50" : "bg-white/5 text-slate-300 hover:text-white border border-white/10"}`}
+                          >
+                            {option.label}
+                          </a>
+                        </SheetClose>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-auto flex flex-col gap-3 border-t border-white/10 pt-4">
+                    <div className="flex items-center justify-around">
+                      <SheetClose asChild>
+                        <Link
+                          href={getLocalizedHref("/privacy", locale)}
+                          className="text-xs font-medium text-slate-400 hover:text-white"
+                        >
+                          {nav.privacyPolicy}
+                        </Link>
+                      </SheetClose>
+                      <span className="text-slate-600">•</span>
+                      <SheetClose asChild>
+                        <Link
+                          href={getLocalizedHref("/terms", locale)}
+                          className="text-xs font-medium text-slate-400 hover:text-white"
+                        >
+                          {nav.termsOfService}
+                        </Link>
+                      </SheetClose>
+                    </div>
+
+                    {/* Mobile Auth Button */}
+                    {!user ? (
+                      <Button
+                        type="button"
+                        disabled={isSigningIn}
+                        onClick={() => void signInWithGoogle()}
+                        className="h-11 w-full rounded-xl font-bold flex items-center justify-center gap-2.5 bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer"
+                      >
+                        {isSigningIn ? (
+                          <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+                        ) : (
+                          <svg className="size-4" viewBox="0 0 24 24">
+                            <path
+                              fill="#EA4335"
+                              d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
+                            />
+                            <path
+                              fill="#4285F4"
+                              d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
+                            />
+                            <path
+                              fill="#FBBC05"
+                              d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-2.9z"
+                            />
+                            <path
+                              fill="#34A853"
+                              d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.4 7.5 23 12 23z"
+                            />
+                          </svg>
+                        )}
+                        <span>
+                          {isSigningIn
+                            ? "Logowanie..."
+                            : nav.signIn || "Zaloguj się"}
+                        </span>
+                      </Button>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <SheetClose asChild>
+                          <Link
+                            href={getLocalizedHref(
+                              "/dashboard/reviews",
+                              locale,
+                            )}
+                            title={nav.reviews || "Powtórki"}
+                            className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/40 transition cursor-pointer text-left active:scale-98"
+                          >
+                            <div className="flex items-center gap-2">
+                              {user.photoURL ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img
+                                  src={user.photoURL}
+                                  alt={user.displayName || "User"}
+                                  className="size-7 rounded-full border border-indigo-400/40 object-cover"
+                                />
+                              ) : (
+                                <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+                                  {(user.displayName ||
+                                    user.email ||
+                                    "U")[0].toUpperCase()}
+                                </div>
+                              )}
+                              <span className="text-xs font-bold text-white max-w-[130px] truncate">
+                                {user.displayName || user.email}
+                              </span>
+                            </div>
+                            <span className="px-2 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-bold">
+                              {rawDueCount}
+                            </span>
+                          </Link>
+                        </SheetClose>
+                        <SheetClose asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => void signOut()}
+                            className="h-10 w-full rounded-xl text-xs font-bold text-red-400 border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
+                          >
+                            <LogOut className="size-3.5 mr-2" />
+                            <span>{nav.signOut || "Wyloguj się"}</span>
+                          </Button>
+                        </SheetClose>
+                      </div>
+                    )}
+                  </div>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+      </header>
+      <div className="h-17 lg:h-19" aria-hidden="true" />
+    </>
+  );
 }
