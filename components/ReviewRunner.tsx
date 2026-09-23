@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 import { SRS, resolveImageUrl, type ReviewWord } from "@/lib/srs";
 import type { Dict, Locale } from "@/lib/i18n/types";
 
+import { REVIEW_VOICE, ReviewAudioCache, reviewAudioText, selectReviewVoice } from "@/lib/review-audio";
 import "./review.css";
 
 interface ReviewRunnerProps {
@@ -47,14 +48,14 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const [saving, setSaving] = useState(false);
   const [actionError, setActionError] = useState("");
   const [editing, setEditing] = useState<ReviewWord | null>(null);
-  const [voiceMenu, setVoiceMenu] = useState(false);
-  const [voiceId, setVoiceId] = useState("");
   const [premiumVoices, setPremiumVoices] = useState<string[]>([]);
-  const [voiceAccessLoading, setVoiceAccessLoading] = useState(true);
+  const browserVoices = useRef<SpeechSynthesisVoice[]>([]);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const speechRequest = useRef(0);
-  const audioUrl = useRef<string | null>(null);
-  const spokenCard = useRef("");
+  const audioCache = useRef(new ReviewAudioCache());
+  const [audioMessage, setAudioMessage] = useState("");
+  const [audioLoading, setAudioLoading] = useState(false);
   const session = useRef("");
   const pl = locale === "pl";
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -93,15 +94,14 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           ? "reverse"
           : "normal",
       );
-      setVoiceId(localStorage.getItem("reviewVoice") || "");
     } catch {
       /* Storage may be unavailable in private browsing. */
     }
     return () => {
       speechRequest.current++;
       audioRef.current?.pause();
-      if (audioUrl.current) URL.revokeObjectURL(audioUrl.current);
       window.speechSynthesis?.cancel();
+      audioCache.current.clear();
     };
   }, []);
 
@@ -111,7 +111,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   useEffect(() => {
     const controller = new AbortController();
     setPremiumVoices([]);
-    setVoiceAccessLoading(true);
     const checkAccess = async () => {
       try {
         if (!user) return;
@@ -140,197 +139,133 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         }
       } catch {
         /* Keep premium locked when entitlement cannot be verified. */
-      } finally {
-        if (!controller.signal.aborted) setVoiceAccessLoading(false);
       }
     };
     void checkAccess();
     return () => controller.abort();
-  }, [user, voiceMenu]);
+  }, [user]);
 
-  // Available speech synthesis voices
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-
-  // Load available voices and listen for changes
   useEffect(() => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const cache = audioCache.current;
+    return () => { cache.clear(); speechRequest.current++; audioRef.current?.pause(); window.speechSynthesis?.cancel(); };
+  }, [user?.uid]);
 
-    const updateVoices = () => {
-      const vList = window.speechSynthesis.getVoices();
-      if (vList && vList.length > 0) {
-        setVoices(vList);
+  useEffect(() => {
+    speechRequest.current++;
+    audioRef.current?.pause();
+    window.speechSynthesis?.cancel();
+    setIsSpeaking(false);
+    setAudioLoading(false);
+    setAudioMessage("");
+    setImageLoaded(false);
+  }, [currentCard?.id, currentCard?.original, currentCard?.translated, currentCard?.sentence, currentCard?.sentenceTranslated, direction, answerShown]);
+
+  useEffect(() => {
+    if (!premiumVoices.includes(REVIEW_VOICE)) return;
+    const upcoming = queue.slice(currentIndex, currentIndex + 3);
+    let cancelled = false;
+    // Current card first; future cards use low-priority downloads.
+    void (async () => {
+      for (const [index, card] of upcoming.entries()) {
+        if (cancelled) return;
+        await Promise.all([
+          audioCache.current.get(reviewAudioText(card.original, card.sentence), card.srcLang || "en", index > 0),
+          audioCache.current.get(reviewAudioText(card.translated, card.sentenceTranslated), card.tgtLang || "pl", index > 0),
+        ]);
       }
-    };
+    })();
+    return () => { cancelled = true; };
+  }, [queue, currentIndex, premiumVoices]);
 
-    updateVoices();
-    window.speechSynthesis.addEventListener("voiceschanged", updateVoices);
-    return () => {
-      window.speechSynthesis.removeEventListener("voiceschanged", updateVoices);
-    };
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    const update = () => { browserVoices.current = synth.getVoices(); };
+    update();
+    synth.addEventListener("voiceschanged", update);
+    return () => { synth.removeEventListener("voiceschanged", update); synth.cancel(); };
   }, []);
 
-  // Pick best voice — Chrome Google voice priority
-  const pickGoogleVoice = useCallback(
-    (targetLang: string): SpeechSynthesisVoice | null => {
-      const voiceList =
-        voices.length > 0
-          ? voices
-          : typeof window !== "undefined" && "speechSynthesis" in window
-            ? window.speechSynthesis.getVoices()
-            : [];
-
-      if (!voiceList || voiceList.length === 0) return null;
-
-      const base = (targetLang || "en").split("-")[0].toLowerCase();
-      const langVoices = voiceList.filter((v) =>
-        (v.lang || "").toLowerCase().startsWith(base),
-      );
-
-      // 1. Exact Google voice for this language (e.g. "Google US English", "Google polski", "Google Deutsch")
-      const exactGoogle = langVoices.find((v) => /google/i.test(v.name));
-      if (exactGoogle) return exactGoogle;
-
-      // 2. Any voice in list matching language with Google in name
-      const anyGoogle = voiceList.find(
-        (v) =>
-          /google/i.test(v.name) && (v.lang || "").toLowerCase().includes(base),
-      );
-      if (anyGoogle) return anyGoogle;
-
-      // 3. Natural or Neural voice
-      const naturalVoice = langVoices.find((v) =>
-        /natural|neural|online/i.test(v.name),
-      );
-      if (naturalVoice) return naturalVoice;
-
-      // 4. Default language voice
-      return langVoices[0] || null;
-    },
-    [voices],
-  );
-
-  // Reset image loaded on card change
-  useEffect(() => {
-    setImageLoaded(false);
-  }, [currentIndex, currentCard?.id]);
-
-  const speakText = useCallback(
-    async (text: string, lang = "en", rate = 1) => {
-      if (
-        typeof window === "undefined" ||
-        !("speechSynthesis" in window) ||
-        !text
-      )
-        return;
-      try {
-        const request = ++speechRequest.current;
-        audioRef.current?.pause();
-        if (audioUrl.current) {
-          URL.revokeObjectURL(audioUrl.current);
-          audioUrl.current = null;
-        }
-        window.speechSynthesis.cancel();
-        if (
-          premiumVoices.includes(voiceId) &&
-          user &&
-          lang === (currentCard?.srcLang || "en")
-        ) {
-          setIsSpeaking(true);
-          try {
-            const token = await user.getIdToken();
-            const response = await fetch(
-              "https://geminiproxy-gyagzflbra-ew.a.run.app",
-              {
-                method: "POST",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  action: "synthesizeGeminiTts",
-                  context: "review",
-                  text,
-                  language: lang,
-                  voiceId,
-                  cacheNotBefore: currentCard?.ttsCacheInvalidatedAt || 0,
-                }),
-              },
-            );
-            if (!response.ok) {
-              const error = await response.json();
-              throw new Error(error.error || "Audio unavailable");
-            }
-            const blob = await response.blob();
-            if (request !== speechRequest.current) return;
-            const url = URL.createObjectURL(blob);
-            audioUrl.current = url;
-            const audio = new Audio(url);
-            audioRef.current = audio;
-            audio.playbackRate = rate;
-            const cleanup = () => {
-              URL.revokeObjectURL(url);
-              if (audioUrl.current === url) audioUrl.current = null;
-              setIsSpeaking(false);
-            };
-            audio.onended = cleanup;
-            audio.onerror = cleanup;
-            await audio.play();
-            return;
-          } catch (error) {
-            if (request !== speechRequest.current) return;
-            setActionError(
-              error instanceof Error ? error.message : "Audio unavailable",
-            );
-          }
-        }
-        if (request !== speechRequest.current) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        const voice =
-          voices.find((v) => v.voiceURI === voiceId) || pickGoogleVoice(lang);
-
-        if (voice) {
-          utterance.voice = voice;
-          utterance.lang = voice.lang;
-        } else {
-          const bcpMap: Record<string, string> = {
-            en: "en-US",
-            pl: "pl-PL",
-            de: "de-DE",
-            es: "es-ES",
-            fr: "fr-FR",
-            it: "it-IT",
-            ja: "ja-JP",
-            ko: "ko-KR",
-            nl: "nl-NL",
-            pt: "pt-BR",
-            cs: "cs-CZ",
-          };
-          const base = lang.split("-")[0].toLowerCase();
-          utterance.lang = bcpMap[base] || lang;
-        }
-
-        utterance.rate = rate;
-        setIsSpeaking(true);
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-
-        // Chrome fix for speech synthesis pausing
-        window.speechSynthesis.resume();
-        window.speechSynthesis.speak(utterance);
-      } catch (err) {
-        console.warn("[TTS] SpeechSynthesis failed:", err);
-        setIsSpeaking(false);
+  const speakFallback = useCallback((text: string, lang: string, rate: number, request: number) => {
+    if (request !== speechRequest.current) return;
+    const synth = window.speechSynthesis;
+    if (!synth || !window.SpeechSynthesisUtterance) {
+      setAudioMessage(pl ? "Ta przeglądarka nie obsługuje wymowy." : "Speech is unavailable in this browser.");
+      return;
+    }
+    const available = synth.getVoices();
+    const voice = selectReviewVoice(available.length ? available : browserVoices.current, lang);
+    const utterance = new SpeechSynthesisUtterance(text);
+    // Retain the utterance until playback finishes (including on mobile Safari).
+    utteranceRef.current = utterance;
+    utterance.lang = voice?.lang || lang;
+    if (voice) utterance.voice = voice;
+    utterance.rate = rate;
+    utterance.onstart = () => { if (request === speechRequest.current) setIsSpeaking(true); };
+    utterance.onend = () => {
+      if (request !== speechRequest.current) return;
+      utteranceRef.current = null;
+      setIsSpeaking(false);
+    };
+    utterance.onerror = (event) => {
+      if (request !== speechRequest.current) return;
+      utteranceRef.current = null;
+      setIsSpeaking(false);
+      if (event.error !== "interrupted" && event.error !== "canceled") {
+        setAudioMessage(pl ? "Dotknij głośnika, aby ponowić odsłuch." : "Tap the speaker to retry playback.");
       }
-    },
-    [
-      pickGoogleVoice,
-      voiceId,
-      voices,
-      user,
-      currentCard?.srcLang,
-      premiumVoices,
-    ],
-  );
+    };
+    try {
+      synth.cancel();
+      synth.speak(utterance);
+      synth.resume();
+    } catch {
+      setIsSpeaking(false);
+      setAudioMessage(pl ? "Nie udało się odtworzyć wymowy." : "Could not play speech.");
+    }
+  }, [pl]);
+
+  const speakText = useCallback(async (text: string, lang = "en", rate = 1) => {
+    if (!text) return;
+    const request = ++speechRequest.current;
+    audioRef.current?.pause();
+    window.speechSynthesis?.cancel();
+    setIsSpeaking(false);
+    setAudioMessage("");
+    setAudioLoading(false);
+    if (!premiumVoices.includes(REVIEW_VOICE) || audioCache.current.isMissing(text, lang)) {
+      speakFallback(text, lang, rate, request);
+      return;
+    }
+    setAudioLoading(true);
+    const url = await audioCache.current.get(text, lang);
+    if (request !== speechRequest.current) return;
+    setAudioLoading(false);
+    if (!url) {
+      speakFallback(text, lang, rate, request);
+      return;
+    }
+    const audio = audioRef.current || new Audio();
+    audioRef.current = audio;
+    audio.src = url;
+    audio.playbackRate = rate;
+    audio.preservesPitch = true;
+    audio.onended = () => { if (request === speechRequest.current) setIsSpeaking(false); };
+    audio.onerror = () => {
+      if (request !== speechRequest.current) return;
+      setIsSpeaking(false);
+      setAudioMessage(pl ? "Nie udało się odtworzyć nagrania. Spróbuj ponownie." : "Could not play recording. Try again.");
+    };
+    try {
+      await audio.play();
+      if (request === speechRequest.current) setIsSpeaking(true);
+    } catch {
+      if (request === speechRequest.current) {
+        setIsSpeaking(false);
+        setAudioMessage(pl ? "Dotknij głośnika, aby spróbować ponownie." : "Tap the speaker to try again.");
+      }
+    }
+  }, [premiumVoices, speakFallback, pl]);
 
   const flipCard = useCallback(() => {
     if (busy.current || !currentCard || editing) return;
@@ -401,8 +336,8 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         if (result) throw result;
         speechRequest.current++;
         audioRef.current?.pause();
-        window.speechSynthesis?.cancel();
-        setIsSpeaking(false);
+      window.speechSynthesis?.cancel();
+          setIsSpeaking(false);
         setAnswerShown(false);
         setCurrentIndex((prev) => prev + 1);
       } catch (error) {
@@ -427,7 +362,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
         editing ||
-        voiceMenu ||
         e.repeat ||
         e.ctrlKey ||
         e.metaKey ||
@@ -504,7 +438,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     answerShown,
     speakText,
     editing,
-    voiceMenu,
   ]);
 
   // Touch handlers for mobile swipe — strictly horizontal, zero page scroll
@@ -607,53 +540,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const isNormal = direction === "normal";
   const srcLang = (currentCard?.srcLang || "en").toUpperCase();
   const tgtLang = (currentCard?.tgtLang || "pl").toUpperCase();
-
-  const showWord = isNormal
-    ? answerShown
-      ? currentCard?.translated
-      : currentCard?.original
-    : answerShown
-      ? currentCard?.original
-      : currentCard?.translated;
-
-  const showSentence = isNormal
-    ? answerShown
-      ? currentCard?.sentenceTranslated
-      : currentCard?.sentence
-    : answerShown
-      ? currentCard?.sentence
-      : currentCard?.sentenceTranslated;
-
-  const speakLang = isNormal
-    ? answerShown
-      ? currentCard?.tgtLang || "pl"
-      : currentCard?.srcLang || "en"
-    : answerShown
-      ? currentCard?.srcLang || "en"
-      : currentCard?.tgtLang || "pl";
-
-  useEffect(() => {
-    if (!currentCard || editing || loadingWords) return;
-    const key = `${currentCard.id}:${direction}:${answerShown}`;
-    if (spokenCard.current === key) return;
-    spokenCard.current = key;
-    const text =
-      showSentence &&
-      showSentence.trim().toLowerCase() !== showWord?.trim().toLowerCase()
-        ? `${showWord}. ${showSentence}`
-        : showWord || "";
-    void speakText(text, speakLang);
-  }, [
-    currentCard,
-    direction,
-    answerShown,
-    editing,
-    loadingWords,
-    showWord,
-    showSentence,
-    speakLang,
-    speakText,
-  ]);
 
   // Intervals preview
   const labelAgain = currentCard
@@ -867,20 +753,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
   const progressPercent = Math.round((currentIndex / queue.length) * 100);
   const screenshotUrl = resolveImageUrl(currentCard?.screenshot);
-  const chooseVoice = (value: string) => {
-    if (
-      ["Sulafat", "Algieba"].includes(value) &&
-      !premiumVoices.includes(value)
-    )
-      return;
-    setVoiceId(value);
-    setVoiceMenu(false);
-    try {
-      localStorage.setItem("reviewVoice", value);
-    } catch {
-      /* optional persistence */
-    }
-  };
   const saveEdit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!editing || !user || busy.current) return;
@@ -934,7 +806,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         <div className="review-header">
           <span className="review-icon">🧠</span>
           <span className="review-title">
-            {pl ? "Codzienna powtórka" : "Daily Review"}
+            {pl ? "Powtórki" : "Review"}
           </span>
           <span className="review-count" aria-live="polite">
             {currentIndex + 1}/{queue.length}
@@ -958,119 +830,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
             {isNormal ? srcLang : tgtLang} <span className="dir-arrow">→</span>{" "}
             {isNormal ? tgtLang : srcLang}
           </button>
-          <div className="review-voice-picker">
-            <button
-              type="button"
-              className="review-voice-btn"
-              aria-expanded={voiceMenu}
-              aria-controls="review-voice-menu"
-              onClick={() => setVoiceMenu((v) => !v)}
-            >
-              <Volume2 />
-              <span>{pl ? "Głos" : "Voice"}</span>
-              <span
-                className={`review-voice-ai-badge ${premiumVoices.length ? "" : "is-locked"}`}
-              >
-                AI
-              </span>
-              <span aria-hidden="true">⌄</span>
-            </button>
-            <div
-              id="review-voice-menu"
-              className="review-voice-menu"
-              hidden={!voiceMenu}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") setVoiceMenu(false);
-              }}
-            >
-              <div className="review-voice-menu-head">
-                <strong>{pl ? "Głos powtórek" : "Review voice"}</strong>
-                <button
-                  className="review-voice-close"
-                  type="button"
-                  aria-label={pl ? "Zamknij" : "Close"}
-                  onClick={() => setVoiceMenu(false)}
-                >
-                  ×
-                </button>
-              </div>
-              <button
-                type="button"
-                className="review-voice-system"
-                onClick={() => chooseVoice("")}
-              >
-                🔊 {pl ? "Głos systemowy" : "System voice"} {!voiceId && "✓"}
-              </button>
-              <label className="review-voice-option-copy">
-                {pl ? "Głos przeglądarki" : "Browser voice"}
-                <select
-                  className="w-full bg-slate-900 text-white p-2 rounded"
-                  value={
-                    voices.some((v) => v.voiceURI === voiceId) ? voiceId : ""
-                  }
-                  onChange={(e) => chooseVoice(e.target.value)}
-                >
-                  <option value="">{pl ? "Automatyczny" : "Automatic"}</option>
-                  {voices.map((v) => (
-                    <option key={v.voiceURI} value={v.voiceURI}>
-                      {v.name} ({v.lang})
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <div className="review-voice-el-head">
-                <span>Gemini TTS</span>
-                <span className="review-voice-premium">PREMIUM</span>
-              </div>
-              <div className="review-voice-list">
-                {["Sulafat", "Algieba"].map((name) => (
-                  <button
-                    type="button"
-                    className={`review-voice-item ${voiceId === name ? "active" : ""}`}
-                    key={name}
-                    disabled={!premiumVoices.includes(name)}
-                    onClick={() => chooseVoice(name)}
-                  >
-                    <span className="review-voice-avatar el">
-                      {name === "Sulafat" ? "👩" : "👨"}
-                    </span>
-                    <span>{name}</span>
-                    {!premiumVoices.includes(name) ? (
-                      <span aria-label={pl ? "Zablokowane" : "Locked"}>🔒</span>
-                    ) : (
-                      voiceId === name && (
-                        <span className="review-voice-check">✓</span>
-                      )
-                    )}
-                  </button>
-                ))}
-              </div>
-              {!premiumVoices.length && (
-                <div className="review-voice-teaser">
-                  <p>
-                    {voiceAccessLoading
-                      ? pl
-                        ? "Sprawdzanie planu…"
-                        : "Checking your plan…"
-                      : pl
-                        ? "Naturalne głosy AI dostępne w planach BASIC i PRO."
-                        : "Natural AI voices are available with BASIC and PRO."}
-                  </p>
-                  {!voiceAccessLoading && (
-                    <a
-                      className="review-voice-upgrade"
-                      href={`${locale === "en" ? "/" : `/${locale}`}#pricing`}
-                    >
-                      {pl
-                        ? "Odblokuj głosy Gemini TTS"
-                        : "Unlock Gemini TTS voices"}
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
         </div>
+        {(audioLoading || audioMessage) && <p className="review-audio-status" role="status">
+          {audioLoading ? (pl ? "Wczytywanie nagrania…" : "Loading recording…") : audioMessage}
+        </p>}
         <div
           className="review-progress"
           role="progressbar"
