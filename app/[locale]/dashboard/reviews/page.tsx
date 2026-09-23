@@ -57,5 +57,5 @@ export default async function LocaleDashboardReviewsPage({
     if (!isLocale(locale)) notFound();
     const dict = await getDictionary(locale);
 
-    return <DashboardReviewsClient dict={dict} locale={locale} />;
+    return <div data-reviews-screen><DashboardReviewsClient dict={dict} locale={locale} /></div>;
 }
