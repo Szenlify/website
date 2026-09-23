@@ -25,6 +25,24 @@ export function isIosDevice(): boolean {
   );
 }
 
+export function isMobileDevice(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return (
+    /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|webOS/i.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
+    (typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 768px) and (pointer: coarse)").matches)
+  );
+}
+
+export function isSafariBrowser(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const isAppleVendor = typeof navigator.vendor === "string" && navigator.vendor.includes("Apple");
+  const hasSafari = /Safari/i.test(ua) && !/Chrome|Chromium|Edg|Android|CriOS|FxiOS/i.test(ua);
+  return hasSafari || (isAppleVendor && typeof window !== "undefined" && !(window as unknown as { chrome?: unknown }).chrome);
+}
+
 export function isAppleDevice(): boolean {
   if (typeof navigator === "undefined") return false;
   return (
@@ -225,10 +243,10 @@ export function selectReviewVoice<T extends { name: string; lang: string; defaul
   );
   if (!matchingVoices.length) return undefined;
 
-  const onIos = isIosDevice();
+  const onMobile = isMobileDevice();
 
   // On PC / desktop browsers: strictly ONLY voices from Google
-  if (!onIos) {
+  if (!onMobile) {
     const googleVoices = matchingVoices.filter((v) =>
       /google/i.test(`${v.name} ${v.voiceURI}`)
     );
