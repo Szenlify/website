@@ -482,12 +482,12 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
 }
 .review-screenshot-box {
     position: relative;
-    width: 85%;
+    width: 100%;
     min-height: 140px;
     aspect-ratio: 16 / 9;
     max-height: 250px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+
     background: linear-gradient(
         90deg,
         rgba(255, 255, 255, 0.03) 25%,
@@ -550,6 +550,8 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
 .review-word {
     font-size: 24px;
     font-weight: 700;
+    text-align: start;
+    padding-left: 12px;
     letter-spacing: -0.5px;
     white-space: pre-line;
     line-height: 1.25;
