@@ -10,13 +10,13 @@ import type { Dict, Locale } from "@/lib/i18n/types";
 
 export const FEATURE_IMAGE_SLOTS = {
   slot1_dualSubtitles: {
-    src: "/showcase/1.jpg",
+    src: "/showcase/11.jpg",
     alt: "Podwójne napisy Lectoro AI na filmie wideo",
     label: "ZDJĘCIE 1: Podwójne napisy na wideo (Netflix / YouTube)",
     windowTitle: "Netflix / YouTube Dual Subtitles",
   },
   slot2_dictionaryAudio: {
-    src: "/showcase/wardog.png",
+    src: "/showcase/22.jpg",
     alt: "Wyskakujące okienko słownika z tłumaczeniem słowa i odsłuchem audio",
     label: "ZDJĘCIE 2: Interaktywny słownik i wymowa audio każdego słówka",
     windowTitle: "Lectoro Pop-up Dictionary & Speech",
@@ -72,13 +72,13 @@ export default function FeatureShowcase({
         </div>
         <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight mb-5 max-w-3xl mx-auto">
           {isPl
-            ? "Wszystko, co musisz wiedzieć: Co to jest i jak używać Lectoro"
-            : "Everything You Need to Know: What It Is & How to Use Lectoro"}
+            ? "Wszystko, co musisz wiedzieć jak używać Lectoro"
+            : "Everything You Need to Know How to Use Lectoro"}
         </h2>
         <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
           {isPl
-            ? "Zaprojektowane na wzór Language Reactor, udoskonalone o kontekstową sztuczną inteligencję, wymowę Chrome Google TTS i mobilne fiszki ze spaced repetition."
-            : "Engineered like Language Reactor, enhanced with contextual AI, Chrome Google TTS audio, and spaced-repetition mobile video flashcards."}
+            ? "Zaprojektowane na wzór Language Reactor, udoskonalone o kontekstową sztuczną inteligencję, wymowę i mobilne fiszki ze spaced repetition."
+            : "Engineered like Language Reactor, enhanced with contextual AI, TTS and spaced-repetition mobile video flashcards."}
         </p>
       </div>
 
@@ -160,9 +160,9 @@ export default function FeatureShowcase({
                   alt={FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.alt}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  className="object-contain group-hover:scale-[0.98] transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
+
               </div>
             </div>
           </div>
@@ -192,9 +192,9 @@ export default function FeatureShowcase({
                   alt={FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.alt}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  className="object-contain group-hover:scale-[0.98] transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#08090E]/80 via-transparent to-transparent pointer-events-none" />
+
               </div>
             </div>
           </div>
