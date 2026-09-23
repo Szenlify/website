@@ -16,6 +16,7 @@ import { SRS, resolveImageUrl, type ReviewWord } from "@/lib/srs";
 import type { Dict, Locale } from "@/lib/i18n/types";
 
 import { REVIEW_VOICE, ReviewAudioCache, reviewAudioText, selectReviewVoice } from "@/lib/review-audio";
+import ReviewScreenshot from "./ReviewScreenshot";
 import "./review.css";
 
 interface ReviewRunnerProps {
@@ -70,7 +71,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [touchDeltaX, setTouchDeltaX] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Snapshot the session: rating updates must not reorder or reset its queue.
   useEffect(() => {
@@ -157,7 +157,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     setIsSpeaking(false);
     setAudioLoading(false);
     setAudioMessage("");
-    setImageLoaded(false);
   }, [currentCard?.id, currentCard?.original, currentCard?.translated, currentCard?.sentence, currentCard?.sentenceTranslated, direction, answerShown]);
 
   useEffect(() => {
@@ -999,25 +998,13 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                   </div>
                                 )}
                               {screenshotUrl && (
-                                <div className="review-screenshot">
-                                  <div
-                                    className={`review-screenshot-box ${imageLoaded ? "is-loaded" : ""}`}
-                                  >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                      key={screenshotUrl}
-                                      className="review-screenshot-img"
-                                      src={screenshotUrl}
-                                      alt={r.movieSnapshotAlt}
-                                      onLoad={() => setImageLoaded(true)}
-                                      onError={(e) =>
-                                        e.currentTarget.parentElement?.classList.add(
-                                          "review-image-hidden",
-                                        )
-                                      }
-                                    />
-                                  </div>
-                                </div>
+                                <ReviewScreenshot
+                                  key={screenshotUrl}
+                                  src={screenshotUrl}
+                                  alt={r.movieSnapshotAlt}
+                                  pl={pl}
+                                  active={active}
+                                />
                               )}
                             </div>
                           </div>
