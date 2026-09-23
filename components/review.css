@@ -1330,9 +1330,6 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     grid-area: 1 / 1;
     min-width: 0;
     padding: 16px 20px 24px;
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl);
-    background: #0d2630;
     box-shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 32px rgba(0,0,0,.12);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
