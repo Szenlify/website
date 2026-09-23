@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useLayoutEffect } from "react";
+import { resetReviewScroll } from "@/lib/review-scroll";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import ReviewRunner from "@/components/ReviewRunner";
 import type { Dict, Locale } from "@/lib/i18n/types";
 import { getLocalizedHref } from "@/lib/routing";
-import { Home, Sparkles, ChevronRight } from "lucide-react";
+import { Home, Sparkles } from "lucide-react";
 
 interface DashboardReviewsClientProps {
     dict: Dict;
@@ -19,6 +20,10 @@ export default function DashboardReviewsClient({
 }: DashboardReviewsClientProps) {
     const { user, loading, isSigningIn, signInWithGoogle } = useAuth();
     const r = dict.reviews;
+
+    useLayoutEffect(() => {
+        resetReviewScroll();
+    }, [loading, user?.uid, locale]);
 
     // Loading auth state
     if (loading) {

@@ -2,7 +2,7 @@
 
 import "./pricing.css";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { auth, loginWithGoogle } from "@/lib/firebase";
 import { BILLING_PLANS, getBillingUrl, type PaidPlan, type PaymentMode } from "@/lib/billing";
@@ -94,11 +94,11 @@ export default function Pricing({ dict, locale }: PricingProps) {
 
     return (
         <section
-            className="lectoro-pricing py-20 border-t border-white/10 bg-[#050711]/40 relative z-10"
+            className="lectoro-pricing py-14 sm:py-20 border-t border-white/10 bg-[#050711]/40 relative z-10"
             id="pricing"
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-16">
+                <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-16">
                     <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3 block">
                         {pricing.tag}
                     </span>

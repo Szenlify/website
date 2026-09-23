@@ -45,6 +45,7 @@ interface NavbarProps {
 
 export default function Navbar({ dict, locale }: NavbarProps) {
   const pathname = usePathname();
+  const isReviewsPage = /\/dashboard\/reviews\/?$/.test(pathname);
   const {
     user,
     isSigningIn,
@@ -71,9 +72,9 @@ export default function Navbar({ dict, locale }: NavbarProps) {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
+      <header data-review-navigation={isReviewsPage} className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-          <Logo locale={locale} />
+          <Logo locale={locale} className="shrink-0 max-sm:gap-2 max-sm:[&_span]:text-xl max-[360px]:[&>img]:hidden" />
           <nav className="hidden lg:flex items-center gap-7">
             <Link
               href={getLocalizedSectionHref("features", locale)}
@@ -105,7 +106,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="navbar-actions flex items-center gap-2 sm:gap-3">
             {/* Language selector (desktop) */}
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
@@ -149,7 +150,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                 type="button"
                 disabled={isSigningIn}
                 onClick={() => void signInWithGoogle()}
-                className="inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-50"
+                className="min-h-11 whitespace-nowrap inline-flex items-center gap-2 px-2.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-50"
               >
                 {isSigningIn ? (
                   <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
@@ -183,7 +184,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                 <Link
                   href={getLocalizedHref("/dashboard/reviews", locale)}
                   title={nav.reviews || "Powtórki"}
-                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95 ${
+                  className={`min-h-11 min-w-11 justify-center inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95 ${
                     pathname.includes("/dashboard/reviews")
                       ? "ring-2 ring-indigo-500/50"
                       : ""
@@ -202,7 +203,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                     <button
                       type="button"
                       title="Profil użytkownika"
-                      className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer active:scale-95"
+                      className="min-h-11 min-w-11 justify-center flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer active:scale-95"
                     >
                       {user.photoURL ? (
                         /* eslint-disable-next-line @next/next/no-img-element */
@@ -266,7 +267,8 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-xl text-slate-300 lg:hidden"
+                  className="size-11 shrink-0 rounded-xl text-slate-300 lg:hidden"
+                  data-review-menu-trigger
                   aria-label="Toggle Navigation Menu"
                 >
                   <Menu className="size-5" />
@@ -275,7 +277,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
               <SheetContent className="lg:hidden" aria-describedby={undefined}>
                 <SheetTitle className="sr-only">Navigation</SheetTitle>
                 <div className="border-b border-white/10 p-4 pr-16">
-                  <Logo locale={locale} />
+                  <Logo locale={locale} className="shrink-0 max-sm:gap-2 max-sm:[&_span]:text-xl max-[360px]:[&>img]:hidden" />
                 </div>
                 <nav className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto overscroll-contain px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
                   {user && (
@@ -307,7 +309,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                       <Link
                         href={href}
                         onClick={() => openLanding()}
-                        className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white"
+                        className="flex items-center justify-between min-h-12 rounded-xl px-4 py-3 text-base font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white"
                       >
                         <span>{label}</span>
                         {index === 0 && (
@@ -352,7 +354,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                       <SheetClose asChild>
                         <Link
                           href={getLocalizedHref("/privacy", locale)}
-                          className="text-xs font-medium text-slate-400 hover:text-white"
+                          className="inline-flex min-h-11 items-center text-xs font-medium text-slate-400 hover:text-white"
                         >
                           {nav.privacyPolicy}
                         </Link>
@@ -361,7 +363,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                       <SheetClose asChild>
                         <Link
                           href={getLocalizedHref("/terms", locale)}
-                          className="text-xs font-medium text-slate-400 hover:text-white"
+                          className="inline-flex min-h-11 items-center text-xs font-medium text-slate-400 hover:text-white"
                         >
                           {nav.termsOfService}
                         </Link>
@@ -459,7 +461,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
           </div>
         </div>
       </header>
-      <div className="h-17 lg:h-19" aria-hidden="true" />
+      <div data-review-navigation-spacer={isReviewsPage} className="h-17 lg:h-19" aria-hidden="true" />
     </>
   );
 }

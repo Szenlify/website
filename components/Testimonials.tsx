@@ -32,7 +32,7 @@ export default function Testimonials({ dict }: TestimonialsProps) {
     ];
 
     return (
-        <section className="relative z-10 overflow-hidden py-24">
+        <section className="relative z-10 overflow-hidden py-14 sm:py-24">
             {/* Ambient Background Blur */}
             <div
                 aria-hidden="true"
@@ -41,7 +41,7 @@ export default function Testimonials({ dict }: TestimonialsProps) {
 
             <div className="mx-auto ">
                 {/* Header Section */}
-                <div className="mx-auto mb-16 max-w-3xl text-center">
+                <div className="mx-auto px-4 mb-8 sm:mb-16 max-w-3xl text-center">
                     <span className="mb-3 inline-block rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-widest text-cyan-300">
                         {testimonials.tag}
                     </span>
@@ -68,7 +68,7 @@ export default function Testimonials({ dict }: TestimonialsProps) {
                         {items.map((item) => (
                             <CarouselItem
                                 key={item.name}
-                                className="flex pl-4 basis-[85%] sm:basis-[360px] lg:basis-[480px]"
+                                className="flex pl-4 basis-[80%] sm:basis-[360px] lg:basis-[480px]"
                             >
                                 <article className="relative flex min-h-[280px] w-full flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-slate-900/60 p-6 sm:p-8 backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:bg-slate-900/80 hover:shadow-2xl hover:shadow-indigo-500/10">
                                     <div>

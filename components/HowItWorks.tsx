@@ -8,9 +8,9 @@ interface HowItWorksProps {
 export default function HowItWorks({ dict }: HowItWorksProps) {
     const { hiw } = dict;
     return (
-        <section className="py-24 relative z-10" id="how-it-works">
+        <section className="py-14 sm:py-24 relative z-10" id="how-it-works">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-16">
+                <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-16">
                     <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3 block">
                         {hiw.tag}
                     </span>
@@ -23,7 +23,7 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
                 </div>
 
                 <ol className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <li className="glass-panel p-8 relative">
+                    <li className="glass-panel p-5 sm:p-8 relative">
                         <div aria-hidden="true" className="font-display font-black text-5xl text-indigo-500/20 mb-4">
                             01
                         </div>
@@ -35,7 +35,7 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
                         </p>
                     </li>
 
-                    <li className="glass-panel p-8 relative">
+                    <li className="glass-panel p-5 sm:p-8 relative">
                         <div aria-hidden="true" className="font-display font-black text-5xl text-indigo-500/20 mb-4">
                             02
                         </div>
@@ -47,7 +47,7 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
                         </p>
                     </li>
 
-                    <li className="glass-panel p-8 relative">
+                    <li className="glass-panel p-5 sm:p-8 relative">
                         <div aria-hidden="true" className="font-display font-black text-5xl text-indigo-500/20 mb-4">
                             03
                         </div>

@@ -9,9 +9,9 @@ interface FinalCTAProps {
 export default function FinalCTA({ dict }: FinalCTAProps) {
     const { finalCta } = dict;
     return (
-        <section className="py-24 relative z-10">
+        <section className="py-14 sm:py-24 relative z-10">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="relative rounded-3xl p-10 sm:p-16 text-center overflow-hidden border border-indigo-500/40 bg-linear-to-r from-indigo-900/40 via-purple-900/30 to-cyan-900/40 shadow-2xl shadow-indigo-950/60">
+                <div className="relative rounded-3xl p-5 py-8 sm:p-16 text-center overflow-hidden border border-indigo-500/40 bg-linear-to-r from-indigo-900/40 via-purple-900/30 to-cyan-900/40 shadow-2xl shadow-indigo-950/60">
                     <div className="relative z-10">
                         <h2 className="font-display font-black text-3xl sm:text-5xl text-white mb-4">
                             {finalCta.title1}
@@ -27,7 +27,7 @@ export default function FinalCTA({ dict }: FinalCTAProps) {
                             href={CHROME_STORE_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-base font-extrabold text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-8 py-4 rounded-2xl text-base font-extrabold text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                         >
                             <svg
                                 height={32}

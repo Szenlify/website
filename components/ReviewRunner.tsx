@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import {
   Volume2,
   Turtle,
@@ -17,6 +17,7 @@ import type { Dict, Locale } from "@/lib/i18n/types";
 
 import { REVIEW_VOICE, ReviewAudioCache, reviewAudioText, selectReviewVoice } from "@/lib/review-audio";
 import ReviewScreenshot from "./ReviewScreenshot";
+import { resetReviewScroll } from "@/lib/review-scroll";
 import "./review.css";
 
 interface ReviewRunnerProps {
@@ -106,6 +107,13 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   }, []);
 
   const currentCard = queue[currentIndex] || null;
+  const editingCardId = editing?.id;
+
+  // Reset on screen/card transitions, not on typing, audio or swipe frames.
+  useLayoutEffect(() => {
+    resetReviewScroll();
+  }, [currentCard, currentIndex, answerShown, direction, editingCardId,
+      isCramMode, loadingWords, wordsError, words.length, actionError]);
 
   // Ask the same server that enforces Lectoro plan entitlements. Fail closed.
   useEffect(() => {

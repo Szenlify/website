@@ -547,3 +547,30 @@ h6 {
     }
 }
 
+
+/* Reviews keep the menu available without occupying a mobile navbar row. */
+@media (max-width: 640px) {
+    header[data-review-navigation="true"] {
+        inset: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) auto auto;
+        width: auto;
+        background: transparent;
+        border: 0;
+        backdrop-filter: none;
+    }
+
+    header[data-review-navigation="true"] > div {
+        padding: 0;
+    }
+
+    header[data-review-navigation="true"] > div > :not(.navbar-actions),
+    header[data-review-navigation="true"] .navbar-actions > :not([data-review-menu-trigger]),
+    [data-review-navigation-spacer="true"] {
+        display: none;
+    }
+
+    header[data-review-navigation="true"] [data-review-menu-trigger] {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 16px rgb(0 0 0 / 25%);
+    }
+}

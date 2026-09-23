@@ -460,8 +460,8 @@
 .lectoro-pricing .subscription-plan-action { gap:4px; }
 .lectoro-pricing .pricing-nav { display:none; }
 @media(max-width:767px) {
- .lectoro-pricing .subscription-plans-grid { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:12px; padding:4px 0 16px; }
- .lectoro-pricing .subscription-plan-card { flex:0 0 87%; padding:20px; scroll-snap-align:center; }
+ .lectoro-pricing .subscription-plans-grid { display:flex; align-items:flex-start; overflow-x:auto; scroll-snap-type:x mandatory; gap:12px; padding:4px 0 16px; }
+ .lectoro-pricing .subscription-plan-card { flex:0 0 70%; padding:20px; scroll-snap-align:center; }
  .lectoro-pricing .pricing-nav { display:flex; justify-content:center; gap:12px; margin-top:12px; }
  .lectoro-pricing .pricing-nav button { min-width:44px; min-height:44px; border:1px solid var(--glass-border); border-radius:10px; color:#c7d2fe; background:rgba(129,140,248,.1); }
 }

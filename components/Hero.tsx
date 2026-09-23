@@ -9,7 +9,7 @@ interface HeroProps {
 export default function Hero({ dict }: HeroProps) {
     const { hero } = dict;
     return (
-        <section className="relative pt-20 pb-16 text-center overflow-hidden">
+        <section className="relative pt-10 pb-12 sm:pt-20 sm:pb-16 text-center overflow-hidden">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Live Pill Badge */}
                 <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-semibold text-amber-300 tracking-wide uppercase mb-6">
@@ -17,18 +17,18 @@ export default function Hero({ dict }: HeroProps) {
                 </div>
 
                 {/* Main Hero Headline */}
-                <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight text-white mb-6">
+                <h1 className="font-display font-black text-[clamp(2rem,1rem+5vw,3rem)] text-balance sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight text-white mb-6">
                     {hero.title}{" "}
                     <span className="text-gradient">{hero.titleHighlight}</span>
                 </h1>
 
                 {/* Hero Subtitle */}
-                <p className="font-body text-lg sm:text-xl text-slate-300/90 leading-relaxed max-w-3xl mx-auto mb-10">
+                <p className="font-body text-base sm:text-xl text-slate-300/90 leading-relaxed max-w-3xl mx-auto mb-8 sm:mb-10">
                     {hero.subtitle}
                 </p>
 
                 {/* Hero CTAs */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <Link
                         href={CHROME_STORE_URL}
                         target="_blank"
@@ -49,8 +49,8 @@ export default function Hero({ dict }: HeroProps) {
                             <path d="m91.29 104.57 77.35 133.25A89.19 89.19 0 0 1 256 166h205.17a246.5 246.5 0 0 0-25.78-43.94l.12.08A245.3 245.3 0 0 1 461.17 166h.17a246 246 0 0 0-25.66-44 2.6 2.6 0 0 1-.35-.26 223.93 223.93 0 0 0-344.19-17.4l.14.24Z" />
                         </svg>
                         <span>{hero.installCta}</span>
-                        <span className="px-2.5 absolute -top-2 -left-3 sm:-left-6 rotate-[-27deg] py-1 rounded-lg text-xs font-extrabold -tracking-widest bg-teal-500 text-amber-200 uppercase">
-                            <span className="animate-pulse">
+                        <span className="px-2.5 absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap sm:-left-6 sm:translate-x-0 sm:rotate-[-27deg] py-1 rounded-lg text-xs font-extrabold tracking-normal bg-teal-400 text-slate-950 uppercase">
+                            <span className="motion-safe:animate-pulse">
                                 {hero.trialBadge}
                             </span>
                         </span>
@@ -85,7 +85,7 @@ export default function Hero({ dict }: HeroProps) {
                 </div>
             </div>
 
-            <div id="demo" className="relative mx-3 mt-8 max-w-5xl scroll-mt-24 sm:mx-6 sm:mt-12 lg:mx-auto">
+            <div id="demo" className="relative mx-4 mt-6 max-w-5xl scroll-mt-24 sm:mx-6 sm:mt-12 lg:mx-auto">
                 <div aria-hidden="true" className="pointer-events-none absolute -inset-4 rounded-3xl bg-linear-to-r from-indigo-500/20 via-purple-500/15 to-cyan-500/20 blur-2xl" />
                 <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl sm:rounded-3xl">
                     <video

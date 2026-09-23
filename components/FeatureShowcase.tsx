@@ -59,9 +59,9 @@ export default function FeatureShowcase({
   const isPl = locale === "pl";
 
   return (
-    <section className="py-24 relative z-10 overflow-hidden" id="features">
+    <section className="py-14 sm:py-24 relative z-10 overflow-hidden" id="features">
       {/* Header sekcji */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-28 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-28 text-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-xs font-semibold text-indigo-400 mb-4 tracking-wider uppercase">
           <Sparkles className="size-3.5" />
           <span>
@@ -82,11 +82,11 @@ export default function FeatureShowcase({
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28 sm:space-y-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-40">
         {/* ========================================================================= */}
         {/* BLOK 1: PODWÓJNE NAPISY (NETFLIX & YOUTUBE)                              */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           <div className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1  text-green-200 text-xs font-mono font-bold">
               <span>{isPl ? "01 PODWÓJNE NAPISY" : "01 DUAL SUBTITLES"}</span>
@@ -171,7 +171,7 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 2: INTERAKTYWNY SŁOWNIK I WYMOWA AUDIO (ODWRÓCONY UKŁAD)             */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           {/* Ramka na zdjęcie 2 (Po lewej na desktopie) */}
           <div className="lg:col-span-6 order-2 lg:order-1">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
@@ -254,7 +254,7 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 3: KONTEKSTOWE WYJAŚNIENIA AI (IDIOMY, SLANG, GRAMATYKA)            */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           <div className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 text-purple-200 text-xs font-mono font-bold">
               <span>
@@ -340,7 +340,7 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 4: SKRÓTY KLAWISZOWE & PRECYZYJNA NAWIGACJA (JAK W LR)               */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           {/* Ramka na zdjęcie 4 (Po lewej na desktopie) */}
           <div className="lg:col-span-6 order-2 lg:order-1">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
@@ -428,7 +428,7 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 5: FISZKI WIDEO & POWTÓRKI SRS (SPACED REPETITION)                  */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           <div className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1  text-emerald-200 text-xs font-mono font-bold">
               <Layers className="size-3.5" />
@@ -511,7 +511,7 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 6: TŁUMACZENIE STRON WWW & ARTYKUŁÓW (ODWRÓCONY UKŁAD)               */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           {/* Ramka na zdjęcie 6 (Po lewej na desktopie) */}
           <div className="lg:col-span-6 order-2 lg:order-1">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">

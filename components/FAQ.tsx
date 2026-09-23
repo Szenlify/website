@@ -15,11 +15,11 @@ export default function FAQ({ dict }: FAQProps) {
 
     return (
         <section
-            className="py-24 border-t border-white/10 bg-[#050711]/40 relative z-10"
+            className="py-14 sm:py-24 border-t border-white/10 bg-[#050711]/40 relative z-10"
             id="faq"
         >
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-16">
+                <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-16">
                     <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3 block">
                         {faq.tag}
                     </span>
@@ -40,10 +40,10 @@ export default function FAQ({ dict }: FAQProps) {
                             value={`faq-${index}`}
                             className="overflow-hidden rounded-2xl border border-white/10 bg-[#0e1222]/90"
                         >
-                            <AccordionTrigger className="p-6 font-display text-base font-bold text-white hover:no-underline sm:text-lg [&>svg]:size-5 [&>svg]:text-indigo-400">
+                            <AccordionTrigger className="p-4 sm:p-6 font-display text-base font-bold text-white hover:no-underline sm:text-lg [&>svg]:size-5 [&>svg]:text-indigo-400">
                                 {item.question}
                             </AccordionTrigger>
-                            <AccordionContent className="px-6 pb-6 text-sm leading-relaxed text-slate-300">
+                            <AccordionContent className="px-4 pb-4 sm:px-6 sm:pb-6 text-sm leading-relaxed text-slate-300">
                                 {item.answer}
                             </AccordionContent>
                         </AccordionItem>

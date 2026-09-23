@@ -1327,7 +1327,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
 }
 .lectoro-review .review-flip-back { transform: rotateY(180deg) translateZ(1px); }
 
-/* A single mobile viewport: navigation above, review actions anchored below. */
+/* A single mobile viewport with a floating menu and anchored review actions. */
 @media (max-width: 640px) {
     body > div:has([data-reviews-screen]) {
         height: 100dvh;
@@ -1366,7 +1366,11 @@ body:has([data-reviews-page]) { overflow-x: clip; }
         min-height: 0;
         max-width: none;
         border-radius: 0;
-        padding-block: 8px max(8px, env(safe-area-inset-bottom));
+        padding-block: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-bottom));
+    }
+    .lectoro-review .review-header {
+        min-height: 44px;
+        padding-inline-end: 52px;
     }
     .lectoro-review .review-panel,
     .lectoro-review .review-card { min-height: 0; }
