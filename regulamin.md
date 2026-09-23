@@ -17,8 +17,8 @@ Pobierając, instalując lub korzystając z rozszerzenia przeglądarki Chrome **
 Lectoro AI zapewnia zaawansowane narzędzia edukacyjne wspierające naukę języków obcych metodą immersji językowej, w tym m.in.:
 - Inteligentne dwujęzyczne napisy na platformach wideo (YouTube, Netflix oraz odtwarzacze HTML5),
 - Tryb chmury słów (Word Cloud) z tłumaczeniami kontekstowymi pojedynczych wyrazów i związków frazeologicznych,
-- Generowanie wyjaśnień gramatycznych i kulturowych za pośrednictwem sztucznej inteligencji **Google Gemini AI**,
-- Naturalną syntezę mowy audio (w tym naturalne głosy **Gemini 2.5 Flash TTS** oraz syntezę systemową przeglądarki),
+- Generowanie wyjaśnień gramatycznych i kulturowych za pośrednictwem sztucznej inteligencji **AI**,
+- Naturalną syntezę mowy audio (w tym naturalne głosy **AI TTS** oraz syntezę systemową przeglądarki),
 - Osobisty system powtórek w odstępach czasowych (**Spaced Repetition System — SRS**) oraz eksport do zewnętrznych programów do nauki (Anki, Excel/CSV) i interaktywne quizy AI.
 
 Udzielamy Ci ograniczonej, niewyłącznej, niezbywalnej i odwołalnej licencji na korzystanie z Lectoro AI wyłącznie do osobistych, niekomercyjnych celów edukacyjnych, zgodnie z niniejszym Regulaminem.
@@ -35,15 +35,15 @@ Firma Google LLC nie jest stroną transakcji subskrypcyjnych, nie przetwarza Two
 
 1. **Plan Free (Bezpłatny):**
    - Dostępny bez opłat, bez limitu czasowego i bez konieczności podawania danych karty płatniczej.
-   - Obejmuje: nielimitowane dwujęzyczne napisy na YouTube, Netflix i stronach wideo, nielimitowany słownik kontekstowy (skrót S), nielimitowany zapis słówek w pamięci urządzenia, do 25 fiszek synchronizowanych w chmurze, 15 bezpłatnych zapytań Gemini AI na miesiąc (wyjaśnienia gramatyczne, idiomy), do 3 eksportów do Anki/Excel miesięcznie oraz standardową syntezę mowy przeglądarki.
+   - Obejmuje: nielimitowane dwujęzyczne napisy na YouTube, Netflix i stronach wideo, nielimitowany słownik kontekstowy (skrót S), nielimitowany zapis słówek w pamięci urządzenia, do 25 fiszek synchronizowanych w chmurze, 15 bezpłatnych zapytań AI na miesiąc (wyjaśnienia gramatyczne, idiomy), do 3 eksportów do Anki/Excel miesięcznie oraz standardową syntezę mowy przeglądarki.
 
 2. **Plan Basic ($7.99 / miesiąc):**
    - 3-dniowy bezpłatny okres próbny ($0 za pierwsze 3 dni).
-   - Obejmuje: do 1 000 zapytań Gemini AI miesięcznie, do 3 000 fiszek SRS w chmurze, do 15 000 znaków naturalnej syntezy głosu Gemini TTS miesięcznie, nielimitowane napisy dwujęzyczne, nielimitowany eksport do Anki i Excel/CSV oraz do 10 quizów AI na godzinę.
+   - Obejmuje: do 800 zapytań AI miesięcznie, do 2 500 fiszek SRS w chmurze, do 10 000 znaków naturalnej syntezy głosu AI TTS miesięcznie, nielimitowane napisy dwujęzyczne, nielimitowany eksport do Anki i Excel/CSV oraz do 10 quizów AI na godzinę.
 
 3. **Plan Pro ($19.99 / miesiąc):**
    - 3-dniowy bezpłatny okres próbny ($0 za pierwsze 3 dni).
-   - Obejmuje: nielimitowane wyjaśnienia Gemini AI (idiomy, gramatyka, niuanse), nielimitowane fiszki SRS w chmurze, synchronizację w chmurze na wszystkich urządzeniach, do 100 000 znaków naturalnej syntezy głosu Gemini TTS miesięcznie, nielimitowane tłumaczenie napisów dwujęzycznych oraz nielimitowany eksport do Anki, Excel i quizów AI.
+   - Obejmuje: nielimitowane wyjaśnienia AI (idiomy, gramatyka, niuanse), nielimitowane fiszki SRS w chmurze, synchronizację w chmurze na wszystkich urządzeniach, do 100 000 znaków naturalnej syntezy głosu AI TTS miesięcznie, nielimitowane tłumaczenie napisów dwujęzycznych oraz nielimitowany eksport do Anki, Excel i quizów AI.
 
 *Uwaga: Ceny mogą być wyświetlane w walutach lokalnych (np. EUR, GBP, PLN, BRL) zgodnie z geolokalizacją i cennikiem Stripe.*
 
@@ -67,7 +67,7 @@ Firma Google LLC nie jest stroną transakcji subskrypcyjnych, nie przetwarza Two
 
 Jako użytkownik rozszerzenia Lectoro AI zobowiązujesz się do korzystania z niego w sposób zgodny z prawem i dobrymi obyczajami. Kategorycznie zabronione jest:
 1. Próbowanie dekompilacji, odtwarzania kodu źródłowego (reverse engineering) lub modyfikowania rozszerzenia w sposób naruszający prawa autorskie.
-2. Automatyzowanie zapytań (np. przy użyciu skryptów, botów lub crawlerów) mających na celu nadużywanie naszych backendowych interfejsów API sztucznej inteligencji (Google Gemini API) lub magazynów danych.
+2. Automatyzowanie zapytań (np. przy użyciu skryptów, botów lub crawlerów) mających na celu nadużywanie naszych backendowych interfejsów API sztucznej inteligencji (AI API) lub magazynów danych.
 3. Obchodzenie, usuwanie lub naruszanie zabezpieczeń technicznych, systemów autoryzacji subskrypcji lub zabezpieczeń praw autorskich / DRM na platformach podmiotów trzecich (np. Netflix, YouTube).
 4. Odsprzedawanie, sublicencjonowanie lub komercyjne redystrybuowanie usług Lectoro AI bądź wygenerowanych baz danych słownictwa bez uprzedniej pisemnej zgody właściciela.
 

@@ -153,9 +153,9 @@ export default async function LocalePrivacyPage({
                         <ul className="list-disc pl-5 space-y-2 mt-3 text-slate-400">
                             <li>
                                 <strong className="text-white">
-                                    {p.s4.geminiLabel}
+                                    {p.s4.aiLabel}
                                 </strong>{" "}
-                                {p.s4.geminiText}
+                                {p.s4.aiText}
                             </li>
                             {p.s4.cloudflareLabel && (
                                 <li>

@@ -51,7 +51,7 @@ Lectoro AI nie jest zwykłym słownikiem ani automatycznym translatorem. Został
    Mózg zapomina informacje według krzywej Ebbinghausa. Lectoro kalkuluje optymalny moment na powtórkę każdego słówka (np. po 10 minutach, 1 dniu, 3 dniach, 7 dniach itd.), przenosząc wiedzę z pamięci krótkotrwałej do długotrwałej.
 5. **Aktywna rekapitulacja (*Active Recall*)**:
    W trybie powtórek oraz w generatorze quizów użytkownik nie tylko pasywnie rozpoznaje słowa, lecz musi samodzielnie odtworzyć odpowiedź z pamięci (Direct Recall, Context Cloze, uzupełnianie luk w zdaniach).
-6. **Sztuczna Inteligencja jako osobisty lektor gramatyki (Gemini AI)**:
+6. **Sztuczna Inteligencja jako osobisty lektor gramatyki (AI Tutor)**:
    Gdy trafisz na trudny idiom, phrasal verb, slang lub skomplikowaną strukturę gramatyczną, wciśnięcie klawisza `Enter` uruchamia analizę AI, która w ułamku sekundy rozbija zdanie na części pierwsze, podaje poziom CEFR (A1–C2) i wyjaśnia niuanse w Twoim języku ojczystym.
 
 ---
@@ -99,7 +99,7 @@ Sterowanie klawiaturą zostało ujednolicone dla wszystkich platform:
 | **`A`** | **`←` (Strzałka w lewo)** | **Poprzedni dialog LUB powtórzenie bieżącego** — jeśli minęło ponad 40% czasu trwania bieżącego dialogu (lub min. 1.1 s), klawisz odnawia dialog od początku; jeśli jesteś na początku kwestii, cofa do poprzedniej kwestii. |
 | **`D`** | **`→` (Strzałka w prawo)** | **Następny dialog** — natychmiast przeskakuje do następnej kwestii dialogowej (lub o 5 sekund w przód przy braku ścieżki dialogowej). |
 | **`S`** | **`↓` (Strzałka w dół)** | **Tryb czytania (Word Cloud)** — pauzuje wideo, wyświetla chmurę tłumaczeń nad każdym słowem i czyta całe zdanie na głos. |
-| **`Q`** | **`Enter` / `NumpadEnter`** | **Wyjaśnienie AI (AI Explanation)** — pauzuje wideo i otwiera panel głębokiej analizy językowej Gemini AI. |
+| **`Q`** | **`Enter` / `NumpadEnter`** | **Wyjaśnienie AI (AI Explanation)** — pauzuje wideo i otwiera panel głębokiej analizy językowej AI. |
 | **`Z`** | **`V` / `Home` / `PageUp`** | **Zapisz zdanie do bazy SRS** — błyskawicznie zapisuje bieżącą kwestię jako fiszkę ze zrzutem ekranu z wideo. |
 | **`[`** | **`{`** | **Zmniejsz prędkość odtwarzania** o 0.05× (np. z 1.00× na 0.95×) z widocznym wskaźnikiem na ekranie. |
 | **`]`** | **`}`** | **Zwiększ prędkość odtwarzania** o 0.05× (np. do 1.05×, aż do 2.00×). |
@@ -138,7 +138,7 @@ Naciśnięcie klawisza **`S`** lub **`↓`** podczas oglądania wideo aktywuje *
 ### Głębokie wyjaśnienia AI (Klawisz Enter / Q)
 
 Naciśnięcie klawisza **`Enter`** lub **`Q`** otwiera nakładkę **AI Sentence Explanation**:
-- **Ocena poziomu CEFR**: model Gemini AI klasyfikuje trudność zdania (od A1 do C2).
+- **Ocena poziomu CEFR**: model AI klasyfikuje trudność zdania (od A1 do C2).
 - **Kontekstowe tłumaczenie**: całościowy, naturalny przekład z zachowaniem intencji wypowiedzi.
 - **Ekstrakcja kluczowych pojęć (od 0 do 4 pozycji)**:
   - Trudne słownictwo (*vocabulary*),
@@ -235,8 +235,8 @@ Zawiera pełną konfigurację konta, języków, sztucznej inteligencji, napisów
 - **Licznik Kredytów AI (AI Explanations)**:
   - Wizualny pasek postępu pokazujący liczbę wykorzystanych zapytań w danym miesiącu (np. `4 / 15` w planie Free, `120 / 800` w Basic lub `45 / ∞` w Pro).
   - Informacja o dacie comiesięcznego odnowienia puli kredytów.
-- **Licznik Znaków Gemini TTS (Natural Voices)**:
-  - Pasek postępu wykorzystania naturalnej syntezy mowy Gemini TTS (dostępnej w planach Basic i Pro).
+- **Licznik Znaków AI TTS (Natural Voices)**:
+  - Pasek postępu wykorzystania naturalnej syntezy mowy AI TTS (dostępnej w planach Basic i Pro).
 
 #### 4. Subskrypcje i Plany (Subscription Plans)
 - Przejrzysta karuzela prezentująca plany: **Free**, **Basic** oraz **Pro**.
@@ -323,7 +323,7 @@ Wbudowany system powtórek fiszek oparty o algorytm **SuperMemo SM-2**:
   - *Tryb odwrócony*: widzisz słowo w języku ojczystym i musisz przypomnieć sobie formę w języku obcym.
 - **Wybór głosu w powtórkach (Review Voice Picker)**:
   - **Głos systemowy (System voice)**: szybki, darmowy i nielimitowany syntezator przeglądarki,
-  - **Gemini TTS (Premium)**: ultra-realistyczne głosy sztucznej inteligencji:
+  - **AI TTS (Premium)**: ultra-realistyczne głosy sztucznej inteligencji:
     - **Sulafat** — ciepły, naturalny głos z perfekcyjną intonacją,
     - **Algieba** — wyrazisty, elegancki głos lektorski.
   - System posiada inteligentny mechanizm wyprzedzającego pobierania dźwięku (*N+1 prefetching*), dzięki czemu nagranie kolejnej karty ładuje się w tle zanim jeszcze na nią przejdziesz.
@@ -383,7 +383,7 @@ Lectoro AI oferuje przejrzysty model rozliczeń: bogaty, w pełni użyteczny pla
 | **Darmowy okres próbny (Trial)** | — | **3 dni za $0** | **3 dni za $0** |
 | **Płatność jednorazowa BLIK (Polska)** | — | **29,99 zł / 30 dni** | **79,99 zł / 30 dni** |
 | **Zoptymalizowany dla** | Początkujących i okazjonalnych widzów | Aktywnych uczniów języków obcych | Pasjonatów, poliglótów i zaawansowanych |
-| **Wyjaśnienia AI (Gemini Explanations)** | **15 na miesiąc** | **800 na miesiąc** | **BEZ LIMITU (∞)** |
+| **Wyjaśnienia AI (AI Explanations)** | **15 na miesiąc** | **800 na miesiąc** | **BEZ LIMITU (∞)** |
 | **Maksymalna liczba kart w SRS** | **25 słówek** | **2 500 słówek** | **BEZ LIMITU (∞)** |
 | **Eksport do Anki (.zip z audio i foto)** | **3 eksporty / mc** | **BEZ LIMITU (∞)** | **BEZ LIMITU (∞)** |
 | **Eksport do Excela (.csv)** | **3 eksporty / mc** | **BEZ LIMITU (∞)** | **BEZ LIMITU (∞)** |
@@ -394,7 +394,7 @@ Lectoro AI oferuje przejrzysty model rozliczeń: bogaty, w pełni użyteczny pla
 | **YouTube Focus Mode (śledzenie słów)** | **Tak** | **Tak** | **Tak** |
 | **Smart AI Flashcard (kontekstowe fiszki)** | Zużywa kredyty AI | Zużywa kredyty AI | Nielimitowane |
 | **Głosy systemowe przeglądarki / Google** | **Tak (nielimitowane)** | **Tak (nielimitowane)** | **Tak (nielimitowane)** |
-| **Gemini TTS Natural Voices (Sulafat & Algieba)** | ❌ *Wyłączone* | **10 000 znaków / mc** *(do 500 zn./zapytanie)* | **100 000 znaków / mc** *(do 1000 zn./zapytanie)* |
+| **AI TTS Natural Voices (Sulafat & Algieba)** | ❌ *Wyłączone* | **10 000 znaków / mc** *(do 500 zn./zapytanie)* | **100 000 znaków / mc** *(do 1000 zn./zapytanie)* |
 | **Synchronizacja w chmurze (Google/Firebase)** | **Tak** | **Tak** | **Tak** |
 | **Dostęp do platformy Web & Mobile** | **Tak** | **Tak** | **Tak** |
 

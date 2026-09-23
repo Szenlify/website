@@ -9,10 +9,14 @@ import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import FinalCTA from "@/components/FinalCTA";
 import HomeView from "@/components/HomeView";
-import { getDictionary, isLocale } from "@/lib/i18n";
+import { getDictionary, isLocale, LOCALES } from "@/lib/i18n";
 import { LOCALE_CONFIG } from "@/lib/i18n/types";
 import { getLanguageAlternates } from "@/lib/routing";
 import { getLocalizedPricing } from "@/lib/pricing";
+
+export async function generateStaticParams() {
+    return LOCALES.map((locale) => ({ locale }));
+}
 
 export async function generateMetadata({
     params,

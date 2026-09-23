@@ -24,8 +24,8 @@ export const FEATURE_IMAGE_SLOTS = {
   },
   slot3_aiExplanation: {
     src: "/showcase/4.jpg",
-    alt: "Google Gemini Contextual AI Sentence Breakdown & CEFR Level",
-    windowTitle: "Gemini 2.5 AI Contextual Grammar & Idioms",
+    alt: "Contextual AI Sentence Breakdown & CEFR Level",
+    windowTitle: "AI Contextual Grammar & Idioms",
   },
   slot4_keyboardShortcuts: {
     src: "/showcase/3.jpg",
@@ -200,7 +200,7 @@ export default function FeatureShowcase({
         </div>
 
         {/* ========================================================================= */}
-        {/* BLOK 3: KONTEKSTOWE WYJAŚNIENIA GEMINI AI                                 */}
+        {/* BLOK 3: KONTEKSTOWE WYJAŚNIENIA AI                                        */}
         {/* ========================================================================= */}
         <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           <div data-reveal-side="left" className="lg:col-span-6 space-y-6">
@@ -307,59 +307,42 @@ export default function FeatureShowcase({
             </h3>
 
             {/* Wypisane skróty w czytelnych kafelkach kbd */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 {sc.b4HowTo}
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
-                  <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-amber-500/40 text-amber-300 font-mono font-bold shadow-xs whitespace-nowrap">
-                    {sc.b4K1}
-                  </kbd>
-                  <span className="text-slate-300 truncate">
-                    {sc.b4K1Desc}
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
-                  <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-amber-500/40 text-amber-300 font-mono font-bold shadow-xs whitespace-nowrap">
-                    {sc.b4K2}
-                  </kbd>
-                  <span className="text-slate-300 truncate">
-                    {sc.b4K2Desc}
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
-                  <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-amber-500/40 text-amber-300 font-mono font-bold shadow-xs whitespace-nowrap">
-                    {sc.b4K3}
-                  </kbd>
-                  <span className="text-slate-300 truncate">
-                    {sc.b4K3Desc}
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
-                  <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-amber-500/40 text-amber-300 font-mono font-bold shadow-xs whitespace-nowrap">
-                    {sc.b4K4}
-                  </kbd>
-                  <span className="text-slate-300 font-semibold text-white truncate">
-                    {sc.b4K4Desc}
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
-                  <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-amber-500/40 text-amber-300 font-mono font-bold shadow-xs whitespace-nowrap">
-                    {sc.b4K5}
-                  </kbd>
-                  <span className="text-slate-300 truncate">
-                    {sc.b4K5Desc}
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3">
-                  <kbd className="px-2.5 py-1 rounded-md bg-[#161B2E] border border-amber-500/40 text-amber-300 font-mono font-bold shadow-xs whitespace-nowrap">
-                    {sc.b4K6}
-                  </kbd>
-                  <span className="text-slate-300 truncate">
-                    {sc.b4K6Desc}
-                  </span>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 text-xs">
+                {[
+                  { keys: ["W", "↑"], desc: sc.b4K1Desc },
+                  { keys: ["A", "←"], desc: sc.b4K2Desc },
+                  { keys: ["D", "→"], desc: sc.b4K3Desc },
+                  { keys: ["S", "↓"], desc: sc.b4K4Desc },
+                  { keys: ["Q", "Enter"], desc: sc.b4K5Desc },
+                  { keys: ["Z", "V"], desc: sc.b4K6Desc },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 sm:p-4 rounded-2xl bg-linear-to-b from-white/[0.04] to-white/[0.015] hover:from-white/[0.07] hover:to-white/[0.03] border border-white/[0.08] hover:border-amber-500/40 transition-all duration-200 flex items-center gap-3.5 sm:gap-4 group shadow-xs hover:shadow-lg hover:shadow-amber-500/5"
+                  >
+                    <div className="inline-flex items-center gap-1.5 shrink-0 select-none">
+                      {item.keys.map((k, kIdx) => (
+                        <span key={k} className="inline-flex items-center gap-1.5">
+                          <kbd className="relative inline-flex items-center justify-center min-w-[30px] sm:min-w-[32px] h-8 px-2 sm:px-2.5 font-mono font-extrabold text-xs sm:text-[13px] text-amber-200/95 tracking-wide bg-linear-to-b from-[#242c44] via-[#181e32] to-[#0f1424] border border-white/[0.12] rounded-lg shadow-[inset_0_1px_0_0_rgba(255,255,255,0.22),inset_0_-1px_0_0_rgba(0,0,0,0.5),0_3px_0_0_#090c17,0_4px_8px_rgba(0,0,0,0.6)] transition-all duration-150 group-hover:border-amber-500/40 group-hover:text-amber-100">
+                            {k}
+                          </kbd>
+                          {kIdx < item.keys.length - 1 && (
+                            <span className="text-slate-500 font-mono text-xs font-bold px-0.5 select-none" aria-hidden="true">
+                              /
+                            </span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-xs sm:text-sm font-medium text-slate-200 group-hover:text-white transition-colors leading-snug">
+                      {item.desc}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

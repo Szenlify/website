@@ -64,8 +64,8 @@ Gdy decydujesz się zalogować przy użyciu konta Google (Firebase Authenticatio
 
 W celu zapewnienia najwyższej jakości edukacyjnej, Lectoro AI korzysta ze sprawdzonych, wiodących na rynku partnerów technologicznych:
 
-1. **Google Cloud & Gemini AI (Vertex AI / Gemini API)**:
-   - **Zakres:** Odpowiada za generowanie kontekstowych wyjaśnień gramatycznych, analizę idiomów oraz naturalną syntezę mowy (Gemini 2.5 Flash TTS).
+1. **Google Cloud & Zaawansowane API Sztucznej Inteligencji (AI)**:
+   - **Zakres:** Odpowiada za generowanie kontekstowych wyjaśnień gramatycznych, analizę idiomów oraz naturalną syntezę mowy (AI TTS).
    - **Prywatność i brak trenowania modeli:** Zapytania są przetwarzane za pośrednictwem komercyjnego endpointu API Google Cloud. Zgodnie z warunkami biznesowymi Google Cloud, **Google NIE wykorzystuje zapytań ani treści przesyłanych przez użytkowników Lectoro AI do trenowania publicznych modeli sztucznej inteligencji**.
 2. **Cloudflare R2 Storage & CDN**:
    - **Zakres:** Bezpieczny magazyn danych służący do szybkiego dostarczania spakowanych paczek słowników językowych oraz buforowania (cache) zanonimizowanych nagrań audio wymowy pojedynczych słów. Pliki w CDN nie zawierają żadnych danych osobowych użytkownika.

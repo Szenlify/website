@@ -33,7 +33,7 @@ export default function Hero({ dict }: HeroProps) {
                         href={CHROME_STORE_URL}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3 rounded-2xl text-base font-extrabold text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-2xl text-base font-extrabold text-white bg-linear-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                     >
                         <svg
                             height={32}
@@ -49,11 +49,6 @@ export default function Hero({ dict }: HeroProps) {
                             <path d="m91.29 104.57 77.35 133.25A89.19 89.19 0 0 1 256 166h205.17a246.5 246.5 0 0 0-25.78-43.94l.12.08A245.3 245.3 0 0 1 461.17 166h.17a246 246 0 0 0-25.66-44 2.6 2.6 0 0 1-.35-.26 223.93 223.93 0 0 0-344.19-17.4l.14.24Z" />
                         </svg>
                         <span>{hero.installCta}</span>
-                        <span className="px-2.5 absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap sm:-left-6 sm:translate-x-0 sm:rotate-[-27deg] py-1 rounded-lg text-xs font-extrabold tracking-normal bg-teal-400 text-slate-950 uppercase">
-                            <span className="motion-safe:animate-pulse">
-                                {hero.trialBadge}
-                            </span>
-                        </span>
                     </Link>
 
                     <Link
@@ -74,14 +69,13 @@ export default function Hero({ dict }: HeroProps) {
                 </div>
 
                 {/* Trust signals */}
-                <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs sm:text-sm text-slate-400 font-medium">
-                    {/* <div className="flex items-center gap-1.5 text-amber-400 font-bold">
-            <span>★★★★★</span>
-            <span className="text-white font-bold">4.9/5</span>
-            <span className="text-slate-400 font-normal">(1,280+ ratings)</span>
-          </div> */}
-                    {/* <span>•</span> */}
-                    <span>{hero.builtFor}</span>
+                <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 text-xs sm:text-sm font-medium">
+                    <span className="text-slate-400">{hero.builtFor}</span>
+                    <span className="text-slate-600 hidden xs:inline" aria-hidden="true">•</span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/10 text-teal-300 border border-teal-500/30 shadow-xs tracking-wide">
+                        <span className="size-1.5 rounded-full bg-teal-400 motion-safe:animate-pulse" />
+                        {hero.trialBadge}
+                    </span>
                 </div>
             </div>
 

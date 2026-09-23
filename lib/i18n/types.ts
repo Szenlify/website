@@ -228,8 +228,8 @@ export interface Dict {
         s4: {
             heading: string;
             intro: string;
-            geminiLabel: string;
-            geminiText: string;
+            aiLabel: string;
+            aiText: string;
             cloudflareLabel?: string;
             cloudflareText?: string;
             firebaseLabel?: string;
