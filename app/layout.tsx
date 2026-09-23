@@ -93,12 +93,22 @@ export const metadata: Metadata = {
             "Click subtitles for AI explanations, save contextual video flashcards and review vocabulary with SRS.",
         images: ["/showcase/1.jpg"],
     },
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "black-translucent",
+        title: "Lectoro AI",
+    },
 };
 
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
-    themeColor: "#070913",
+    viewportFit: "cover",
+    themeColor: [
+        { color: "#070913" },
+        { media: "(prefers-color-scheme: light)", color: "#070913" },
+        { media: "(prefers-color-scheme: dark)", color: "#070913" },
+    ],
     colorScheme: "dark",
 };
 

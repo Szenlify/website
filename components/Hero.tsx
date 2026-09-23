@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CHROME_STORE_URL } from "@/lib/config";
 import type { Dict } from "@/lib/i18n/types";
+import styles from "./Hero.module.css";
 
 interface HeroProps {
     dict: Dict;
@@ -10,25 +11,30 @@ export default function Hero({ dict }: HeroProps) {
     const { hero } = dict;
     return (
         <section className="relative pt-10 pb-12 sm:pt-20 sm:pb-16 text-center overflow-hidden">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className={`${styles.intro} max-w-4xl mx-auto px-4 sm:px-6 lg:px-8`}>
                 {/* Live Pill Badge */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-semibold text-amber-300 tracking-wide uppercase mb-6">
+                <div className={`${styles.badge} inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-semibold text-amber-300 tracking-wide uppercase mb-6`}>
+                    <span className={styles.waveform} aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                    </span>
                     <span>{hero.badge}</span>
                 </div>
 
                 {/* Main Hero Headline */}
-                <h1 className="font-display font-black text-[clamp(2rem,1rem+5vw,3rem)] text-balance sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight text-white mb-6">
+                <h1 className={`${styles.title} font-display font-black text-[clamp(2rem,1rem+5vw,3rem)] text-balance sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight text-white mb-6`}>
                     {hero.title}{" "}
                     <span className="text-gradient">{hero.titleHighlight}</span>
                 </h1>
 
                 {/* Hero Subtitle */}
-                <p className="font-body text-base sm:text-xl text-slate-300/90 leading-relaxed max-w-3xl mx-auto mb-8 sm:mb-10">
+                <p className={`${styles.subtitle} font-body text-base sm:text-xl text-slate-300/90 leading-relaxed max-w-3xl mx-auto mb-8 sm:mb-10`}>
                     {hero.subtitle}
                 </p>
 
                 {/* Hero CTAs */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <div className={`${styles.actions} flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8`}>
                     <Link
                         href={CHROME_STORE_URL}
                         target="_blank"
@@ -69,11 +75,11 @@ export default function Hero({ dict }: HeroProps) {
                 </div>
 
                 {/* Trust signals */}
-                <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 text-xs sm:text-sm font-medium">
+                <div className={`${styles.trust} flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 text-xs sm:text-sm font-medium`}>
                     <span className="text-slate-400">{hero.builtFor}</span>
                     <span className="text-slate-600 hidden xs:inline" aria-hidden="true">•</span>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/10 text-teal-300 border border-teal-500/30 shadow-xs tracking-wide">
-                        <span className="size-1.5 rounded-full bg-teal-400 motion-safe:animate-pulse" />
+                        <span className="size-1.5 rounded-full bg-teal-400" aria-hidden="true" />
                         {hero.trialBadge}
                     </span>
                 </div>
@@ -82,6 +88,7 @@ export default function Hero({ dict }: HeroProps) {
             <div id="demo" className="relative mx-4 mt-6 max-w-5xl scroll-mt-24 sm:mx-6 sm:mt-12 lg:mx-auto">
                 <div aria-hidden="true" className="pointer-events-none absolute -inset-4 rounded-3xl bg-linear-to-r from-indigo-500/20 via-purple-500/15 to-cyan-500/20 blur-2xl" />
                 <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl sm:rounded-3xl">
+                    <div className={styles.demoAccent} aria-hidden="true" />
                     <video
                         className="block max-h-[80svh] w-full object-contain"
                         width={1200}

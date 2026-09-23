@@ -72,7 +72,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
 
   return (
     <>
-      <header data-review-navigation={isReviewsPage} className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200">
+      <header data-review-navigation={isReviewsPage} className="fixed inset-x-0 top-0 z-50 bg-[#070913]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-200 pt-[env(safe-area-inset-top,0px)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <Logo locale={locale} className="shrink-0 max-sm:gap-2 max-sm:[&_span]:text-xl max-[360px]:[&>img]:hidden" />
           <nav className="hidden lg:flex items-center gap-7">
