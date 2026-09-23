@@ -1343,7 +1343,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
 /* A single mobile viewport with a floating menu and anchored review actions. */
 @media (max-width: 640px) {
     body > div:has([data-reviews-screen]) {
-        height: 100vh;
+        height: 85vh;
         min-height: 0;
     }
     body:has([data-reviews-screen]) #main-content {
@@ -1426,7 +1426,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     .lectoro-review .review-voice-btn { min-height: 44px; }
     .lectoro-review .review-edit-form { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
     .lectoro-review .review-edit-form input { font-size: 16px; }
-    .lectoro-review .review-voice-menu { max-height: calc(100dvh - 150px); overflow-y: auto; overscroll-behavior: contain; }
+    .lectoro-review .review-voice-menu { max-height: calc(85vh - 150px); overflow-y: auto; overscroll-behavior: contain; }
 }
 
 .lectoro-review .review-audio-status {
