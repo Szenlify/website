@@ -20,6 +20,7 @@ import {
   cleanSpeechText,
   getRecommendedSpeechRate,
   isIosDevice,
+  ReviewAudioCache,
 } from "@/lib/review-audio";
 import ReviewScreenshot from "./ReviewScreenshot";
 import { resetReviewScroll } from "@/lib/review-scroll";
@@ -288,6 +289,8 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const [editing, setEditing] = useState<ReviewWord | null>(null);
   const browserVoices = useRef<SpeechSynthesisVoice[]>([]);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
+  const audioCache = useMemo(() => new ReviewAudioCache(), []);
   const speechRequest = useRef(0);
   const [audioMessage, setAudioMessage] = useState("");
   const session = useRef("");
@@ -324,8 +327,13 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     return () => {
       speechReq.current++;
       window.speechSynthesis?.cancel();
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current = null;
+      }
+      audioCache.clear();
     };
-  }, []);
+  }, [audioCache]);
 
   const currentCard = queue[currentIndex] || null;
   const editingCardId = editing?.id;
@@ -347,6 +355,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   useEffect(() => {
     speechRequest.current++;
     window.speechSynthesis?.cancel();
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+      audioPlayerRef.current = null;
+    }
   }, [activeCardKey]);
 
   const [voicesRevision, setVoicesRevision] = useState(0);
@@ -367,31 +379,33 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   }, []);
 
   const isIos = useMemo(() => isIosDevice(), []);
-  const hasOnlyCompactVoice = useMemo(() => {
-    if (!isIos || !browserVoices.current.length) return false;
-    const baseLang = (currentCard?.srcLang || "en").split(/[-_]/)[0].toLowerCase();
-    const matching = browserVoices.current.filter((v) =>
-      (v.lang || "").toLowerCase().split(/[-_]/)[0] === baseLang
-    );
-    if (!matching.length) return false;
-    return matching.every((v) => /compact|kompakt/i.test(`${v.name} ${v.voiceURI}`));
-  }, [isIos, currentCard?.srcLang, voicesRevision]);
 
-  const speakText = useCallback((text: string, lang = "en", rate = 1) => {
-    if (!text) return;
-    const request = ++speechRequest.current;
-    window.speechSynthesis?.cancel();
-    setIsSpeaking(false);
-    setAudioMessage("");
+  // Background prefetch for mobile Edge TTS audio
+  useEffect(() => {
+    if (!currentCard || !isIos) return;
+    const frontText = direction === "normal" ? currentCard.original : currentCard.translated;
+    const frontLang = direction === "normal" ? (currentCard.srcLang || "en") : (currentCard.tgtLang || "pl");
+    const backText = direction === "normal" ? currentCard.translated : currentCard.original;
+    const backLang = direction === "normal" ? (currentCard.tgtLang || "pl") : (currentCard.srcLang || "en");
 
+    void audioCache.getEdge(cleanSpeechText(frontText), frontLang, true);
+    void audioCache.getEdge(cleanSpeechText(backText), backLang, true);
+
+    const nextCard = queue[currentIndex + 1];
+    if (nextCard) {
+      const nextText = direction === "normal" ? nextCard.original : nextCard.translated;
+      const nextLang = direction === "normal" ? (nextCard.srcLang || "en") : (nextCard.tgtLang || "pl");
+      void audioCache.getEdge(cleanSpeechText(nextText), nextLang, true);
+    }
+  }, [currentCard, currentIndex, direction, isIos, audioCache, queue]);
+
+  const fallbackNativeSpeak = useCallback((clean: string, lang: string, rate: number, request: number) => {
     const synth = window.speechSynthesis;
     if (!synth || !window.SpeechSynthesisUtterance) {
       setAudioMessage(rc.unsupportedAudio);
+      setIsSpeaking(false);
       return;
     }
-    const clean = cleanSpeechText(text);
-    if (!clean) return;
-
     const available = synth.getVoices();
     const voiceList = available.length ? available : browserVoices.current;
     const voice = selectReviewVoice(voiceList, lang);
@@ -401,6 +415,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
       // In PC / desktop browsers: strictly ONLY voices from Google.
       // If no Google voice is available for this language, do not play inferior system voices.
       setAudioMessage(rc.unsupportedAudio);
+      setIsSpeaking(false);
       return;
     }
 
@@ -436,6 +451,58 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
       setAudioMessage(rc.playbackFailed);
     }
   }, [rc]);
+
+  const speakText = useCallback(async (text: string, lang = "en", rate = 1) => {
+    if (!text) return;
+    const request = ++speechRequest.current;
+    window.speechSynthesis?.cancel();
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+      audioPlayerRef.current = null;
+    }
+    setIsSpeaking(false);
+    setAudioMessage("");
+
+    const clean = cleanSpeechText(text);
+    if (!clean) return;
+
+    const onIos = isIosDevice();
+
+    // 1. Mobile (iPhone / iPad / iOS): Use Microsoft Edge TTS (Azure Neural) for studio-quality audio
+    if (onIos) {
+      try {
+        setIsSpeaking(true);
+        const audioUrl = await audioCache.getEdge(clean, lang);
+        if (request !== speechRequest.current) return;
+
+        if (audioUrl) {
+          const audio = new Audio(audioUrl);
+          audioPlayerRef.current = audio;
+          audio.playbackRate = rate;
+          audio.onended = () => {
+            if (request === speechRequest.current) {
+              setIsSpeaking(false);
+              audioPlayerRef.current = null;
+            }
+          };
+          audio.onerror = () => {
+            if (request === speechRequest.current) {
+              setIsSpeaking(false);
+              audioPlayerRef.current = null;
+              fallbackNativeSpeak(clean, lang, rate, request);
+            }
+          };
+          await audio.play();
+          return;
+        }
+      } catch {
+        // Fallback to native speech synthesis below
+      }
+    }
+
+    // 2. PC / Desktop: Strictly Google voices
+    fallbackNativeSpeak(clean, lang, rate, request);
+  }, [audioCache, fallbackNativeSpeak]);
 
   const flipCard = useCallback(() => {
     if (busy.current || !currentCard || editing) return;
@@ -1141,7 +1208,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                 >
                                   {word}
                                 </span>
-                                <button
+                                <div className="flex items-center gap-2 my-2"><button
                                   type="button"
                                   className={`review-speak-btn ${isSpeaking && active ? "speaking" : ""}`}
                                   aria-label={r.listenAudio}
@@ -1161,20 +1228,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                 >
                                   <Turtle />
                                 </button>
-                                {isIos && hasOnlyCompactVoice && (
-                                  <button
-                                    type="button"
-                                    className="review-speak-btn review-speak-hint-btn"
-                                    aria-label={rc.iosVoiceHint}
-                                    title={rc.iosVoiceHint}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setAudioMessage(rc.iosVoiceHint);
-                                    }}
-                                  >
-                                    <Info />
-                                  </button>
-                                )}
+                              </div>
                               </div>
                               {sentence &&
                                 sentence.trim().toLowerCase() !==

@@ -543,6 +543,7 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
 }
 .review-word-row {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 10px;
@@ -550,8 +551,6 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
 .review-word {
     font-size: 24px;
     font-weight: 700;
-    text-align: start;
-    padding-left: 12px;
     letter-spacing: -0.5px;
     white-space: pre-line;
     line-height: 1.25;

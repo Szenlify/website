@@ -66,6 +66,11 @@ export function cleanSpeechText(text: string): string {
     .trim();
 }
 
+export function edgeAudioUrl(text: string, language: string): string {
+  const lang = (language || "en").trim().toLowerCase();
+  return `/api/tts?text=${encodeURIComponent(text.trim())}&lang=${encodeURIComponent(lang)}`;
+}
+
 export class ReviewAudioCache {
   private entries = new Map<string, {
     promise: Promise<string | null>;
@@ -84,7 +89,7 @@ export class ReviewAudioCache {
     if (existing) return existing.promise;
 
     // Bound memory and network work even during long review sessions.
-    while (this.entries.size >= 16) {
+    while (this.entries.size >= 24) {
       const oldest = this.entries.keys().next().value!;
       this.remove(oldest);
     }
@@ -121,6 +126,61 @@ export class ReviewAudioCache {
         return entry.url;
       } catch {
         // Network failures can be retried; genuine cache misses stay cached.
+        if (this.entries.get(key) === entry) this.entries.delete(key);
+        return null;
+      } finally {
+        clearTimeout(timeout);
+      }
+    })();
+
+    this.entries.set(key, entry);
+    return entry.promise;
+  }
+
+  getEdge(
+    text: string,
+    language: string,
+    background = false
+  ): Promise<string | null> {
+    const key = JSON.stringify(["edge", text.trim(), language.trim().toLowerCase()]);
+    const existing = this.entries.get(key);
+    if (existing) return existing.promise;
+
+    while (this.entries.size >= 24) {
+      const oldest = this.entries.keys().next().value!;
+      this.remove(oldest);
+    }
+
+    const controller = new AbortController();
+    const entry: {
+      promise: Promise<string | null>;
+      controller: AbortController;
+      url?: string;
+      missing?: boolean;
+    } = {
+      controller,
+      promise: Promise.resolve(null),
+    };
+
+    entry.promise = (async () => {
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      try {
+        const url = edgeAudioUrl(text, language);
+        const response = await fetch(url, {
+          signal: controller.signal,
+          priority: background ? "low" : "auto",
+        });
+
+        if (!response.ok) {
+          entry.missing = true;
+          return null;
+        }
+        const blob = await response.blob();
+        if (!blob.size || !blob.type.startsWith("audio/")) throw new Error("Invalid audio file");
+        if (controller.signal.aborted) return null;
+        entry.url = URL.createObjectURL(blob);
+        return entry.url;
+      } catch {
         if (this.entries.get(key) === entry) this.entries.delete(key);
         return null;
       } finally {
