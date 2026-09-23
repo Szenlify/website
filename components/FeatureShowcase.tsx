@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import "./feature-showcase.css";
 import {
   Layers,
   Check,
@@ -59,7 +60,7 @@ export default function FeatureShowcase({
   const isPl = locale === "pl";
 
   return (
-    <section className="py-14 sm:py-24 relative z-10 overflow-hidden" id="features">
+    <section className="py-14 sm:py-24 relative z-10 overflow-clip" id="features">
       {/* Header sekcji */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-28 text-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-xs font-semibold text-indigo-400 mb-4 tracking-wider uppercase">
@@ -86,8 +87,8 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 1: PODWÓJNE NAPISY (NETFLIX & YOUTUBE)                              */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
-          <div className="lg:col-span-6 space-y-6">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+          <div data-reveal-side="left" className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1  text-green-200 text-xs font-mono font-bold">
               <span>{isPl ? "01 PODWÓJNE NAPISY" : "01 DUAL SUBTITLES"}</span>
             </div>
@@ -139,7 +140,7 @@ export default function FeatureShowcase({
           </div>
 
           {/* Ramka na zdjęcie 1 */}
-          <div className="lg:col-span-6">
+          <div data-reveal-side="right" className="lg:col-span-6">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
               {/* Belka okna */}
               <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
@@ -171,9 +172,9 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 2: INTERAKTYWNY SŁOWNIK I WYMOWA AUDIO (ODWRÓCONY UKŁAD)             */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           {/* Ramka na zdjęcie 2 (Po lewej na desktopie) */}
-          <div className="lg:col-span-6 order-2 lg:order-1">
+          <div data-reveal-side="left" className="lg:col-span-6 order-2 lg:order-1">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
               <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
@@ -200,7 +201,7 @@ export default function FeatureShowcase({
           </div>
 
           {/* Treść Bloku 2 */}
-          <div className="lg:col-span-6 space-y-6 order-1 lg:order-2">
+          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 order-1 lg:order-2">
             <div className="inline-flex items-center gap-2 px-3 py-1  text-cyan-200 text-xs font-mono font-bold">
               <span>
                 {isPl
@@ -254,8 +255,8 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 3: KONTEKSTOWE WYJAŚNIENIA AI (IDIOMY, SLANG, GRAMATYKA)            */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
-          <div className="lg:col-span-6 space-y-6">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+          <div data-reveal-side="left" className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 text-purple-200 text-xs font-mono font-bold">
               <span>
                 {isPl
@@ -310,7 +311,7 @@ export default function FeatureShowcase({
           </div>
 
           {/* Ramka na zdjęcie 3 */}
-          <div className="lg:col-span-6">
+          <div data-reveal-side="right" className="lg:col-span-6">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
               <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
@@ -340,9 +341,9 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 4: SKRÓTY KLAWISZOWE & PRECYZYJNA NAWIGACJA (JAK W LR)               */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           {/* Ramka na zdjęcie 4 (Po lewej na desktopie) */}
-          <div className="lg:col-span-6 order-2 lg:order-1">
+          <div data-reveal-side="left" className="lg:col-span-6 order-2 lg:order-1">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
               <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
@@ -369,7 +370,7 @@ export default function FeatureShowcase({
           </div>
 
           {/* Treść Bloku 4 */}
-          <div className="lg:col-span-6 space-y-6 order-1 lg:order-2">
+          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 order-1 lg:order-2">
             <div className="inline-flex items-center gap-2 px-3 py-1  text-amber-200 text-xs font-mono font-bold">
               <span>
                 {isPl ? "04 STEROWANIE KLAWIATURĄ" : "04 KEYBOARD CONTROLS"}
@@ -428,8 +429,8 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 5: FISZKI WIDEO & POWTÓRKI SRS (SPACED REPETITION)                  */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
-          <div className="lg:col-span-6 space-y-6">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+          <div data-reveal-side="left" className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1  text-emerald-200 text-xs font-mono font-bold">
               <Layers className="size-3.5" />
               <span>
@@ -481,7 +482,7 @@ export default function FeatureShowcase({
           </div>
 
           {/* Ramka na zdjęcie 5 */}
-          <div className="lg:col-span-6">
+          <div data-reveal-side="right" className="lg:col-span-6">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
               <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
@@ -511,9 +512,9 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 6: TŁUMACZENIE STRON WWW & ARTYKUŁÓW (ODWRÓCONY UKŁAD)               */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
           {/* Ramka na zdjęcie 6 (Po lewej na desktopie) */}
-          <div className="lg:col-span-6 order-2 lg:order-1">
+          <div data-reveal-side="left" className="lg:col-span-6 order-2 lg:order-1">
             <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
               <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
@@ -540,7 +541,7 @@ export default function FeatureShowcase({
           </div>
 
           {/* Treść Bloku 6 */}
-          <div className="lg:col-span-6 space-y-6 order-1 lg:order-2">
+          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 order-1 lg:order-2">
             <div className="inline-flex items-center gap-2 px-3 py-1  text-blue-200 text-xs font-mono font-bold">
               <span>
                 {isPl ? "06 CZYTNIK STRON & ARTYKUŁÓW" : "06 WEB READER MODE"}

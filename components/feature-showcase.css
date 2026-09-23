@@ -1,0 +1,49 @@
+/* Without scroll-timeline support, the content remains fully visible. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    #features [data-feature-reveal] {
+      --reveal-distance: 36px;
+      view-timeline: --feature-pair block;
+    }
+
+    #features [data-reveal-side="left"] {
+      --reveal-start: calc(-1 * var(--reveal-distance));
+    }
+
+    #features [data-reveal-side="right"] {
+      --reveal-start: var(--reveal-distance);
+    }
+
+    #features [data-feature-reveal] > [data-reveal-side] {
+      animation: feature-slide-together auto cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      animation-timeline: view(block);
+      animation-range: entry 0% entry 100%;
+    }
+
+    @media (min-width: 1024px) {
+      #features [data-feature-reveal] {
+        --reveal-distance: clamp(80px, 10vw, 144px);
+      }
+
+      #features [data-feature-reveal] > [data-reveal-side] {
+        /* A shared timeline brings both columns together in sync. */
+        animation-timeline: --feature-pair;
+      }
+    }
+
+    #features [data-feature-reveal] > [data-reveal-side]:focus-within {
+      animation: none;
+    }
+  }
+}
+
+@keyframes feature-slide-together {
+  from {
+    opacity: 0.06;
+    transform: translate3d(var(--reveal-start), 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
