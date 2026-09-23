@@ -1343,7 +1343,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
 /* A single mobile viewport with a floating menu and anchored review actions. */
 @media (max-width: 640px) {
     body > div:has([data-reviews-screen]) {
-        height: 100dvh;
+        height: 100vh;
         min-height: 0;
     }
     body:has([data-reviews-screen]) #main-content {
