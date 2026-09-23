@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from "react";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import {
@@ -8,12 +8,12 @@ import {
     loginWithGoogle,
     logoutUser,
     fetchUserWords,
-    saveWordReviewRating,
+    commitBatchedWordReviews,
     checkRedirectAuth,
     editReviewWord,
     deleteReviewWord,
 } from "@/lib/firebase";
-import { SRS, type ReviewWord } from "@/lib/srs";
+import { SRS, type ReviewWord, type SRState } from "@/lib/srs";
 
 interface AuthContextValue {
     user: User | null;
@@ -38,6 +38,7 @@ interface AuthContextValue {
     editWord: (word: ReviewWord) => Promise<void>;
     removeWord: (id: string) => Promise<void>;
     recordWordRating: (word: ReviewWord, grade: 1 | 2) => Promise<void>;
+    flushPendingReviews: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -61,6 +62,7 @@ const AuthContext = createContext<AuthContextValue>({
     signOut: async () => {},
     refreshWords: async () => {},
     recordWordRating: async () => {},
+    flushPendingReviews: async () => {},
     editWord: async () => {},
     removeWord: async () => {},
 });
@@ -75,6 +77,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loadingWords, setLoadingWords] = useState(false);
     const [viewMode, setViewMode] = useState<"reviews" | "landing">("landing");
     const [isCramMode, setIsCramMode] = useState(false);
+
+    const BATCH_FLUSH_INACTIVITY_MS = 30000; // Auto-zapis po 30 sekundach bezruchu
+    const BATCH_FLUSH_THRESHOLD = 10; // Auto-zapis gdy więcej niż lub równe 10 fiszek
+    const getStorageKey = (uid: string) => `lectoro_pending_reviews_${uid}`;
+
+    const pendingReviewsRef = useRef<Record<string, SRState>>({});
+    const flushTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const isFlushingRef = useRef<boolean>(false);
 
     const loadWords = useCallback(async (uid: string) => {
         setLoadingWords(true);
@@ -174,8 +184,87 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
+    const flushPendingReviews = useCallback(async () => {
+        if (!user?.uid) return;
+        if (flushTimerRef.current) {
+            clearTimeout(flushTimerRef.current);
+            flushTimerRef.current = null;
+        }
+        if (isFlushingRef.current) return;
+
+        const toCommit = { ...pendingReviewsRef.current };
+        const count = Object.keys(toCommit).length;
+        if (count === 0) return;
+
+        isFlushingRef.current = true;
+        try {
+            await commitBatchedWordReviews(user.uid, toCommit);
+            for (const id of Object.keys(toCommit)) {
+                delete pendingReviewsRef.current[id];
+            }
+            if (typeof window !== "undefined") {
+                const remaining = Object.keys(pendingReviewsRef.current).length;
+                if (remaining === 0) {
+                    localStorage.removeItem(getStorageKey(user.uid));
+                } else {
+                    localStorage.setItem(getStorageKey(user.uid), JSON.stringify(pendingReviewsRef.current));
+                }
+            }
+        } catch (error) {
+            console.error("Failed to commit batched word reviews to Firestore:", error);
+        } finally {
+            isFlushingRef.current = false;
+        }
+    }, [user?.uid]);
+
+    // Odzyskiwanie niezapisanych powtórek z localStorage po zalogowaniu / awarii
+    useEffect(() => {
+        if (!user?.uid) return;
+        if (typeof window !== "undefined") {
+            try {
+                const saved = localStorage.getItem(getStorageKey(user.uid));
+                if (saved) {
+                    const parsed = JSON.parse(saved) as Record<string, SRState>;
+                    if (parsed && Object.keys(parsed).length > 0) {
+                        pendingReviewsRef.current = { ...parsed, ...pendingReviewsRef.current };
+                        void flushPendingReviews();
+                    }
+                }
+            } catch (e) {
+                console.warn("Failed to restore pending reviews from localStorage", e);
+            }
+        }
+    }, [user?.uid, flushPendingReviews]);
+
+    // Bezpieczeństwo: zapis przy zmianie karty, zminimalizowaniu lub zamknięciu okna
+    useEffect(() => {
+        if (!user?.uid) return;
+
+        const handleVisibilityOrUnload = () => {
+            if (Object.keys(pendingReviewsRef.current).length > 0) {
+                void flushPendingReviews();
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityOrUnload);
+        window.addEventListener("pagehide", handleVisibilityOrUnload);
+        window.addEventListener("beforeunload", handleVisibilityOrUnload);
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityOrUnload);
+            window.removeEventListener("pagehide", handleVisibilityOrUnload);
+            window.removeEventListener("beforeunload", handleVisibilityOrUnload);
+            if (flushTimerRef.current) {
+                clearTimeout(flushTimerRef.current);
+                flushTimerRef.current = null;
+            }
+            handleVisibilityOrUnload();
+        };
+    }, [user?.uid, flushPendingReviews]);
+
     const signOut = useCallback(async () => {
         try {
+            await flushPendingReviews();
             await logoutUser();
             setUser(null);
             setWords([]);
@@ -185,17 +274,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.error("Sign out error:", error);
             throw error;
         }
-    }, []);
+    }, [flushPendingReviews]);
 
     const recordWordRating = useCallback(
         async (word: ReviewWord, grade: 1 | 2) => {
             if (!user?.uid) throw new Error("Please sign in");
-            const updatedSr = await saveWordReviewRating(user.uid, word, grade);
+
+            // 1. Obliczamy stan algorytmu SRS synchronicznie
+            const updatedSr = SRS.update(word.sr, grade, Date.now());
+
+            // 2. Natychmiastowa aktualizacja w pamięci podręcznej UI (0ms opóźnienia animacji)
             setWords((prev) =>
                 prev.map((w) => (w.id === word.id ? { ...w, sr: updatedSr, updatedAt: Date.now() } : w))
             );
+
+            // 3. Dodanie do bufora kolejki z deduplikacją
+            pendingReviewsRef.current[word.id] = updatedSr;
+
+            // 4. Kopia zapasowa w localStorage
+            if (typeof window !== "undefined") {
+                try {
+                    localStorage.setItem(
+                        getStorageKey(user.uid),
+                        JSON.stringify(pendingReviewsRef.current)
+                    );
+                } catch (e) {
+                    console.warn("Could not write pending review to localStorage", e);
+                }
+            }
+
+            // 5. Sprawdzenie warunków wysyłki buncza:
+            const count = Object.keys(pendingReviewsRef.current).length;
+            if (count >= BATCH_FLUSH_THRESHOLD) {
+                // Warunek 1: Więcej niż / równe 10 fiszek -> natychmiastowa wysyłka paczki
+                if (flushTimerRef.current) {
+                    clearTimeout(flushTimerRef.current);
+                    flushTimerRef.current = null;
+                }
+                void flushPendingReviews();
+            } else {
+                // Warunek 2: Mniej niż 10 fiszek -> odliczanie 30 sekund bezruchu
+                if (flushTimerRef.current) {
+                    clearTimeout(flushTimerRef.current);
+                }
+                flushTimerRef.current = setTimeout(() => {
+                    void flushPendingReviews();
+                }, BATCH_FLUSH_INACTIVITY_MS);
+            }
         },
-        [user]
+        [user?.uid, flushPendingReviews]
     );
 
     const editWord = useCallback(async (word: ReviewWord) => {
@@ -203,8 +330,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await editReviewWord(user.uid, word);
         setWords(previous => previous.map(item => item.id === word.id ? word : item));
     }, [user]);
+
     const removeWord = useCallback(async (id: string) => {
         if (!user) throw new Error("Please sign in");
+        if (pendingReviewsRef.current[id]) {
+            delete pendingReviewsRef.current[id];
+            if (typeof window !== "undefined") {
+                localStorage.setItem(getStorageKey(user.uid), JSON.stringify(pendingReviewsRef.current));
+            }
+        }
         await deleteReviewWord(user.uid, id);
         setWords(previous => previous.filter(item => item.id !== id));
     }, [user]);
@@ -252,6 +386,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 signOut,
                 refreshWords,
                 recordWordRating,
+                flushPendingReviews,
                 editWord,
                 removeWord,
             }}

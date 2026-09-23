@@ -604,6 +604,19 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
     width: 20px;
     height: 20px;
 }
+.review-speak-hint-btn {
+    border-color: rgba(251, 191, 36, 0.35);
+    background: rgba(251, 191, 36, 0.1);
+    color: #fbbf24;
+}
+.review-speak-hint-btn:hover {
+    background: rgba(251, 191, 36, 0.2);
+    border-color: rgba(251, 191, 36, 0.6);
+}
+.review-speak-hint-btn svg {
+    width: 14px;
+    height: 14px;
+}
 .review-speak-sm {
     width: 28px;
     height: 28px;

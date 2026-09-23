@@ -15,6 +15,7 @@ import {
     doc,
     updateDoc,
     deleteDoc,
+    writeBatch,
 } from "firebase/firestore";
 import { SRS, type ReviewWord, type SRState } from "./srs";
 
@@ -175,6 +176,38 @@ export async function saveWordReviewRating(
     }
 
     return updatedSr;
+}
+
+export async function commitBatchedWordReviews(
+    uid: string,
+    updates: Record<string, SRState>
+): Promise<void> {
+    const entries = Object.entries(updates);
+    if (!uid || entries.length === 0) return;
+
+    // Firestore batch limit is 500 operations.
+    const CHUNK_SIZE = 500;
+    for (let i = 0; i < entries.length; i += CHUNK_SIZE) {
+        const chunk = entries.slice(i, i + CHUNK_SIZE);
+        const batch = writeBatch(db);
+        const now = Date.now();
+
+        for (const [wordId, sr] of chunk) {
+            const wordRef = doc(db, "users", uid, "words", wordId);
+            batch.update(wordRef, {
+                sr_reps: sr.reps,
+                sr_step: sr.step,
+                sr_interval: sr.interval,
+                sr_easeFactor: sr.easeFactor,
+                sr_lapses: sr.lapses,
+                sr_nextReview: sr.nextReview,
+                sr_lastReview: sr.lastReview,
+                updatedAt: now,
+            });
+        }
+
+        await batch.commit();
+    }
 }
 
 export async function editReviewWord(uid: string, word: ReviewWord): Promise<void> {

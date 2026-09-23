@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from "react";
 import {
   Volume2,
   Turtle,
@@ -15,7 +15,12 @@ import { useAuth } from "@/context/AuthContext";
 import { SRS, resolveImageUrl, type ReviewWord } from "@/lib/srs";
 import type { Dict, Locale } from "@/lib/i18n/types";
 
-import { REVIEW_VOICE, ReviewAudioCache, reviewAudioText, selectReviewVoice } from "@/lib/review-audio";
+import {
+  selectReviewVoice,
+  cleanSpeechText,
+  getRecommendedSpeechRate,
+  isIosDevice,
+} from "@/lib/review-audio";
 import ReviewScreenshot from "./ReviewScreenshot";
 import { resetReviewScroll } from "@/lib/review-scroll";
 import "./review.css";
@@ -41,6 +46,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
   retryAudioTap: string;
   playbackFailed: string;
   listenSlowly: string;
+  iosVoiceHint: string;
 }> = {
   pl: {
     review: "Powtórki",
@@ -58,6 +64,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Dotknij głośnika, aby spróbować ponownie.",
     playbackFailed: "Nie udało się odtworzyć nagrania. Spróbuj ponownie.",
     listenSlowly: "Słuchaj wolniej (0,75×)",
+    iosVoiceHint: "Wskazówka iPhone: Możesz bezpłatnie uzyskać studyjną jakość głosu w Ustawienia → Dostępność → Zawartość mówiona → Głosy (pobierz głos Ulepszony).",
   },
   en: {
     review: "Review",
@@ -75,6 +82,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Tap the speaker to try again.",
     playbackFailed: "Could not play recording. Try again.",
     listenSlowly: "Listen slowly (0.75×)",
+    iosVoiceHint: "iPhone tip: Get natural studio voice quality in Settings → Accessibility → Spoken Content → Voices (download Enhanced voice).",
   },
   de: {
     review: "Wiederholung",
@@ -92,6 +100,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Tippe auf den Lautsprecher, um es erneut zu versuchen.",
     playbackFailed: "Aufnahme konnte nicht abgespielt werden. Bitte erneut versuchen.",
     listenSlowly: "Langsamer anhören (0,75×)",
+    iosVoiceHint: "iPhone-Tipp: Natürliche Studioqualität aktivieren unter: Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen (Erweiterte Stimme laden).",
   },
   es: {
     review: "Repaso",
@@ -109,6 +118,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Toca el altavoz para intentarlo de nuevo.",
     playbackFailed: "No se pudo reproducir el audio. Inténtalo de nuevo.",
     listenSlowly: "Escuchar más lento (0,75×)",
+    iosVoiceHint: "Consejo iPhone: Consigue voz de estudio gratuita en Ajustes → Accesibilidad → Contenido leído → Voces (descarga voz Mejorada).",
   },
   fr: {
     review: "Révision",
@@ -126,6 +136,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Touchez le haut-parleur pour réessayer.",
     playbackFailed: "Impossible de lire l'enregistrement. Réessayez.",
     listenSlowly: "Écouter plus lentement (0,75×)",
+    iosVoiceHint: "Astuce iPhone : Obtenez une voix naturelle en allant dans Réglages → Accessibilité → Contenu énoncé → Voix (téléchargez la voix Améliorée).",
   },
   it: {
     review: "Ripasso",
@@ -143,6 +154,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Tocca l'altoparlante per riprovare.",
     playbackFailed: "Impossibile riprodurre la registrazione. Riprova.",
     listenSlowly: "Ascolta più lentamente (0,75×)",
+    iosVoiceHint: "Suggerimento iPhone: Ottieni una voce di qualità studio in Impostazioni → Accessibilità → Contenuti letti ad alta voce → Voci (scarica voce Migliorata).",
   },
   cs: {
     review: "Opakování",
@@ -160,6 +172,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Klepnutím na reproduktor zkuste znovu.",
     playbackFailed: "Nahrávku se nepodařilo přehrát. Zkuste to znovu.",
     listenSlowly: "Poslouchat pomaleji (0,75×)",
+    iosVoiceHint: "Tip pro iPhone: Přirozený studiový hlas získáte v Nastavení → Zpřístupnění → Předčítání obsahu → Hlasy (stáhněte vylepšený hlas).",
   },
   nl: {
     review: "Herhaling",
@@ -177,6 +190,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Tik op de luidspreker om opnieuw te proberen.",
     playbackFailed: "Kon opname niet afspelen. Probeer het opnieuw.",
     listenSlowly: "Langzamer luisteren (0,75×)",
+    iosVoiceHint: "iPhone-tip: Krijg natuurlijke studiokwaliteit via Instellingen → Toegankelijkheid → Gesproken materiaal → Stemmen (download Verbeterde stem).",
   },
   pt: {
     review: "Revisão",
@@ -194,6 +208,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "Toque no alto-falante para tentar novamente.",
     playbackFailed: "Não foi possível reproduzir o áudio. Tente novamente.",
     listenSlowly: "Ouvir mais devagar (0,75×)",
+    iosVoiceHint: "Dica iPhone: Obtenha qualidade de estúdio gratuita em Ajustes → Acessibilidade → Conteúdo Falado → Vozes (baixe a voz Melhorada).",
   },
   ja: {
     review: "復習",
@@ -211,6 +226,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "スピーカーをタップして再試行してください。",
     playbackFailed: "音声を再生できませんでした。もう一度お試しください。",
     listenSlowly: "ゆっくり再生 (0.75×)",
+    iosVoiceHint: "iPhoneのヒント: 「設定」→「アクセシビリティ」→「読み上げコンテンツ」→「声」で拡張音声をダウンロードすると、より自然な発音になります。",
   },
   ko: {
     review: "복습",
@@ -228,6 +244,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     retryAudioTap: "스피커를 탭하여 다시 시도하세요.",
     playbackFailed: "오디오를 재생하지 못했습니다. 다시 시도해 주세요.",
     listenSlowly: "느리게 듣기 (0.75×)",
+    iosVoiceHint: "iPhone 팁: 설정 → 손쉬운 사용 → 콘텐츠 말하기 → 음성에서 '향상된 음성'을 다운로드하면 훨씬 자연스러운 발음을 들을 수 있습니다.",
   },
 };
 
@@ -243,6 +260,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     startCramMode,
     exitCramMode,
     recordWordRating,
+    flushPendingReviews,
     editWord,
     removeWord,
     refreshWords,
@@ -268,14 +286,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const [saving, setSaving] = useState(false);
   const [actionError, setActionError] = useState("");
   const [editing, setEditing] = useState<ReviewWord | null>(null);
-  const [premiumVoices, setPremiumVoices] = useState<string[]>([]);
   const browserVoices = useRef<SpeechSynthesisVoice[]>([]);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const speechRequest = useRef(0);
-  const audioCache = useRef(new ReviewAudioCache());
   const [audioMessage, setAudioMessage] = useState("");
-  const [audioLoading, setAudioLoading] = useState(false);
   const session = useRef("");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [swipeClass, setSwipeClass] = useState<string>("");
@@ -307,12 +321,9 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
   useEffect(() => {
     const speechReq = speechRequest;
-    const cache = audioCache;
     return () => {
       speechReq.current++;
-      audioRef.current?.pause();
       window.speechSynthesis?.cancel();
-      cache.current.clear();
     };
   }, []);
 
@@ -325,112 +336,81 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   }, [currentCard, currentIndex, answerShown, direction, editingCardId,
       isCramMode, loadingWords, wordsError, words.length, actionError]);
 
-  // Ask the same server that enforces Lectoro plan entitlements. Fail closed.
-  useEffect(() => {
-    const controller = new AbortController();
-    const checkAccess = async () => {
-      try {
-        if (!user) {
-          setPremiumVoices([]);
-          return;
-        }
-        const token = await user.getIdToken();
-        const response = await fetch(
-          "https://geminiproxy-gyagzflbra-ew.a.run.app",
-          {
-            method: "POST",
-            signal: controller.signal,
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              action: "geminiTtsVoices",
-              context: "review",
-            }),
-          },
-        );
-        if (!response.ok) {
-          setPremiumVoices([]);
-          return;
-        }
-        const data = await response.json();
-        if (!controller.signal.aborted && Array.isArray(data.voices)) {
-          setPremiumVoices(
-            data.voices.map((voice: { voice_id: string }) => voice.voice_id),
-          );
-        }
-      } catch {
-        setPremiumVoices([]);
-        /* Keep premium locked when entitlement cannot be verified. */
-      }
-    };
-    void checkAccess();
-    return () => controller.abort();
-  }, [user]);
-
-  useEffect(() => {
-    const cache = audioCache.current;
-    const speechReq = speechRequest;
-    return () => { cache.clear(); speechReq.current++; audioRef.current?.pause(); window.speechSynthesis?.cancel(); };
-  }, [user?.uid]);
-
   const activeCardKey = `${currentCard?.id || ""}:${currentCard?.original || ""}:${direction}:${answerShown}`;
   const [prevCardKey, setPrevCardKey] = useState(activeCardKey);
   if (prevCardKey !== activeCardKey) {
     setPrevCardKey(activeCardKey);
     setIsSpeaking(false);
-    setAudioLoading(false);
     setAudioMessage("");
   }
 
   useEffect(() => {
     speechRequest.current++;
-    audioRef.current?.pause();
     window.speechSynthesis?.cancel();
   }, [activeCardKey]);
 
-  useEffect(() => {
-    if (!premiumVoices.includes(REVIEW_VOICE)) return;
-    const upcoming = queue.slice(currentIndex, currentIndex + 3);
-    let cancelled = false;
-    // Current card first; future cards use low-priority downloads.
-    void (async () => {
-      for (const [index, card] of upcoming.entries()) {
-        if (cancelled) return;
-        await Promise.all([
-          audioCache.current.get(reviewAudioText(card.original, card.sentence), card.srcLang || "en", index > 0),
-          audioCache.current.get(reviewAudioText(card.translated, card.sentenceTranslated), card.tgtLang || "pl", index > 0),
-        ]);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [queue, currentIndex, premiumVoices]);
+  const [voicesRevision, setVoicesRevision] = useState(0);
 
   useEffect(() => {
     const synth = window.speechSynthesis;
     if (!synth) return;
-    const update = () => { browserVoices.current = synth.getVoices(); };
+    const update = () => {
+      browserVoices.current = synth.getVoices();
+      setVoicesRevision((v) => v + 1);
+    };
     update();
     synth.addEventListener("voiceschanged", update);
-    return () => { synth.removeEventListener("voiceschanged", update); synth.cancel(); };
+    return () => {
+      synth.removeEventListener("voiceschanged", update);
+      synth.cancel();
+    };
   }, []);
 
-  const speakFallback = useCallback((text: string, lang: string, rate: number, request: number) => {
-    if (request !== speechRequest.current) return;
+  const isIos = useMemo(() => isIosDevice(), []);
+  const hasOnlyCompactVoice = useMemo(() => {
+    if (!isIos || !browserVoices.current.length) return false;
+    const baseLang = (currentCard?.srcLang || "en").split(/[-_]/)[0].toLowerCase();
+    const matching = browserVoices.current.filter((v) =>
+      (v.lang || "").toLowerCase().split(/[-_]/)[0] === baseLang
+    );
+    if (!matching.length) return false;
+    return matching.every((v) => /compact|kompakt/i.test(`${v.name} ${v.voiceURI}`));
+  }, [isIos, currentCard?.srcLang, voicesRevision]);
+
+  const speakText = useCallback((text: string, lang = "en", rate = 1) => {
+    if (!text) return;
+    const request = ++speechRequest.current;
+    window.speechSynthesis?.cancel();
+    setIsSpeaking(false);
+    setAudioMessage("");
+
     const synth = window.speechSynthesis;
     if (!synth || !window.SpeechSynthesisUtterance) {
       setAudioMessage(rc.unsupportedAudio);
       return;
     }
+    const clean = cleanSpeechText(text);
+    if (!clean) return;
+
     const available = synth.getVoices();
-    const voice = selectReviewVoice(available.length ? available : browserVoices.current, lang);
-    const utterance = new SpeechSynthesisUtterance(text);
+    const voiceList = available.length ? available : browserVoices.current;
+    const voice = selectReviewVoice(voiceList, lang);
+    const onIos = isIosDevice();
+
+    if (!onIos && !voice) {
+      // In PC / desktop browsers: strictly ONLY voices from Google.
+      // If no Google voice is available for this language, do not play inferior system voices.
+      setAudioMessage(rc.unsupportedAudio);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(clean);
     // Retain the utterance until playback finishes (including on mobile Safari).
     utteranceRef.current = utterance;
     utterance.lang = voice?.lang || lang;
     if (voice) utterance.voice = voice;
-    utterance.rate = rate;
+    utterance.rate = getRecommendedSpeechRate(rate, voice?.name);
+    utterance.pitch = 1.0;
     utterance.onstart = () => { if (request === speechRequest.current) setIsSpeaking(true); };
     utterance.onend = () => {
       if (request !== speechRequest.current) return;
@@ -448,58 +428,14 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     try {
       synth.cancel();
       synth.speak(utterance);
-      synth.resume();
+      if (synth.paused) {
+        synth.resume();
+      }
     } catch {
       setIsSpeaking(false);
       setAudioMessage(rc.playbackFailed);
     }
   }, [rc]);
-
-  const speakText = useCallback(async (text: string, lang = "en", rate = 1) => {
-    if (!text) return;
-    const request = ++speechRequest.current;
-    audioRef.current?.pause();
-    window.speechSynthesis?.cancel();
-    setIsSpeaking(false);
-    setAudioMessage("");
-    setAudioLoading(false);
-    if (!premiumVoices.includes(REVIEW_VOICE) || audioCache.current.isMissing(text, lang)) {
-      speakFallback(text, lang, rate, request);
-      return;
-    }
-    setAudioLoading(true);
-    const url = await audioCache.current.get(text, lang);
-    if (request !== speechRequest.current) return;
-    setAudioLoading(false);
-    if (!url) {
-      speakFallback(text, lang, rate, request);
-      return;
-    }
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.onended = null;
-      audioRef.current.onerror = null;
-    }
-    const sound = new Audio(url);
-    sound.playbackRate = rate;
-    sound.preservesPitch = true;
-    sound.onended = () => { if (request === speechRequest.current) setIsSpeaking(false); };
-    sound.onerror = () => {
-      if (request !== speechRequest.current) return;
-      setIsSpeaking(false);
-      setAudioMessage(rc.playbackFailed);
-    };
-    audioRef.current = sound;
-    try {
-      await sound.play();
-      if (request === speechRequest.current) setIsSpeaking(true);
-    } catch {
-      if (request === speechRequest.current) {
-        setIsSpeaking(false);
-        setAudioMessage(rc.retryAudioTap);
-      }
-    }
-  }, [premiumVoices, speakFallback, rc]);
 
   const flipCard = useCallback(() => {
     if (busy.current || !currentCard || editing) return;
@@ -516,6 +452,13 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
       busy.current = false;
     }, duration);
   }, [currentCard, editing]);
+
+  // Natychmiastowy zapis oczekującego bufora, gdy użytkownik ukończy kolejkę powtórek
+  useEffect(() => {
+    if (currentIndex >= queue.length && queue.length > 0) {
+      void flushPendingReviews();
+    }
+  }, [currentIndex, queue.length, flushPendingReviews]);
 
   const rateCard = useCallback(
     async (grade: 1 | 2) => {
@@ -569,9 +512,8 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         ]);
         if (result) throw result;
         speechRequest.current++;
-        audioRef.current?.pause();
-      window.speechSynthesis?.cancel();
-          setIsSpeaking(false);
+        window.speechSynthesis?.cancel();
+        setIsSpeaking(false);
         setAnswerShown(false);
         setCurrentIndex((prev) => prev + 1);
       } catch (error) {
@@ -972,7 +914,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           )}
           <button
             type="button"
-            onClick={() => void refreshWords()}
+            onClick={async () => {
+              await flushPendingReviews();
+              await refreshWords();
+            }}
             className="inline-flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/30 cursor-pointer active:scale-95"
           >
             <RotateCw className="size-4" />
@@ -1065,9 +1010,11 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
             {isNormal ? tgtLang : srcLang}
           </button>
         </div>
-        {(audioLoading || audioMessage) && <p className="review-audio-status" role="status">
-          {audioLoading ? rc.loadingAudio : audioMessage}
-        </p>}
+        {audioMessage && (
+          <p className="review-audio-status" role="status">
+            {audioMessage}
+          </p>
+        )}
         <div
           className="review-progress"
           role="progressbar"
@@ -1214,6 +1161,20 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                 >
                                   <Turtle />
                                 </button>
+                                {isIos && hasOnlyCompactVoice && (
+                                  <button
+                                    type="button"
+                                    className="review-speak-btn review-speak-hint-btn"
+                                    aria-label={rc.iosVoiceHint}
+                                    title={rc.iosVoiceHint}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setAudioMessage(rc.iosVoiceHint);
+                                    }}
+                                  >
+                                    <Info />
+                                  </button>
+                                )}
                               </div>
                               {sentence &&
                                 sentence.trim().toLowerCase() !==
