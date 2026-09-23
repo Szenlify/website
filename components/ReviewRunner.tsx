@@ -513,7 +513,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     const duration = window.matchMedia("(prefers-reduced-motion: reduce)")
       .matches
       ? 1
-      : 720;
+      : 400;
     setTimeout(() => {
       setFlipPhase("");
       busy.current = false;
@@ -683,34 +683,47 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     editing,
   ]);
 
-  // Touch handlers for mobile swipe — strictly horizontal, zero page scroll
+  const touchStartTime = useRef(0);
+  const touchStartPos = useRef({ x: 0, y: 0 });
+
+  // Touch handlers for mobile swipe & tap
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (busy.current || (e.target as HTMLElement).closest("button")) return;
+    if (busy.current || (e.target as HTMLElement).closest("button, input, textarea, a")) return;
     setEnteredCard(currentCard?.id || null);
+    const clientX = e.touches[0].clientX;
+    const clientY = e.touches[0].clientY;
+    const now = performance.now();
+    touchStartTime.current = now;
+    touchStartPos.current = { x: clientX, y: clientY };
+
     drag.current = {
       x: 0,
-      lastX: e.touches[0].clientX,
-      time: performance.now(),
+      lastX: clientX,
+      time: now,
       velocity: 0,
     };
-    setTouchStartX(e.touches[0].clientX);
-    setTouchStartY(e.touches[0].clientY);
+    setTouchStartX(clientX);
+    setTouchStartY(clientY);
     setIsDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (busy.current || touchStartX === null || touchStartY === null) return;
     const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
     const deltaX = currentX - touchStartX;
-    if (
-      Math.abs(deltaX) < 12 &&
-      Math.abs(e.touches[0].clientY - touchStartY) > 12
-    ) {
+    const deltaY = currentY - touchStartY;
+
+    // If movement is predominantly vertical, cancel horizontal drag so user can scroll smoothly
+    if (Math.abs(deltaY) > 14 && Math.abs(deltaY) > Math.abs(deltaX) * 1.3) {
       setTouchStartX(null);
+      setTouchStartY(null);
       setIsDragging(false);
       setTouchDeltaX(0);
+      drag.current.x = 0;
       return;
     }
+
     const now = performance.now();
     drag.current.velocity =
       (currentX - drag.current.lastX) / Math.max(1, now - drag.current.time);
@@ -720,25 +733,35 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     setTouchDeltaX(deltaX);
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX === null) return;
     setIsDragging(false);
 
     const x = drag.current.x;
+    const elapsed = performance.now() - touchStartTime.current;
     const velocity =
       performance.now() - drag.current.time < 100 ? drag.current.velocity : 0;
     const threshold = Math.min(
       100,
       (cardRef.current?.offsetWidth || 320) * 0.24,
     );
+
+    // 1. Swipe exceeded threshold or fling velocity: rate card
     if (
       Math.abs(x) >= threshold ||
-      (Math.abs(x) > 24 &&
+      (Math.abs(x) > 28 &&
         Math.abs(velocity) > 0.55 &&
         Math.sign(velocity) === Math.sign(x))
     ) {
       void rateCard(x < 0 ? 1 : 2);
     } else {
+      // 2. Clean quick tap on the card (movement < 12px and duration < 380ms): flip card!
+      if (Math.abs(x) < 12 && elapsed < 380) {
+        const target = e.target as HTMLElement;
+        if (!target.closest("button, input, textarea, a")) {
+          flipCard();
+        }
+      }
       drag.current.x = 0;
       setTouchDeltaX(0);
     }
@@ -746,28 +769,36 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     setTouchStartY(null);
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (busy.current) return;
+    const target = e.target as HTMLElement;
+    if (target.closest("button, input, textarea, a")) return;
+    if (Math.abs(touchDeltaX) > 10) return;
+    flipCard();
+  };
+
   // Calculate rotation, translation, and glow shadow during touch drag
   const isSwipingLeft = touchDeltaX < -15;
-  const swipeIntensity = Math.min(1, Math.abs(touchDeltaX) / 100);
+  const swipeIntensity = Math.min(1, Math.abs(touchDeltaX) / 80);
 
   const dynamicShadow =
     isDragging && touchDeltaX !== 0
       ? isSwipingLeft
-        ? `0 20px 50px -10px rgba(239, 68, 68, ${0.3 + swipeIntensity * 0.45}), 0 0 30px -5px rgba(239, 68, 68, ${swipeIntensity * 0.4})`
-        : `0 20px 50px -10px rgba(16, 185, 129, ${0.3 + swipeIntensity * 0.45}), 0 0 30px -5px rgba(16, 185, 129, ${swipeIntensity * 0.4})`
+        ? `0 20px 50px -10px rgba(239, 68, 68, ${0.35 + swipeIntensity * 0.5}), 0 0 35px -5px rgba(239, 68, 68, ${swipeIntensity * 0.45})`
+        : `0 20px 50px -10px rgba(16, 185, 129, ${0.35 + swipeIntensity * 0.5}), 0 0 35px -5px rgba(16, 185, 129, ${swipeIntensity * 0.45})`
       : undefined;
 
   const dynamicBorder =
     isDragging && touchDeltaX !== 0
       ? isSwipingLeft
-        ? `rgba(239, 68, 68, ${0.4 + swipeIntensity * 0.6})`
-        : `rgba(16, 185, 129, ${0.4 + swipeIntensity * 0.6})`
+        ? `rgba(239, 68, 68, ${0.45 + swipeIntensity * 0.55})`
+        : `rgba(16, 185, 129, ${0.45 + swipeIntensity * 0.55})`
       : undefined;
 
   const cardTransformStyle: React.CSSProperties =
     isDragging || !!swipeClass
       ? {
-          transform: `translate3d(${touchDeltaX}px, 0, 0) rotate(${touchDeltaX * 0.08}deg)`,
+          transform: `translate3d(${touchDeltaX}px, 0, 0) rotate(${touchDeltaX * 0.09}deg)`,
           boxShadow: dynamicShadow,
           borderColor: dynamicBorder,
           transition: "none",
@@ -1161,6 +1192,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                   }}
                   className={`review-flashcard ${enteredCard !== currentCard.id ? "review-entering" : ""} ${isDragging ? "review-dragging" : ""} ${flipPhase} ${swipeClass}`}
                   style={cardTransformStyle}
+                  onClick={handleCardClick}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
@@ -1172,6 +1204,29 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     setIsDragging(false);
                   }}
                 >
+                  {/* Dynamic Swipe Action Stamps on Mobile */}
+                  {isDragging && touchDeltaX !== 0 && (
+                    <>
+                      {touchDeltaX < -15 && (
+                        <div
+                          className="review-swipe-stamp review-swipe-stamp-again"
+                          style={{ opacity: Math.min(1, (Math.abs(touchDeltaX) - 15) / 50) }}
+                        >
+                          <span className="stamp-title">↺ {r.btnAgain}</span>
+                          <span className="stamp-sub">{labelAgain}</span>
+                        </div>
+                      )}
+                      {touchDeltaX > 15 && (
+                        <div
+                          className="review-swipe-stamp review-swipe-stamp-good"
+                          style={{ opacity: Math.min(1, (Math.abs(touchDeltaX) - 15) / 50) }}
+                        >
+                          <span className="stamp-title">✓ {r.btnGood}</span>
+                          <span className="stamp-sub">{labelGood}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
                   <div className="review-flip-scene">
                     <div
                       className={`review-flip-inner ${answerShown ? "is-flipped" : ""}`}
@@ -1250,6 +1305,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                   alt={r.movieSnapshotAlt}
                                   locale={locale}
                                   active={active}
+                                  onClick={flipCard}
                                 />
                               )}
                             </div>

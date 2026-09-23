@@ -23,11 +23,13 @@ export default function ReviewScreenshot({
   alt,
   locale = "en",
   active,
+  onClick,
 }: {
   src: string;
   alt: string;
   locale?: Locale;
   active: boolean;
+  onClick?: (e: React.MouseEvent) => void;
 }) {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
   const [attempt, setAttempt] = useState(0);
@@ -39,7 +41,13 @@ export default function ReviewScreenshot({
   }, []);
 
   return (
-    <div className="review-screenshot">
+    <div
+      className="review-screenshot cursor-pointer select-none"
+      onClick={onClick}
+      role="button"
+      tabIndex={-1}
+      aria-label="Obróć kartę"
+    >
       <div
         className={`review-screenshot-box ${status === "loaded" ? "is-loaded" : ""} ${status === "error" ? "is-error" : ""}`}
         aria-busy={status === "loading"}
@@ -49,7 +57,8 @@ export default function ReviewScreenshot({
             <span>{copy.error}</span>
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setStatus("loading");
                 setAttempt((value) => value + 1);
               }}
