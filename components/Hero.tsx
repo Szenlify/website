@@ -95,7 +95,7 @@ export default function Hero({ dict }: HeroProps) {
                         aria-label={dict.hero.demoCta}
                     >
                         <source src="/v.mov" type="video/mp4" />
-                        <a href="/v1.mp4">{dict.hero.demoCta}</a>
+                        <a href="/v.mov">{dict.hero.demoCta}</a>
                     </video>
                 </div>
             </div>
