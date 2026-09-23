@@ -220,4 +220,150 @@ export const plGuides: GuideDictionary = {
             "Twórz kontekstowe fiszki wideo, powtarzaj z SRS i eksportuj kolekcję, kiedy tego potrzebujesz.",
         ctaButton: "Zacznij z Lectoro AI",
     },
+    "dual-subtitles-netflix-youtube": {
+        "slug": "dual-subtitles-netflix-youtube",
+        "title": "Podwójne napisy na Netflixie i YouTube — Kompletny poradnik i tryb Word Cloud (Klawisz S)",
+        "description": "Dowiedz się, jak włączyć dwa napisy naraz na Netflixie i YouTube. Odkryj klawisz S (Word Cloud) do natychmiastowego tłumaczenia słowo po słowie i zapamiętywania z wideo.",
+        "eyebrow": "Konfiguracja napisów i immersja",
+        "updatedAt": "Zaktualizowano 23 września 2026",
+        "readingTime": "8 min czytania",
+        "intro": "Oglądanie filmów wyłącznie z pojedynczymi napisami w języku ojczystym trenuje jedynie szybkie czytanie po polsku. Z kolei napisy wyłącznie w języku obcym szybko męczą, gdy aktorzy mówią za szybko lub używają slangu. Podwójne napisy w połączeniu z trybem Word Cloud (klawisz S) w Lectoro AI eliminują ten problem — pozwalają cieszyć się fabułą, natychmiast rozumieć trudne słowa w kontekście i tworzyć trwałe fiszki pamięciowe.",
+        "sections": [
+                {
+                        "heading": "Dlaczego pojedyncze napisy zawodzą w nauce języka",
+                        "paragraphs": [
+                                "Gdy włączasz polskie napisy, mózg idzie na skróty — wyłącza skupienie na ścieżce dźwiękowej i po prostu czyta znajomy tekst. Z kolei napisy wyłącznie w języku docelowym (np. angielskim) bez natychmiastowego słownika wywołują przeciążenie poznawcze: jedno niezrozumiałe słowo potrafi zablokować sens całej 5-minutowej sceny.",
+                                "Rozwiązaniem jest jednoczesne wyświetlanie dwóch strumieni napisów: oryginalnej wypowiedzi na pierwszym planie oraz dyskretnego tłumaczenia pomocniczego tuż obok. Twoje oko uczy się łączyć dźwięk aktora z pisanym tekstem, a wzrok sięga po tłumaczenie tylko wtedy, gdy mózg tego naprawdę potrzebuje."
+                        ],
+                        "bullets": [
+                                "Oryginalna linijka uczy naturalnego łączenia wyrazów i intonacji",
+                                "Tłumaczenie pomocnicze daje natychmiastowe poczucie bezpieczeństwa i eliminuje frustrację",
+                                "Oszczędzasz godziny czasu, nie musząc zatrzymywać filmu i wpisywać słów do translatora w telefonie"
+                        ]
+                },
+                {
+                        "heading": "Klawisz S: Magiczny moment Word Cloud (Tłumaczenie słowo po słowie)",
+                        "paragraphs": [
+                                "Większość tradycyjnych rozszerzeń wyświetla tłumaczenie jako jeden zbity blok tekstu. Przy długich zdaniach nadal nie wiesz, który wyraz w języku obcym odpowiada danemu słowu po polsku.",
+                                "W Lectoro AI rozwiązuje to unikalny tryb Word Cloud: w dowolnym momencie wideo wciskasz klawisz S (lub strzałkę w dół). W ułamku sekundy odtwarzacz zatrzymuje się, a całe zdanie rozbija się na interaktywne kafelki słów. Każda kafelka ma własne precyzyjne tłumaczenie, klasyfikację gramatyczną i krystalicznie czystą wymowę audio.",
+                                "Możesz spokojnie przeanalizować całą strukturę zdania słowo po słowie bez zgadywania i bez wychodzenia z pełnego ekranu."
+                        ],
+                        "steps": [
+                                {
+                                        "title": "Krok 1: Wciśnij klawisz S",
+                                        "text": "Gdy w dialogu padnie trudne zdanie, wciśnij klawisz S lub strzałkę w dół na klawiaturze."
+                                },
+                                {
+                                        "title": "Krok 2: Zbadaj kafelki słów",
+                                        "text": "Zobacz tłumaczenie każdego słowa, kliknij aby odsłuchać naturalną wymowę lub wciśnij Enter/Q dla głębokiej analizy AI."
+                                },
+                                {
+                                        "title": "Krok 3: Zapisz kadr klawiszem Z",
+                                        "text": "Wciśnij Z lub V, aby zapisać słowo wraz z pełnym zdaniem i zrzutem sceny z filmu do powtórek SRS."
+                                }
+                        ]
+                },
+                {
+                        "heading": "Jak skonfigurować podwójne napisy w 60 sekund",
+                        "paragraphs": [
+                                "Instalacja i konfiguracja Lectoro AI w Google Chrome zajmuje mniej niż minutę i nie wymaga zakładania karty płatniczej.",
+                                "Po dodaniu wtyczki z Chrome Web Store otwórz dowolny film na Netflixie, YouTube, TED lub Plex. Pasek podwójnych napisów pojawi się automatycznie pod wideo. Możesz dowolnie zmieniać rozmiar czcionki, kolory oraz przełączać języki jednym kliknięciem."
+                        ],
+                        "bullets": [
+                                "Wsparcie dla Netflix, YouTube, TED oraz Plex",
+                                "Pełna personalizacja wielkości czcionki, tła i kontrastu",
+                                "Automatyczna synchronizacja ze skrótami klawiszowymi W, A, S, D, Q, Z"
+                        ]
+                }
+        ],
+        "faq": [
+                {
+                        "question": "Czy podwójne napisy działają na wszystkich filmach na Netflixie i YouTube?",
+                        "answer": "Tak. Lectoro AI działa z każdym filmem, serialem i materiałem wideo posiadającym napisy w serwisach Netflix, YouTube, TED oraz Plex."
+                },
+                {
+                        "question": "Co dokładnie dzieje się po wciśnięciu klawisza S?",
+                        "answer": "Klawisz S pauzuje odtwarzanie i aktywuje tryb Word Cloud — rozbija bieżącą linijkę dialogową na interaktywne kafelki z natychmiastowym tłumaczeniem każdego słowa z osobna."
+                },
+                {
+                        "question": "Czy korzystanie z podwójnych napisów jest bezpłatne?",
+                        "answer": "Tak, podwójne napisy oraz tryb czytania Word Cloud są w 100% darmowe w planie Free, bez konieczności podawania karty kredytowej."
+                }
+        ],
+        "relatedLabel": "Następny poradnik",
+        "ctaTitle": "Oglądaj filmy z podwójnymi napisami już dziś",
+        "ctaText": "Zainstaluj Lectoro AI za darmo w Chrome i zamień każdy seans na Netflixie w fascynującą lekcję języka.",
+        "ctaButton": "Zainstaluj w Chrome — Bezpłatnie",
+        "locale": "pl"
+},
+    "language-reactor-alternative": {
+        "slug": "language-reactor-alternative",
+        "title": "Najlepsza alternatywa dla Language Reactor w 2026 roku — Porównanie Lectoro AI",
+        "description": "Szukasz nowoczesnej alternatywy dla Language Reactor (LLN) lub Lingopie? Zobacz porównanie: tryb Word Cloud (klawisz S), zrzuty scen w fiszkach, mobilne powtórki PWA i eksport do Anki.",
+        "eyebrow": "Porównanie rozszerzeń i narzędzi",
+        "updatedAt": "Zaktualizowano 23 września 2026",
+        "readingTime": "9 min czytania",
+        "intro": "Language Reactor (dawniej Language Learning with Netflix) zrewolucjonizował naukę języków z filmów, jednak wielu użytkowników napotyka dziś problemy z przestarzałym interfejsem, brakiem synchronizacji mobilnej czy trudnościami z nauką poza domem. Lectoro AI powstało jako nowoczesna odpowiedź na te wyzwania — łącząc płynne podwójne napisy z rewolucyjnym trybem Word Cloud (klawisz S), automatycznymi zrzutami scen i aplikacją na telefon.",
+        "sections": [
+                {
+                        "heading": "Dlaczego użytkownicy szukają alternatyw dla Language Reactor",
+                        "paragraphs": [
+                                "Language Reactor był pionierem, ale od lat zmaga się z ograniczeniami: interfejs bywa przeładowany, brakuje natywnej aplikacji do powtórek na telefonie, a eksport fiszek wymaga ręcznego konfigurowania szablonów Anki. Co więcej, w przypadku długich kwestii dialogowych użytkownik widzi jedynie zbity blok tłumaczenia, bez możliwości łatwej izolacji poszczególnych słów.",
+                                "Wielu uczniów potrzebuje rozwiązania, które działa lekko, nie obciąża procesora, pozwala powtarzać słówka na telefonie w drodze do pracy i wspiera współczesne platformy streamingowe w standardzie Manifest V3."
+                        ],
+                        "bullets": [
+                                "Brak wygodnego mobilnego systemu powtórek w Language Reactor",
+                                "Brak automatycznego przechwytywania kadrów scen jako kotwic pamięciowych",
+                                "Monolityczny tekst tłumaczeń zamiast interaktywnego podziału na słowa"
+                        ]
+                },
+                {
+                        "heading": "Kluczowe przewagi Lectoro AI nad konkurencją",
+                        "paragraphs": [
+                                "Lectoro AI zostało zaprojektowane od zera z myślą o maksymalnej wygodzie i nowoczesnych zasadach kognitywistyki.",
+                                "1. Tryb Word Cloud (Klawisz S): Jedno naciśnięcie rozbija całe zdanie na pojedyncze kafelki słów z wymową i precyzyjnym znaczeniem.",
+                                "2. Fiszki ze zrzutem sceny (Klawisz Z): Zamiast gołego tekstu, Twoja fiszka zawiera dokładny kadr z filmu, oddający emocje i sytuację.",
+                                "3. Powtórki na telefonie (/dashboard/reviews): Dostępne w przeglądarce smartfona jako PWA z algorytmem SuperMemo SM-2, bez konieczności instalowania zewnętrznych aplikacji.",
+                                "4. Głęboka analiza AI (Klawisz Q / Enter): Błyskawiczne wyjaśnienia idiomów, slangu i struktur gramatycznych w języku ojczystym."
+                        ],
+                        "bullets": [
+                                "Lekka wtyczka Manifest V3 o minimalnym zużyciu pamięci RAM",
+                                "Gotowy eksport do Anki (.zip z grafikami i audio)",
+                                "Bezpłatny plan bez karty kredytowej"
+                        ]
+                },
+                {
+                        "heading": "Zestawienie funkcji: Lectoro AI vs Language Reactor",
+                        "paragraphs": [
+                                "Oto bezpośrednie porównanie kluczowych możliwości obu narzędzi w 2026 roku:"
+                        ],
+                        "bullets": [
+                                "Podwójne napisy Netflix & YouTube: Lectoro AI (Tak) | Language Reactor (Tak)",
+                                "Tryb Word Cloud (Klawisz S): Lectoro AI (Tak, interaktywne kafelki) | Language Reactor (Brak)",
+                                "Fiszki z kadrem wideo: Lectoro AI (Automatyczne zrzuty HD) | Language Reactor (Ograniczone)",
+                                "Powtórki mobilne bez Anki: Lectoro AI (Tak, PWA Web) | Language Reactor (Brak)",
+                                "Darmowy plan bez karty: Lectoro AI (Tak, bezterminowo) | Language Reactor (Tak)"
+                        ]
+                }
+        ],
+        "faq": [
+                {
+                        "question": "Czy mogę łatwo przenieść się z Language Reactor do Lectoro AI?",
+                        "answer": "Tak, wystarczy zainstalować Lectoro AI z Chrome Web Store. Nie musisz niczego konfigurować — wtyczka automatycznie wykrywa napisy na Netflixie i YouTube."
+                },
+                {
+                        "question": "Czy Lectoro AI pozwala na eksport słówek do Anki?",
+                        "answer": "Tak. W zakładce Moje Słowa możesz jednym kliknięciem pobrać kompletną paczkę .zip zawierającą gotowy plik importu, zoptymalizowane zrzuty ekranu oraz nagrania audio."
+                },
+                {
+                        "question": "Dlaczego tryb Word Cloud w Lectoro AI jest tak popularny?",
+                        "answer": "Ponieważ pozwala jednym klawiszem (S) rozłożyć całe zdanie na pojedyncze kafelki ze słowami, eliminując problem zbyt szybkiego tempa mowy w filmach."
+                }
+        ],
+        "relatedLabel": "Następny poradnik",
+        "ctaTitle": "Wypróbuj nowoczesną alternatywę dla Language Reactor",
+        "ctaText": "Przekonaj się, jak przyjemna może być nauka języka z filmów dzięki trybowi Word Cloud i fiszkom wideo.",
+        "ctaButton": "Zainstaluj Lectoro AI za darmo",
+        "locale": "pl"
+},
 };

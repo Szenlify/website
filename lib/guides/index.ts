@@ -42,4 +42,5 @@ export function getGuide(locale: Locale, slug: string): GuideContent {
 }
 
 export { GUIDE_SLUGS } from "./types";
+export { GUIDE_IMAGES } from "./images";
 export type { GuideContent, GuideSlug } from "./types";

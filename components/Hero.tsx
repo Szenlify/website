@@ -94,8 +94,7 @@ export default function Hero({ dict }: HeroProps) {
                         muted={true}
                         aria-label={dict.hero.demoCta}
                     >
-                        <source src="/v1.webm" type="video/webm" />
-                        <source src="/v1.mp4" type="video/mp4" />
+                        <source src="/v.mov" type="video/mp4" />
                         <a href="/v1.mp4">{dict.hero.demoCta}</a>
                     </video>
                 </div>

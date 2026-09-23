@@ -38,7 +38,7 @@ export const pl: Dict = {
         title: "Nauka języków z podwójnymi napisami na",
         titleHighlight: "Netflixie i YouTube",
         subtitle:
-            "Kliknij dowolne słowo w dwujęzycznych napisach, aby uzyskać natychmiastowe tłumaczenie, naturalną wymowę i kontekstowe wyjaśnienie AI. Zapisuj słownictwo wraz ze zrzutem sceny z filmu i zapamiętuj je na zawsze dzięki powtórkom SRS.",
+            "Oglądaj filmy z dwoma językami naraz. Wciśnij klawisz „S”, aby natychmiast zobaczyć tłumaczenie słowo po słowie (Word Cloud), klikaj nieznane słowa dla wyjaśnień AI i twórz fiszki ze zrzutami scen do powtórek SRS.",
         installCta: "Zainstaluj w Chrome",
         trialBadge: "3 dni trial",
         demoCta: "Wypróbuj interaktywne demo",
@@ -291,7 +291,7 @@ export const pl: Dict = {
     meta: {
         homeTitle: "Lectoro AI — Podwójne napisy dla Netflix i YouTube, Wyjaśnienia AI i Fiszki SRS",
         homeDesc:
-            "Ucz się języków oglądając Netflix, YouTube, TED i czytając artykuły. Kliknij podwójne napisy dla wyjaśnień AI, twórz fiszki ze zrzutem sceny i powtarzaj z algorytmem SRS.",
+            "Ucz się języków oglądając Netflix i YouTube z podwójnymi napisami. Wciśnij klawisz S dla tłumaczenia słowo po słowie (Word Cloud), twórz fiszki ze zrzutem sceny i powtarzaj z algorytmem SRS.",
         privacyTitle: "Polityka prywatności — Lectoro AI",
         privacyDesc:
             "Polityka prywatności rozszerzenia Chrome Lectoro AI oraz serwisu lectoroai.com. Zgodność z Chrome Web Store Limited Use Policy, RODO i ochrona danych.",

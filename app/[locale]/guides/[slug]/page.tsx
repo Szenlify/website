@@ -3,12 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CHROME_STORE_URL } from "@/lib/config";
-import { getGuide, getGuides, GUIDE_SLUGS } from "@/lib/guides";
+import { getGuide, getGuides, GUIDE_IMAGES, GUIDE_SLUGS } from "@/lib/guides";
 import { getGuideCatalogCopy } from "@/lib/guides/catalog";
 import { getDictionary, isLocale, LOCALES } from "@/lib/i18n";
 import { LOCALE_CONFIG } from "@/lib/i18n/types";
 import { getLanguageAlternates, getLocalizedHref } from "@/lib/routing";
 
+// Wspólna konfiguracja zdjęć poradników (dla podstrony poradnika i katalogu /guides):
+// Edytuj plik: lib/guides/images.ts (lub app/[locale]/guides/guide-images.ts)
 const BASE_URL = "https://lectoroai.com";
 const PUBLISHED_AT = "2026-09-02T00:00:00.000Z";
 
@@ -29,10 +31,7 @@ export async function generateMetadata({
     const guide = getGuide(locale, slug);
     const path = `/guides/${guide.slug}`;
     const canonical = `${BASE_URL}${getLocalizedHref(path, locale)}`;
-    const image =
-        guide.slug === "learn-language-netflix-youtube"
-            ? "/showcase/1.jpg"
-            : "/showcase/5.jpg";
+    const image = GUIDE_IMAGES[guide.slug] || "/showcase/1.jpg";
 
     return {
         title: guide.title,
@@ -79,13 +78,11 @@ export default async function GuidePage({
     const canonical = `${BASE_URL}${getLocalizedHref(path, locale)}`;
     const homeHref = getLocalizedHref("/", locale);
     const guidesHref = getLocalizedHref("/guides", locale);
-    const relatedSlug = GUIDE_SLUGS.find((item) => item !== guide.slug)!;
+    const currentIndex = GUIDE_SLUGS.indexOf(guide.slug);
+    const relatedSlug = GUIDE_SLUGS[(currentIndex + 1) % GUIDE_SLUGS.length];
     const relatedGuide = guides[relatedSlug];
     const relatedHref = getLocalizedHref(`/guides/${relatedSlug}`, locale);
-    const image =
-        guide.slug === "learn-language-netflix-youtube"
-            ? "/showcase/1.jpg"
-            : "/showcase/5.jpg";
+    const image = GUIDE_IMAGES[guide.slug] || "/showcase/1.jpg";
 
     const structuredData = {
         "@context": "https://schema.org",
@@ -156,7 +153,7 @@ export default async function GuidePage({
                 }}
             />
 
-            <header className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <header className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
                 <nav
                     aria-label="Breadcrumb"
                     className="mb-7 flex items-center gap-2 text-xs text-slate-400"

@@ -1,223 +1,359 @@
 import type { GuideDictionary } from "./types";
 
 export const esGuides: GuideDictionary = {
-    "learn-language-netflix-youtube": {
-        locale: "es",
-        slug: "learn-language-netflix-youtube",
-        title: "Como aprender un idioma con Netflix y YouTube",
-        description:
-            "Un metodo practico para aprender idiomas con Netflix y YouTube usando subtitulos bilingues, traduccion contextual, explicaciones con IA y repasos diarios breves.",
-        eyebrow: "Guia de inmersion linguistica",
-        updatedAt: "Actualizado el 2 de septiembre de 2026",
-        readingTime: "9 min de lectura",
-        intro: "El streaming puede convertirse en una practica util de idiomas cuando dejas de tratar los subtitulos como una transcripcion para leer y empiezas a usarlos como una superficie de aprendizaje interactiva. Esta guia presenta un flujo repetible basado en video autentico, consultas selectivas y repaso espaciado. Funciona tanto para un episodio completo de Netflix como para una leccion corta de YouTube o una charla TED.",
-        sections: [
-            {
-                heading: "Por que el video autentico ayuda a aprender idiomas",
-                paragraphs: [
-                    "Las peliculas y los videos conectan las palabras con voces, expresiones faciales, situaciones y contexto visual. Esa combinacion hace que el significado sea mas facil de inferir y le da a tu memoria mas pistas que una lista de vocabulario aislada. Tambien escuchas ritmo natural, reducciones, acentos y expresiones cotidianas que los cursos estructurados suelen introducir lentamente.",
-                    "La dificultad es la sobrecarga cognitiva. Si haces pausa por cada palabra desconocida, la historia desaparece y la sesion se vuelve agotadora. Un sistema mejor mantiene el video en el centro, vuelve interactiva solo la expresion valiosa y traslada la memorizacion deliberada a una sesion de repaso aparte.",
-                ],
-                bullets: [
-                    "Elige contenido que realmente verias incluso sin estudiar.",
-                    "Usa material en el que entiendas la situacion general, aunque falten detalles.",
-                    "Al principio, prioriza dialogos claros; aumenta la velocidad y la complejidad de forma gradual.",
-                ],
-            },
-            {
-                heading: "Configura subtitulos bilingues sin depender de ellos",
-                paragraphs: [
-                    "Muestra el subtitulo original junto con una traduccion en un idioma que entiendas bien. Manten la atencion en la linea original y usa la traduccion como una verificacion rapida, no como texto principal. Asi conservas la conexion entre el sonido y el idioma que estas aprendiendo.",
-                    "Con Lectoro AI, puedes usar subtitulos dobles en Netflix y YouTube. Al seleccionar una palabra, la reproduccion puede pausarse y abrir su traduccion, pronunciacion y explicacion contextual. El objetivo no es traducir todo el episodio. Es eliminar friccion cuando una expresion importante bloquea la comprension.",
-                ],
-            },
-            {
-                heading:
-                    "Un flujo de cinco pasos para cada sesion de visualizacion",
-                paragraphs: [
-                    "Usa la misma secuencia simple en cada sesion. La constancia importa mas que la cantidad de palabras recopiladas en una sola noche.",
-                ],
-                steps: [
-                    {
-                        title: "Mira primero para entender el significado",
-                        text: "Reproduce una escena corta sin detenerte. Sigue la situacion, el tono y las acciones clave antes de investigar palabras individuales.",
-                    },
-                    {
-                        title: "Haz clic solo en palabras y frases utiles",
-                        text: "Consulta expresiones que se repiten, que sostienen la escena o que coinciden con situaciones en las que esperas hablar o escribir.",
-                    },
-                    {
-                        title: "Lee la explicacion dentro del contexto",
-                        text: "Verifica si la frase es literal, informal, gramatical o culturalmente especifica. La ayuda contextual con IA es especialmente util para jerga e idiomatismos que la traduccion palabra por palabra no capta.",
-                    },
-                    {
-                        title: "Escucha y repite una vez",
-                        text: "Usa texto a voz natural o vuelve a reproducir la linea. Repite la frase completa en lugar de pronunciar muchas veces una palabra desconectada.",
-                    },
-                    {
-                        title: "Guarda un numero pequeno de ejemplos solidos",
-                        text: "Conserva juntos el subtitulo, la traduccion y la captura del video. Cinco tarjetas memorables valen mas que treinta tarjetas debiles que evitaras repasar.",
-                    },
-                ],
-            },
-            {
-                heading: "Como elegir el vocabulario que vale la pena guardar",
-                paragraphs: [
-                    "Guarda lenguaje que sea util, dificil de inferir la proxima vez o personalmente memorable. Una frase dicha en una escena distintiva ya tiene un anclaje emocional y visual. Conserva la oracion completa cuando sea posible para que la gramatica y las combinaciones de palabras sigan visibles.",
-                    "Omite nombres propios, cognados obvios y palabras raras que no afectan la comprension. Tambien omite una palabra despues de una consulta si su significado ya te resulta evidente. Tu biblioteca de tarjetas debe representar valor futuro, no un historial de cada interrupcion.",
-                ],
-                bullets: [
-                    "Frases recurrentes y phrasal verbs comunes",
-                    "Palabras que entiendes al leer, pero que no reconoces en el habla",
-                    "Colocaciones utiles, estructuras de oracion y expresiones informales",
-                    "Patrones de pronunciacion que difieren de su escritura",
-                ],
-            },
-            {
-                heading: "Crea una rutina que siga siendo disfrutable",
-                paragraphs: [
-                    "Separa la inmersion del repaso. Mira de veinte a cuarenta minutos y recopila con moderacion; luego repasa al dia siguiente las tarjetas pendientes durante unos cinco minutos. Lectoro programa el vocabulario guardado con repeticion espaciada, asi que los elementos dificiles reaparecen antes y los familiares aparecen con menos frecuencia.",
-                    "Mide la constancia, no el tamano de tu coleccion. Tres sesiones enfocadas por semana generan mas practica de escucha que un fin de semana ambicioso seguido de un mes de pausa. A medida que mejore la comprension, oculta la traduccion en escenas faciles y muestrala solo cuando sea necesario.",
-                ],
-            },
-            {
-                heading: "Errores comunes y como evitarlos",
-                paragraphs: [
-                    "Usar solo subtitulos traducidos entrena la lectura en tu idioma mas fuerte. Pausar constantemente destruye el flujo de escucha. Guardar cada palabra desconocida crea una cola de repaso inmanejable. Ver material muy por encima de tu nivel convierte el contexto en ruido.",
-                    "Corrige estos problemas manteniendo los subtitulos originales como prioridad, limitando las consultas, eligiendo generos familiares y cerrando la sesion antes de que la atencion colapse. La inmersion linguistica debe ser lo bastante exigente para producir aprendizaje, pero lo bastante disfrutable para repetirla.",
-                ],
-            },
+        "learn-language-netflix-youtube": {
+        "locale": "es",
+        "slug": "learn-language-netflix-youtube",
+        "title": "Cómo aprender un idioma con Netflix y YouTube",
+        "description": "Un método práctico para aprender idiomas con Netflix y YouTube usando subtítulos dobles, traducción contextual, explicaciones de IA y repasos diarios breves.",
+        "eyebrow": "Guía de inmersión lingüística",
+        "updatedAt": "Actualizado el 23 de septiembre de 2026",
+        "readingTime": "9 min de lectura",
+        "intro": "El streaming puede convertirse en una práctica lingüística de enorme valor cuando dejas de tratar los subtítulos como una simple transcripción para leer y comienzas a usarlos como una plataforma de aprendizaje interactiva. Esta guía presenta un método repetible basado en vídeo auténtico, consultas selectivas y repetición espaciada. Funciona tanto para un episodio completo de Netflix como para una lección corta de YouTube o una charla TED.",
+        "sections": [
+                {
+                        "heading": "Por qué el vídeo auténtico potencia el aprendizaje de idiomas",
+                        "paragraphs": [
+                                "Las películas y series conectan las palabras con voces, expresiones faciales, situaciones y un rico contexto visual. Esta combinación facilita la deducción del significado y proporciona a tu memoria muchos más puntos de apoyo que una lista de vocabulario aislada. Además, escuchas el ritmo natural, las contracciones, los acentos y las expresiones cotidianas que los cursos convencionales introducen muy tarde.",
+                                "La principal dificultad es la sobrecarga cognitiva. Si pausas el vídeo ante cada palabra desconocida, la trama se desvanece y la sesión se vuelve agotadora. Un sistema superior mantiene el vídeo en el centro, vuelve interactivas solo las expresiones clave y traslada la memorización activa a una sesión de repaso independiente."
+                        ],
+                        "bullets": [
+                                "Elige contenidos que verías por placer incluso sin proponerte estudiar.",
+                                "Utiliza material en el que comprendas la situación general, aunque se te escapen detalles.",
+                                "Empieza con diálogos claros y aumenta gradualmente la velocidad y la complejidad."
+                        ]
+                },
+                {
+                        "heading": "Cómo configurar subtítulos dobles sin volverte dependiente de ellos",
+                        "paragraphs": [
+                                "Muestra el subtítulo original junto a una traducción en un idioma que domines bien. Mantén la atención en la línea original y utiliza la traducción solo como una rápida confirmación. De este modo preservas el vínculo entre el sonido y el idioma que estás aprendiendo.",
+                                "Con Lectoro AI puedes disfrutar de subtítulos dobles en Netflix y YouTube. Al pulsar sobre una palabra o presionar la tecla S, la reproducción se detiene y puedes consultar su traducción, pronunciación y explicación contextual. El objetivo no es traducir todo el episodio, sino despejar fricciones cuando una expresión decisiva bloquea la comprensión."
+                        ]
+                },
+                {
+                        "heading": "Un flujo de cinco pasos para cada sesión de visualización",
+                        "paragraphs": [
+                                "Aplica la misma secuencia sencilla en cada sesión. La constancia es mucho más determinante que la cantidad de palabras recopiladas en una sola noche."
+                        ],
+                        "steps": [
+                                {
+                                        "title": "1. Ver primero para captar el sentido global",
+                                        "text": "Reproduce una escena corta sin interrupciones. Sigue la situación, el tono y los acontecimientos antes de analizar palabras individuales."
+                                },
+                                {
+                                        "title": "2. Hacer clic solo en palabras y frases útiles",
+                                        "text": "Consulta términos que se repitan, que vertebren la escena o que preveas utilizar en situaciones reales de conversación o escritura."
+                                },
+                                {
+                                        "title": "3. Leer la explicación en contexto",
+                                        "text": "Comprueba si la frase es literal, coloquial, un modismo o un patrón gramatical. La asistencia contextual de la IA es indispensable para el argot y las frases hechas que la traducción literal distorsiona."
+                                },
+                                {
+                                        "title": "4. Escuchar y repetir una vez en voz alta",
+                                        "text": "Utiliza la síntesis de voz natural o vuelve a escuchar la frase del personaje. Repite la expresión completa en lugar de pronunciar una palabra aislada."
+                                },
+                                {
+                                        "title": "5. Guardar un número reducido de ejemplos sólidos",
+                                        "text": "Conserva el subtítulo, la traducción y el fotograma de la escena juntos. Cinco tarjetas memorables tienen mucho más valor que treinta tarjetas mediocres que evitarás repasar."
+                                }
+                        ]
+                },
+                {
+                        "heading": "Cómo seleccionar vocabulario que realmente merezca la pena guardar",
+                        "paragraphs": [
+                                "Guarda lenguaje práctico, que resultaría difícil de deducir en futuras ocasiones o que te haya impactado personalmente. Una frase pronunciada en una escena memorable ya cuenta con un anclaje emocional y visual muy potente. Siempre que sea posible, conserva la frase completa para que la gramática y las colocaciones permanezcan a la vista.",
+                                "Omite nombres propios, términos internacionales evidentes y palabras arcaicas que no influyan en la comprensión. Tu biblioteca de tarjetas debe reflejar utilidad futura, no el registro de cada pausa que hiciste."
+                        ],
+                        "bullets": [
+                                "Frases recurrentes y verbos compuestos habituales",
+                                "Palabras que comprendes al leer pero no logras distinguir al escuchar",
+                                "Colocaciones útiles, patrones sintácticos y expresiones informales",
+                                "Patrones de pronunciación que difieren notablemente de la escritura"
+                        ]
+                },
+                {
+                        "heading": "Cómo construir una rutina agradable y sostenible",
+                        "paragraphs": [
+                                "Separa la inmersión del repaso. Disfruta de tu vídeo durante 20 o 40 minutos recopilando con moderación, y al día siguiente dedica unos 5 minutos a repasar las tarjetas pendientes. Lectoro programa el vocabulario mediante repetición espaciada (SRS), haciendo que los términos difíciles vuelvan pronto y espaciando los que ya dominas.",
+                                "Mide tu progreso por la constancia y no por el volumen acumulado. Tres sesiones concentradas por semana generan mucha más comprensión auditiva que un fin de semana maratoniano seguido de un mes de inactividad."
+                        ]
+                },
+                {
+                        "heading": "Errores comunes y cómo evitarlos",
+                        "paragraphs": [
+                                "Ver contenidos exclusivamente con subtítulos traducidos solo entrena la lectura rápida en tu lengua materna. Pausar continuamente destruye el ritmo del habla. Guardar cada palabra desconocida genera una acumulación inabarcable de tarjetas.",
+                                "Supera estos problemas dando prioridad a los subtítulos originales, limitando las consultas a momentos clave y finalizando la sesión antes de que tu concentración decaiga."
+                        ]
+                }
         ],
-        faq: [
-            {
-                question: "Debo usar subtitulos en mi idioma nativo?",
-                answer: "Usalos como apoyo junto a los subtitulos originales. Mira primero la linea original y consulta la traduccion solo cuando el contexto no alcance.",
-            },
-            {
-                question: "Cuantas palabras deberia guardar de un episodio?",
-                answer: "No hay un numero fijo, pero cinco a diez ejemplos utiles es un punto de partida sostenible. La calidad del repaso importa mas que el tamano de la coleccion.",
-            },
-            {
-                question: "Que es mejor para principiantes, Netflix o YouTube?",
-                answer: "YouTube suele ser mas facil porque los videos cortos, el habla educativa clara y la velocidad de reproduccion ajustable reducen la sobrecarga. Las series de Netflix que ya conoces tambien pueden funcionar bien.",
-            },
+        "faq": [
+                {
+                        "question": "¿Debo utilizar subtítulos en mi lengua materna?",
+                        "answer": "Úsalos como apoyo complementario junto a los subtítulos originales. Fija la vista en la frase en idioma extranjero y recurre a la traducción solo cuando el contexto no sea suficiente."
+                },
+                {
+                        "question": "¿Cuántas palabras conviene guardar de un episodio?",
+                        "answer": "No hay una cifra estricta, pero de 5 a 10 ejemplos útiles es una meta perfectamente sostenible. La calidad de los repasos importa mucho más que la cantidad."
+                },
+                {
+                        "question": "¿Es mejor Netflix o YouTube para empezar?",
+                        "answer": "YouTube suele resultar más accesible por sus vídeos cortos, lenguaje didáctico claro y velocidad ajustable. No obstante, las series familiares en Netflix también funcionan a la perfección."
+                }
         ],
-        relatedLabel: "Siguiente guia",
-        ctaTitle: "Convierte el proximo video en una leccion de idioma",
-        ctaText:
-            "Usa subtitulos bilingues con clic, explicaciones contextuales con IA y tarjetas de video directamente en Chrome.",
-        ctaButton: "Agregar Lectoro AI a Chrome",
-    },
+        "relatedLabel": "Siguiente guía",
+        "ctaTitle": "Transforma tu próximo vídeo en una lección de idiomas",
+        "ctaText": "Disfruta de subtítulos dobles interactivos, explicaciones de IA en contexto y tarjetas de vídeo directamente en Chrome.",
+        "ctaButton": "Añadir Lectoro AI a Chrome"
+},
     "video-flashcards-spaced-repetition": {
-        locale: "es",
-        slug: "video-flashcards-spaced-repetition",
-        title: "Como crear tarjetas de video y repasarlas con repeticion espaciada",
-        description:
-            "Aprende a convertir escenas de Netflix y YouTube en tarjetas de vocabulario contextual, repasarlas con repeticion espaciada y exportarlas a Anki.",
-        eyebrow: "Guia de flujo de vocabulario",
-        updatedAt: "Actualizado el 2 de septiembre de 2026",
-        readingTime: "10 min de lectura",
-        intro: "Una tarjeta de vocabulario es util cuando te ayuda a reconstruir el significado con rapidez. Una palabra al frente y una definicion de diccionario al reverso rara vez ofrecen contexto suficiente. Una tarjeta de video es mas potente porque puede combinar la frase objetivo, su oracion, traduccion, pronunciacion y la escena exacta en la que la encontraste.",
-        sections: [
-            {
-                heading:
-                    "Por que el contexto hace que las tarjetas sean mas faciles de recordar",
-                paragraphs: [
-                    "La memoria recupera informacion mediante pistas. Una captura recuerda a los personajes y la situacion; el subtitulo recuerda la estructura de la oracion; el audio recuerda la pronunciacion y el ritmo. Juntas, crean varios caminos de regreso al mismo significado.",
-                    "Esto no significa que cada tarjeta necesite exceso de detalle. La mejor tarjeta contiene solo la informacion necesaria para reproducir la comprension original. La escena debe aclarar la frase, mientras que la respuesta debe ser lo bastante breve para evaluarla en pocos segundos.",
-                ],
-            },
-            {
-                heading: "Que debe incluir una tarjeta de video util",
-                paragraphs: [
-                    "Empieza con una palabra o frase objetivo dentro de una oracion completa del subtitulo. Agrega una traduccion concisa y, cuando haga falta, una nota sobre gramatica, jerga o significado cultural. Incluye audio de pronunciacion y un fotograma del momento en que se dijo la linea.",
-                ],
-                bullets: [
-                    "Frase objetivo resaltada dentro de su oracion original",
-                    "Una traduccion corta y natural en lugar de varias entradas de diccionario",
-                    "Una captura de la escena que apoye el significado sin revelar la respuesta",
-                    "Audio para palabras que necesitas reconocer en habla real",
-                    "Una nota contextual opcional para idiomatismos, jerga o gramatica",
-                ],
-            },
-            {
-                heading: "Crea una tarjeta desde Netflix o YouTube paso a paso",
-                paragraphs: [
-                    "Lectoro AI mantiene la creacion de tarjetas dentro del flujo de visualizacion, de modo que recopilar un ejemplo no requiere copiar texto entre varias aplicaciones.",
-                ],
-                steps: [
-                    {
-                        title: "Encuentra una linea significativa",
-                        text: "Elige una oracion cuya situacion sea clara y que contenga lenguaje que esperas volver a encontrar o usar.",
-                    },
-                    {
-                        title: "Selecciona la expresion objetivo",
-                        text: "Haz clic en la palabra dentro del subtitulo bilingue. La reproduccion se pausa para que puedas revisar la traduccion sin perder el momento.",
-                    },
-                    {
-                        title: "Confirma el significado contextual",
-                        text: "Usa la oracion y la explicacion con IA para distinguir el significado pretendido de definiciones de diccionario no relacionadas.",
-                    },
-                    {
-                        title: "Revisa la pronunciacion",
-                        text: "Escucha la palabra y la frase completa. La sintesis de voz natural ayuda cuando volver a reproducir la escena original no es practico.",
-                    },
-                    {
-                        title: "Guarda y continua",
-                        text: "Guarda la frase con su subtitulo y la imagen de la escena, y vuelve a mirar. La edicion puede esperar hasta que el repaso muestre un problema real.",
-                    },
-                ],
-            },
-            {
-                heading:
-                    "Usa repeticion espaciada sin crear una cola de repaso",
-                paragraphs: [
-                    "La repeticion espaciada programa una tarjeta cerca del punto en el que probablemente la olvidarias. Las tarjetas nuevas o dificiles regresan tras intervalos mas cortos. Las tarjetas recordadas correctamente se mueven mas lejos en el tiempo. Esto concentra la practica donde produce mas beneficio.",
-                    "Manten los repasos diarios breves y honestos. Intenta recordar la frase antes de revelar la respuesta y luego califica lo que realmente paso, no lo que te hubiera gustado que pasara. Si una tarjeta falla repetidamente, simplificala, mejora su traduccion o cambia la captura en lugar de insistir con una indicacion confusa.",
-                ],
-                bullets: [
-                    "Repasa las tarjetas pendientes antes de agregar muchas nuevas.",
-                    "Apunta a una sesion diaria de cinco minutos en lugar de maratones irregulares.",
-                    "Elimina tarjetas que ya no sean utiles o que sigan siendo ambiguas.",
-                    "Di la respuesta en voz alta cuando hablar y pronunciar importen.",
-                ],
-            },
-            {
-                heading:
-                    "Cuando usar el repaso integrado y cuando exportar a Anki",
-                paragraphs: [
-                    "El repaso integrado de Lectoro es la opcion mas simple cuando quieres palabras guardadas, conteos de pendientes y sesiones rapidas en el navegador. Mantiene la recopilacion y el recuerdo en un mismo flujo y requiere poca configuracion.",
-                    "Exporta a Anki cuando ya mantienes un sistema de estudio mas amplio, necesitas plantillas de tarjetas personalizadas o combinas vocabulario de video con material de clases y libros. Lectoro puede exportar vocabulario en formatos de texto compatibles con Anki, CSV y PDF imprimible. Despues de exportar, evita repasar las mismas tarjetas en dos sistemas, porque los horarios duplicados generan trabajo innecesario.",
-                ],
-            },
-            {
-                heading:
-                    "Mejora las tarjetas debiles en lugar de estudiar mas duro",
-                paragraphs: [
-                    "Un repaso fallido suele indicar un problema de diseno de tarjeta. Las tarjetas que evaluan varias ideas, contienen traducciones vagas o usan una imagen irrelevante son dificiles por la razon equivocada. Separa los significados multiples en tarjetas distintas y reescribe la respuesta con el lenguaje que usas de forma natural.",
-                    "Con el tiempo, tu coleccion debe volverse mas pequena y clara. Un mazo curado de oraciones utiles apoya mejor la escucha y el habla reales que un archivo enorme de palabras aisladas. El objetivo no es conservar todo lo que viste, sino reconocer y usar mas idioma la proxima vez que mires.",
-                ],
-            },
+        "locale": "es",
+        "slug": "video-flashcards-spaced-repetition",
+        "title": "Cómo crear tarjetas de vídeo y repasarlas con repetición espaciada",
+        "description": "Aprende a transformar escenas de Netflix y YouTube en tarjetas de vocabulario contextuales, a repasarlas con el algoritmo SRS y a exportarlas a Anki.",
+        "eyebrow": "Guía de vocabulario y repetición espaciada",
+        "updatedAt": "Actualizado el 23 de septiembre de 2026",
+        "readingTime": "10 min de lectura",
+        "intro": "Una tarjeta de memoria solo es útil si te ayuda a recordar de inmediato el significado auténtico de una palabra. Una palabra aislada en el anverso y una definición de diccionario en el reverso rara vez ofrecen el contexto adecuado. Una tarjeta de vídeo es incomparablemente más efectiva porque reúne el término clave, la frase completa, la traducción, la pronunciación natural y el fotograma exacto de la escena cinematográfica.",
+        "sections": [
+                {
+                        "heading": "Por qué el contexto cinematográfico afianza el recuerdo",
+                        "paragraphs": [
+                                "La memoria humana recupera información a través de indicios y asociaciones. El fotograma de la escena evoca a los personajes y la situación, el subtítulo muestra la estructura gramatical y el audio recrea la entonación y la fonética. Juntos crean múltiples vías de acceso hacia un mismo significado.",
+                                "Esto no implica que la tarjeta deba sobrecargarse de detalles. La mejor tarjeta contiene la información justa y necesaria para reactivar la comprensión original: la escena aclara la situación y la respuesta se puede evaluar en cuestión de segundos."
+                        ]
+                },
+                {
+                        "heading": "Qué debe incluir una tarjeta de vídeo eficaz",
+                        "paragraphs": [
+                                "Comienza con una palabra o expresión clave integrada en la frase completa del subtítulo. Añade una traducción concisa y natural y, si procede, un apunte sobre gramática o modismos. Incorpora el audio de pronunciación y el fotograma capturado en el momento preciso del diálogo."
+                        ],
+                        "bullets": [
+                                "Término clave destacado dentro de la frase original",
+                                "Traducción natural en lugar de una lista interminable de acepciones de diccionario",
+                                "Fotograma de la escena que respalda el significado sin revelar la respuesta",
+                                "Audio para reconocer la palabra con soltura en el habla real",
+                                "Nota contextual opcional para giros idiomáticos, argot o matices gramaticales"
+                        ]
+                },
+                {
+                        "heading": "Creación paso a paso de una tarjeta desde Netflix o YouTube",
+                        "paragraphs": [
+                                "Lectoro AI integra la creación de tarjetas dentro de tu visualización, evitando copiar y pegar entre distintas ventanas o aplicaciones."
+                        ],
+                        "steps": [
+                                {
+                                        "title": "1. Encontrar una frase con significado",
+                                        "text": "Elige una réplica con un contexto claro que contenga un término práctico para tus futuras conversaciones."
+                                },
+                                {
+                                        "title": "2. Seleccionar la palabra clave",
+                                        "text": "Haz clic en el término en los subtítulos dobles o pulsa la tecla S para activar el modo Word Cloud."
+                                },
+                                {
+                                        "title": "3. Verificar el significado en contexto",
+                                        "text": "Apóyate en la explicación de la IA para captar el sentido exacto de la escena y eludir interpretaciones erróneas."
+                                },
+                                {
+                                        "title": "4. Escuchar la pronunciación",
+                                        "text": "Escucha la palabra y la frase entera mediante síntesis de voz natural y fluida."
+                                },
+                                {
+                                        "title": "5. Guardar con la tecla Z y continuar viendo",
+                                        "text": "Pulsa Z o V para guardar al instante la tarjeta con frase, audio y fotograma en tu cola de repaso SRS y seguir disfrutando del vídeo."
+                                }
+                        ]
+                },
+                {
+                        "heading": "Cómo aplicar la repetición espaciada sin acumular repasos",
+                        "paragraphs": [
+                                "La repetición espaciada (Spaced Repetition) programa el repaso justo antes de que estés a punto de olvidar una palabra. Las tarjetas nuevas o complicadas reaparecen a intervalos breves, mientras que las dominadas se distancian en el tiempo.",
+                                "Mantén las sesiones diarias breves y honestas. Intenta recordar activamente la expresión antes de revelar el reverso. Si una tarjeta te falla reiteradamente, simplifícala o sustituye el fotograma."
+                        ],
+                        "bullets": [
+                                "Completa las tarjetas del día antes de añadir un número excesivo de tarjetas nuevas.",
+                                "Dedica 5 minutos diarios en lugar de maratones irregulares y fatigosos.",
+                                "Elimina las tarjetas que hayan perdido utilidad o resulten ambiguas.",
+                                "Pronuncia la respuesta en voz alta para afianzar el habla y la articulación."
+                        ]
+                },
+                {
+                        "heading": "Cuándo utilizar el repaso integrado y cuándo exportar a Anki",
+                        "paragraphs": [
+                                "El módulo de repaso integrado de Lectoro es la opción más cómoda para practicar en el navegador o en el smartphone a través de la aplicación web (PWA). Te permite recopilar y ejercitarte en un mismo flujo sin configuraciones complejas.",
+                                "Exporta a Anki si ya utilizas un sistema amplio de mazos o deseas combinar vocabulario de series con apuntes académicos. Lectoro permite exportar paquetes .zip listos para Anki con imágenes y audio, además de formatos CSV y PDF para imprimir."
+                        ]
+                },
+                {
+                        "heading": "Mejora las tarjetas deficientes en vez de esforzarte el doble",
+                        "paragraphs": [
+                                "Un fallo recurrente suele deberse a un diseño inadecuado de la tarjeta: evaluar demasiados conceptos juntos o incluir traducciones ambiguas genera una dificultad improductiva.",
+                                "Una selección pulida de frases inolvidables de tus películas favoritas impulsará tu fluidez auditiva y oral con mucha más fuerza que miles de palabras sueltas condenadas al olvido."
+                        ]
+                }
         ],
-        faq: [
-            {
-                question: "Son necesarias las capturas en todas las tarjetas?",
-                answer: "No. Usa una captura cuando la escena aporte una pista memorable o aclare el significado. Un fotograma generico puede distraer y conviene eliminarlo.",
-            },
-            {
-                question:
-                    "Con que frecuencia deberia repasar tarjetas de video?",
-                answer: "Repasa las tarjetas cuando el sistema de repeticion espaciada las marque como pendientes. Una sesion diaria corta mantiene estable la cola y es mas facil de sostener.",
-            },
-            {
-                question: "Puedo exportar las tarjetas de Lectoro a Anki?",
-                answer: "Si. Lectoro admite exportacion de texto compatible con Anki, asi como exportaciones CSV y PDF imprimible para tu coleccion de vocabulario.",
-            },
+        "faq": [
+                {
+                        "question": "¿Son necesarios los fotogramas en todas las tarjetas?",
+                        "answer": "No. Emplea un fotograma cuando aporte un anclaje emocional o clarifique la situación. Una imagen irrelevante puede distraer y es mejor prescindir de ella."
+                },
+                {
+                        "question": "¿Con qué frecuencia debo repasar las tarjetas de vídeo?",
+                        "answer": "Repasa cuando el algoritmo de repetición espaciada indique que vencen las tarjetas. Una breve sesión de 5 minutos al día es suficiente para mantener la cola limpia."
+                },
+                {
+                        "question": "¿Se pueden exportar las tarjetas de Lectoro a Anki?",
+                        "answer": "Sí. Lectoro admite la exportación de archivos .zip con multimedia compatibles con Anki, además de formatos CSV y PDF."
+                }
         ],
-        relatedLabel: "Guia relacionada",
-        ctaTitle: "Guarda vocabulario con la escena que lo hizo memorable",
-        ctaText:
-            "Crea tarjetas de video contextuales, repasa con SRS y exporta tu coleccion cuando lo necesites.",
-        ctaButton: "Comenzar con Lectoro AI",
-    },
+        "relatedLabel": "Guía relacionada",
+        "ctaTitle": "Guarda el vocabulario junto a la escena que lo hizo inolvidable",
+        "ctaText": "Crea tarjetas de vídeo contextuales, repasa con SRS y exporta tu colección en cualquier momento.",
+        "ctaButton": "Empezar con Lectoro AI"
+},
+    "dual-subtitles-netflix-youtube": {
+        "slug": "dual-subtitles-netflix-youtube",
+        "title": "Subtítulos dobles para Netflix y YouTube — Guía completa y Word Cloud (Tecla S)",
+        "description": "Aprende a activar subtítulos dobles bilingües en Netflix y YouTube. Descubre la tecla S (Word Cloud) para traducción interactiva palabra por palabra y flashcards de video.",
+        "eyebrow": "Configuración de subtítulos e inmersión",
+        "updatedAt": "Actualizado el 23 de septiembre de 2026",
+        "readingTime": "8 min de lectura",
+        "intro": "Ver películas con subtítulos únicamente en tu lengua materna solo entrena la lectura rápida. Por otro lado, usar solo subtítulos en el idioma extranjero genera fatiga mental cuando los actores hablan rápido o usan jerga. Los subtítulos dobles combinados con el modo Word Cloud (tecla S) de Lectoro AI eliminan este problema: disfrutas de la trama, comprendes palabras complejas en contexto y creas flashcards de video memorables.",
+        "sections": [
+                {
+                        "heading": "Por qué los subtítulos simples fallan al aprender idiomas",
+                        "paragraphs": [
+                                "Con subtítulos en español, el cerebro desconecta el audio y simplemente lee el texto conocido. Usar solo subtítulos en inglés u otro idioma sin diccionario genera sobrecarga: una sola palabra desconocida puede bloquear la comprensión de toda la escena.",
+                                "Los subtítulos dobles ofrecen el andamiaje ideal: la línea en el idioma que estás aprendiendo se mantiene en primer plano, mientras que una traducción auxiliar aparece de forma discreta debajo. Tu oído vincula el sonido con la escritura y solo consultas la traducción cuando es indispensable."
+                        ],
+                        "bullets": [
+                                "La línea original entrena el ritmo y la entonación natural de los nativos",
+                                "La traducción auxiliar brinda seguridad inmediata y evita la frustración",
+                                "Ahorra tiempo evitando pausar para consultar apps de traducción externas"
+                        ]
+                },
+                {
+                        "heading": "La tecla S: Modo Word Cloud (Traducción palabra por palabra)",
+                        "paragraphs": [
+                                "Otras extensiones muestran la traducción como un bloque de texto denso. En oraciones largas, resulta difícil identificar qué palabra extranjera corresponde a cada término en español.",
+                                "Lectoro AI introduce el modo Word Cloud: pulsa la tecla S (o flecha abajo) en cualquier instante. El video se pausa al instante y la frase se divide en fichas interactivas de palabras. Cada ficha incluye traducción precisa, función gramatical y pronunciación en audio de alta fidelidad.",
+                                "Puedes analizar la estructura de la oración palabra por palabra a tu propio ritmo, sin adivinar y sin salir de pantalla completa."
+                        ],
+                        "steps": [
+                                {
+                                        "title": "Paso 1: Pulsa la tecla S",
+                                        "text": "Cuando escuches una frase compleja, presiona la tecla S o flecha abajo en tu teclado."
+                                },
+                                {
+                                        "title": "Paso 2: Explora las fichas de palabras",
+                                        "text": "Revisa traducciones palabra por palabra, pulsa el altavoz para escuchar la pronunciación o presiona Enter/Q para análisis profundo con IA."
+                                },
+                                {
+                                        "title": "Paso 3: Guarda con la tecla Z",
+                                        "text": "Presiona Z o V para guardar la palabra con la frase completa y la captura de la escena del video en tus repasos SRS."
+                                }
+                        ]
+                },
+                {
+                        "heading": "Cómo activar subtítulos dobles en 60 segundos",
+                        "paragraphs": [
+                                "Instalar Lectoro AI en Google Chrome toma menos de un minuto y no requiere tarjeta de crédito.",
+                                "Tras añadir la extensión desde Chrome Web Store, abre Netflix, YouTube, TED o Plex. La barra de subtítulos dobles aparecerá automáticamente. Puedes personalizar el tamaño de letra, el contraste y alternar idiomas con un clic."
+                        ],
+                        "bullets": [
+                                "Compatibilidad total con Netflix, YouTube, TED y Plex",
+                                "Personalización de tipografía, contraste y fondo",
+                                "Control total con atajos de teclado W, A, S, D, Q, Z"
+                        ]
+                }
+        ],
+        "faq": [
+                {
+                        "question": "¿Los subtítulos dobles funcionan en todos los videos de Netflix y YouTube?",
+                        "answer": "Sí, Lectoro AI funciona con cualquier video que cuente con pistas de subtítulos oficiales en Netflix, YouTube, TED y Plex."
+                },
+                {
+                        "question": "¿Qué hace exactamente la tecla S?",
+                        "answer": "La tecla S pausa la reproducción y activa el modo Word Cloud, descomponiendo la oración en fichas interactivas con traducción palabra por palabra."
+                },
+                {
+                        "question": "¿Es gratis usar subtítulos dobles?",
+                        "answer": "Sí, los subtítulos dobles y el modo Word Cloud son 100% gratuitos en el plan Free sin necesidad de tarjeta."
+                }
+        ],
+        "relatedLabel": "Siguiente guía",
+        "ctaTitle": "Empieza a ver películas con subtítulos dobles hoy",
+        "ctaText": "Instala Lectoro AI gratis en Chrome y convierte cada sesión de streaming en una lección interactiva.",
+        "ctaButton": "Añadir a Chrome — Es gratis",
+        "locale": "es"
+},
+    "language-reactor-alternative": {
+        "slug": "language-reactor-alternative",
+        "title": "La mejor alternativa a Language Reactor en 2026 — Comparativa de Lectoro AI",
+        "description": "¿Buscas una alternativa moderna a Language Reactor (LLN) o Lingopie? Compara funciones: modo Word Cloud (tecla S), flashcards con fotograma de escena, repasos web móviles y exportación a Anki.",
+        "eyebrow": "Comparativa de extensiones",
+        "updatedAt": "Actualizado el 23 de septiembre de 2026",
+        "readingTime": "9 min de lectura",
+        "intro": "Language Reactor (anteriormente Language Learning with Netflix) fue pionero en la inmersión lingüística con videos, pero muchos usuarios enfrentan hoy interfaces obsoletas, falta de sincronización móvil y exportaciones complejas. Lectoro AI fue diseñado como la alternativa moderna: combinando subtítulos dobles fluidos con el modo Word Cloud (tecla S), capturas automáticas de escenas y repasos en el móvil.",
+        "sections": [
+                {
+                        "heading": "Por qué los estudiantes buscan alternativas a Language Reactor",
+                        "paragraphs": [
+                                "Language Reactor abrió el camino, pero su desarrollo se ha estancado: la interfaz resulta sobrecargada, no ofrece una plataforma de repaso móvil nativa sin aplicaciones de terceros y las traducciones se presentan como bloques de texto continuos sin aislamiento por palabras.",
+                                "Los estudiantes actuales necesitan una extensión ligera en Manifest V3, de bajo consumo, que permita repasar vocabulario en el smartphone y brinde asistencia contextual inmediata con IA."
+                        ],
+                        "bullets": [
+                                "Sin plataforma web móvil nativa de repaso en Language Reactor",
+                                "Sin captura automática de fotogramas de video como anclajes de memoria",
+                                "Texto en bloque en lugar de fichas interactivas palabra por palabra"
+                        ]
+                },
+                {
+                        "heading": "Ventajas clave de Lectoro AI",
+                        "paragraphs": [
+                                "Lectoro AI fue creado para eliminar cualquier fricción en el aprendizaje con streaming:",
+                                "1. Modo Word Cloud (Tecla S): Un solo toque descompone diálogos difíciles en fichas interactivas individuales con pronunciación y significado exacto.",
+                                "2. Flashcards con escena de video (Tecla Z): Cada tarjeta integra la expresión facial del personaje y el contexto de la escena en lugar de texto aislado.",
+                                "3. Repasos móviles (/dashboard/reviews): Practica en cualquier smartphone mediante PWA web con repetición espaciada SuperMemo SM-2.",
+                                "4. Explicaciones profundas con IA (Q / Enter): Aclaración inmediata de modismos, phrasal verbs y gramática en tu lengua materna."
+                        ],
+                        "bullets": [
+                                "Extensión Manifest V3 ligera con mínimo uso de memoria",
+                                "Exportación directa a Anki (.zip con imágenes y audio)",
+                                "Plan gratuito sin límite de tiempo ni tarjeta bancaria"
+                        ]
+                },
+                {
+                        "heading": "Comparativa de funciones: Lectoro AI vs Language Reactor",
+                        "paragraphs": [
+                                "A continuación, la comparativa directa de las principales funciones en 2026:"
+                        ],
+                        "bullets": [
+                                "Subtítulos dobles en Netflix y YouTube: Lectoro AI (Sí) | Language Reactor (Sí)",
+                                "Modo interactivo Word Cloud (Tecla S): Lectoro AI (Sí, fichas interactivas) | Language Reactor (No)",
+                                "Capturas automáticas de video HD: Lectoro AI (Sí) | Language Reactor (Limitado)",
+                                "App web de repaso móvil: Lectoro AI (Sí, Web PWA) | Language Reactor (Requiere Anki)",
+                                "Plan gratuito sin tarjeta: Lectoro AI (Sí) | Language Reactor (Sí)"
+                        ]
+                }
+        ],
+        "faq": [
+                {
+                        "question": "¿Es fácil cambiarse de Language Reactor a Lectoro AI?",
+                        "answer": "Sí, solo instala Lectoro AI desde Chrome Web Store. No requiere configuración: detecta subtítulos en Netflix y YouTube de forma automática."
+                },
+                {
+                        "question": "¿Puedo exportar mi vocabulario a Anki?",
+                        "answer": "Sí. Desde la pestaña Mis Palabras puedes descargar con un clic un paquete .zip completo con archivos de importación de Anki, imágenes y audio."
+                },
+                {
+                        "question": "¿Por qué el modo Word Cloud es mejor que pasar el ratón por encima?",
+                        "answer": "La tecla S detiene el video y organiza cada palabra en una ficha separada, permitiendo comprender la estructura gramatical sin prisas."
+                }
+        ],
+        "relatedLabel": "Siguiente guía",
+        "ctaTitle": "Descubre la nueva generación de inmersión en video",
+        "ctaText": "Aprende idiomas con tus series y películas favoritas con la comodidad del modo Word Cloud y las flashcards de video.",
+        "ctaButton": "Probar Lectoro AI gratis",
+        "locale": "es"
+},
 };

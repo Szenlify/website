@@ -5,11 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getGuideCatalogCopy } from "@/lib/guides/catalog";
-import { getGuides, GUIDE_SLUGS } from "@/lib/guides";
+import { getGuides, GUIDE_IMAGES, GUIDE_SLUGS } from "@/lib/guides";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { LOCALE_CONFIG } from "@/lib/i18n/types";
 import { getLanguageAlternates, getLocalizedHref } from "@/lib/routing";
 
+// Wspólna konfiguracja zdjęć poradników (dla podstrony poradnika i katalogu /guides):
+// Edytuj plik: lib/guides/images.ts (lub app/[locale]/guides/guide-images.ts)
 const BASE_URL = "https://lectoroai.com";
 
 export async function generateMetadata({
@@ -155,7 +157,7 @@ export default async function GuidesPage({
                                 <Link href={href} className="guide-link">
                                     <div className="guide-cover">
                                         <Image
-                                            src={index === 0 ? "/showcase/1.jpg" : "/showcase/5.jpg"}
+                                            src={GUIDE_IMAGES[slug] || "/showcase/11.jpg"}
                                             alt=""
                                             width={1280}
                                             height={800}

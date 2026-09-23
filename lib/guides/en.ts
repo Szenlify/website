@@ -217,4 +217,150 @@ export const enGuides: GuideDictionary = {
             "Create contextual video flashcards, review with SRS and export your collection when you need it.",
         ctaButton: "Start with Lectoro AI",
     },
+    "dual-subtitles-netflix-youtube": {
+        "slug": "dual-subtitles-netflix-youtube",
+        "title": "Dual Subtitles for Netflix & YouTube — Complete Setup Guide & Word Cloud (S Key)",
+        "description": "Learn how to enable dual bilingual subtitles on Netflix and YouTube. Discover the S key (Word Cloud) for instant word-by-word interactive translation and video flashcards.",
+        "eyebrow": "Subtitle setup & immersion guide",
+        "updatedAt": "Updated September 23, 2026",
+        "readingTime": "8 min read",
+        "intro": "Watching foreign movies with native subtitles only trains fast reading in your first language. Meanwhile, single target subtitles quickly cause cognitive overload when actors speak fast or use colloquial slang. Dual subtitles combined with Lectoro AI's Word Cloud mode (S key) solve this completely — allowing you to enjoy the plot, grasp difficult words in context, and create memorable video flashcards.",
+        "sections": [
+                {
+                        "heading": "Why Single Subtitles Fail Language Learners",
+                        "paragraphs": [
+                                "When you watch with native subtitles, your brain takes the path of least resistance: it tunes out the audio and simply reads the translated text. Conversely, watching with target subtitles without an instant dictionary leads to cognitive burnout: a single unfamiliar idiom can break your comprehension of an entire scene.",
+                                "Dual subtitles provide the perfect scaffolding: the target language dialogue takes center stage, while a secondary translation sits discreetly below. Your brain learns to link phonetic speech with written spelling, glancing at the secondary line only when comprehension falters."
+                        ],
+                        "bullets": [
+                                "Original line trains natural connected speech and native cadence",
+                                "Secondary translation provides immediate reassurance and eliminates frustration",
+                                "Saves hours of pausing to look up terms in external dictionary apps"
+                        ]
+                },
+                {
+                        "heading": "The S Key: Word Cloud Reading Mode (Word-by-Word Breakdown)",
+                        "paragraphs": [
+                                "Traditional subtitle extensions display translations as a single block of text. In complex sentences, learners still struggle to deduce which foreign word corresponds to which translated word.",
+                                "Lectoro AI introduces the revolutionary Word Cloud mode: press the S key (or down arrow) at any moment. Video playback instantly freezes, and the dialogue line transforms into interactive, clickable word tiles. Each tile features an isolated definition, grammatical role, and clear audio pronunciation.",
+                                "You can deconstruct the sentence word-by-word at your own pace without guessing or exiting fullscreen mode."
+                        ],
+                        "steps": [
+                                {
+                                        "title": "Step 1: Press the S Key",
+                                        "text": "Whenever you encounter a tricky phrase, hit S or down arrow on your keyboard."
+                                },
+                                {
+                                        "title": "Step 2: Inspect Word Tiles",
+                                        "text": "See word-by-word translations, click speaker icons for speech, or press Enter/Q for deep AI analysis."
+                                },
+                                {
+                                        "title": "Step 3: Save Card with Z Key",
+                                        "text": "Press Z or V to save the sentence, audio, and high-definition video frame directly to your SRS flashcards."
+                                }
+                        ]
+                },
+                {
+                        "heading": "How to Enable Dual Subtitles in 60 Seconds",
+                        "paragraphs": [
+                                "Getting started with Lectoro AI in Google Chrome takes less than a minute and requires no credit card.",
+                                "After installing the extension from the Chrome Web Store, navigate to Netflix, YouTube, TED, or Plex. Dual subtitles appear automatically beneath the player. Customize font size, color contrast, and swap languages with a single click."
+                        ],
+                        "bullets": [
+                                "Seamless integration with Netflix, YouTube, TED, and Plex",
+                                "Customizable typography, background opacity, and high-contrast styles",
+                                "Keyboard shortcuts fully mapped (W, A, S, D, Q, Z)"
+                        ]
+                }
+        ],
+        "faq": [
+                {
+                        "question": "Do dual subtitles work on all Netflix and YouTube titles?",
+                        "answer": "Yes. Lectoro AI works with any video that provides subtitle tracks across Netflix, YouTube, TED, and Plex."
+                },
+                {
+                        "question": "What does the S key do during video playback?",
+                        "answer": "The S key pauses playback and launches Word Cloud mode, deconstructing the sentence into interactive tiles with instant word-by-word translations."
+                },
+                {
+                        "question": "Are dual subtitles free to use?",
+                        "answer": "Yes, dual subtitles and the Word Cloud mode are 100% free with no credit card required."
+                }
+        ],
+        "relatedLabel": "Next guide",
+        "ctaTitle": "Start watching with dual subtitles today",
+        "ctaText": "Install Lectoro AI for free on Chrome and turn every streaming session into an enjoyable language breakthrough.",
+        "ctaButton": "Add to Chrome — It's Free",
+        "locale": "en"
+},
+    "language-reactor-alternative": {
+        "slug": "language-reactor-alternative",
+        "title": "The Best Language Reactor Alternative in 2026 — Lectoro AI Review & Feature Comparison",
+        "description": "Looking for a modern Language Reactor (LLN) or Lingopie alternative? Compare features: Word Cloud reading mode (S key), video scene flashcards, mobile web SRS, and Anki exports.",
+        "eyebrow": "Extension comparison & review",
+        "updatedAt": "Updated September 23, 2026",
+        "readingTime": "9 min read",
+        "intro": "Language Reactor (formerly Language Learning with Netflix) pioneered video language immersion, but many learners now face outdated UI, lack of mobile practice, and clunky exports. Lectoro AI was engineered as the modern alternative — combining seamless dual subtitles with the revolutionary Word Cloud mode (S key), automatic video scene snapshots, and a mobile review app.",
+        "sections": [
+                {
+                        "heading": "Why Learners Are Moving Beyond Language Reactor",
+                        "paragraphs": [
+                                "While Language Reactor paved the way, its development has stalled in key areas: the interface can feel cluttered, there is no native mobile review workflow without third-party apps, and subtitle translations are presented as monolithic sentence blocks without easy word-by-word isolation.",
+                                "Modern language learners need a lightweight, Manifest V3 solution that respects system performance, allows reviewing vocabulary on smartphones during commutes, and provides instant contextual AI grammar assistance."
+                        ],
+                        "bullets": [
+                                "Lack of native mobile web review platform in Language Reactor",
+                                "No automatic high-definition scene snapshot flashcard capture",
+                                "Dense block text instead of clean interactive word tiles"
+                        ]
+                },
+                {
+                        "heading": "Key Advantages of Lectoro AI",
+                        "paragraphs": [
+                                "Lectoro AI was built from the ground up to eliminate friction in video immersion:",
+                                "1. Word Cloud Mode (S Key): A single keypress deconstructs complex lines into individual interactive tiles with pronunciation and definitions.",
+                                "2. Video Scene Flashcards (Z Key): Instead of isolated vocabulary words, flashcards embed the actor's facial expression, exact dialogue, and scene context.",
+                                "3. Mobile Reviews (/dashboard/reviews): Practice cards on any smartphone browser via PWA with SuperMemo SM-2 spaced repetition.",
+                                "4. Deep AI Explanations (Q / Enter): Instant breakdown of slang, idioms, and grammar nuances in your native language."
+                        ],
+                        "bullets": [
+                                "Lightweight Manifest V3 extension with minimal RAM overhead",
+                                "Turnkey Anki package export (.zip with media and audio)",
+                                "Free tier available indefinitely without credit card requirements"
+                        ]
+                },
+                {
+                        "heading": "Feature Breakdown: Lectoro AI vs Language Reactor",
+                        "paragraphs": [
+                                "Here is how Lectoro AI compares directly to Language Reactor in 2026:"
+                        ],
+                        "bullets": [
+                                "Dual Subtitles on Netflix & YouTube: Lectoro AI (Yes) | Language Reactor (Yes)",
+                                "Interactive Word Cloud (S key): Lectoro AI (Yes, interactive tiles) | Language Reactor (No)",
+                                "Automatic Video Scene Snapshots: Lectoro AI (Yes) | Language Reactor (Limited)",
+                                "Mobile Flashcard Review App: Lectoro AI (Yes, Web PWA) | Language Reactor (Requires Anki)",
+                                "Free Plan Without Card: Lectoro AI (Yes) | Language Reactor (Yes)"
+                        ]
+                }
+        ],
+        "faq": [
+                {
+                        "question": "Is switching from Language Reactor to Lectoro AI seamless?",
+                        "answer": "Yes, simply install Lectoro AI from the Chrome Web Store. No complex configuration required — dual subtitles activate automatically on Netflix and YouTube."
+                },
+                {
+                        "question": "Can I export vocabulary cards to Anki?",
+                        "answer": "Yes. From the My Words tab, download a complete .zip package with pre-formatted Anki import files, high-res scene images, and native audio."
+                },
+                {
+                        "question": "Why is Word Cloud mode superior to traditional subtitle hovering?",
+                        "answer": "Word Cloud (S key) freezes playback and isolates each word into distinct tiles, making sentence structure and word-by-word meaning immediately obvious."
+                }
+        ],
+        "relatedLabel": "Next guide",
+        "ctaTitle": "Experience the next evolution of video immersion",
+        "ctaText": "Discover how effortless learning foreign languages from movies can be with Word Cloud mode and scene flashcards.",
+        "ctaButton": "Add Lectoro AI to Chrome for Free",
+        "locale": "en"
+},
 };

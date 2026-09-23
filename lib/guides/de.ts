@@ -222,4 +222,150 @@ export const deGuides: GuideDictionary = {
             "Erstelle kontextbezogene Video-Lernkarten, wiederhole mit SRS und exportiere deine Sammlung bei Bedarf.",
         ctaButton: "Mit Lectoro AI starten",
     },
+        "dual-subtitles-netflix-youtube": {
+        "slug": "dual-subtitles-netflix-youtube",
+        "title": "Duale Untertitel für Netflix & YouTube — Komplette Anleitung & Word Cloud (Taste S)",
+        "description": "Erfahre, wie du zweisprachige Untertitel auf Netflix und YouTube aktivierst. Entdecke die S-Taste (Word Cloud) für interaktive Wort-für-Wort-Übersetzung und Video-Karteikarten.",
+        "eyebrow": "Untertitel-Einrichtung & Immersion",
+        "updatedAt": "Aktualisiert am 23. September 2026",
+        "readingTime": "8 Min. Lesezeit",
+        "intro": "Filme nur mit Untertiteln in der Muttersprache zu schauen, trainiert lediglich schnelles Lesen auf Deutsch. Reine Fremdsprachenuntertitel führen dagegen schnell zu kognitiver Überlastung, wenn Schauspieler schnell sprechen oder Umgangssprache verwenden. Duale Untertitel in Kombination mit dem Word-Cloud-Modus (Taste S) von Lectoro AI lösen dieses Problem — du genießt die Handlung, verstehst schwierige Wörter direkt im Kontext und erstellst dauerhafte Video-Lernkarten.",
+        "sections": [
+                {
+                        "heading": "Warum einzelne Untertitel beim Sprachenlernen versagen",
+                        "paragraphs": [
+                                "Wenn du deutsche Untertitel einschaltest, wählt das Gehirn den Weg des geringsten Widerstands: Es blendet die Tonspur aus und liest einfach den vertrauten Text. Reine Fremdsprachenuntertitel ohne Sofort-Wörterbuch führen dagegen zu Frustration: Ein einziges unbekanntes Wort kann das Verständnis einer ganzen Szene blockieren.",
+                                "Duale Untertitel bieten das perfekte Gerüst: Der Dialog in der Zielsprache steht im Mittelpunkt, während eine dezente Übersetzung direkt darunter angezeigt wird. Dein Gehör lernt, Sprachklang und geschriebenes Wort zu verknüpfen, während du nur bei Bedarf auf die Übersetzung blickst."
+                        ],
+                        "bullets": [
+                                "Originalzeile trainiert natürliche Satzmelodie und Sprachrhythmus",
+                                "Hilfsübersetzung gibt sofortige Sicherheit und vermeidet Frustration",
+                                "Spart Stunden mühsamen Pausierens und Eintippens in externe Wörterbuch-Apps"
+                        ]
+                },
+                {
+                        "heading": "Die S-Taste: Magischer Word-Cloud-Lesemodus (Wort-für-Wort-Analyse)",
+                        "paragraphs": [
+                                "Klassische Erweiterungen zeigen Übersetzungen als unübersichtlichen Textblock. Bei langen Sätzen ist oft unklar, welches Fremdwort welcher deutschen Übersetzung entspricht.",
+                                "Lectoro AI löst dies mit dem revolutionären Word-Cloud-Modus: Drücke jederzeit die Taste S (oder Pfeil nach unten). Die Wiedergabe stoppt sofort und der Satz teilt sich in interaktive Wortkacheln auf. Jede Kachel bietet eine präzise Übersetzung, grammatikalische Einordnung und kristallklare Audio-Aussprache.",
+                                "So analysierst du komplexe Satzstrukturen Wort für Wort in deinem eigenen Tempo — ohne Raten und ohne den Vollbildmodus zu verlassen."
+                        ],
+                        "steps": [
+                                {
+                                        "title": "Schritt 1: Taste S drücken",
+                                        "text": "Drücke bei einem schwierigen Satz die Taste S oder die Pfeiltaste nach unten auf deiner Tastatur."
+                                },
+                                {
+                                        "title": "Schritt 2: Wortkacheln erkunden",
+                                        "text": "Sieh dir Wort-für-Wort-Übersetzungen an, klicke auf das Lautsprechersymbol für Aussprache oder drücke Enter/Q für tiefgehende KI-Analyse."
+                                },
+                                {
+                                        "title": "Schritt 3: Karteikarte mit Z-Taste speichern",
+                                        "text": "Drücke Z oder V, um den Satz samt Filmszene und Audio direkt in deinen SRS-Wiederholungen zu sichern."
+                                }
+                        ]
+                },
+                {
+                        "heading": "Duale Untertitel in 60 Sekunden einrichten",
+                        "paragraphs": [
+                                "Die Installation von Lectoro AI in Google Chrome dauert weniger als eine Minute und erfordert keine Kreditkarte.",
+                                "Nach der Installation aus dem Chrome Web Store öffnest du Netflix, YouTube, TED oder Plex. Die dualen Untertitel erscheinen automatisch unter dem Player. Schriftgröße und Kontrast lassen sich individuell anpassen."
+                        ],
+                        "bullets": [
+                                "Nahtlose Integration mit Netflix, YouTube, TED und Plex",
+                                "Anpassbare Schriftgröße, Deckkraft und Kontrastfarben",
+                                "Vollständige Tastatursteuerung mit W, A, S, D, Q, Z"
+                        ]
+                }
+        ],
+        "faq": [
+                {
+                        "question": "Funktionieren duale Untertitel bei allen Videos auf Netflix und YouTube?",
+                        "answer": "Ja, Lectoro AI funktioniert mit allen Titeln auf Netflix, YouTube, TED und Plex, die über offizielle Untertitel verfügen."
+                },
+                {
+                        "question": "Was passiert genau beim Drücken der S-Taste?",
+                        "answer": "Die S-Taste pausiert die Wiedergabe und aktiviert den Word-Cloud-Modus, der den Satz in interaktive Kacheln mit Wort-für-Wort-Übersetzung aufteilt."
+                },
+                {
+                        "question": "Sind duale Untertitel kostenlos nutzbar?",
+                        "answer": "Ja, duale Untertitel und der Word-Cloud-Modus sind im Free-Plan dauerhaft kostenlos ohne Kreditkarte verfügbar."
+                }
+        ],
+        "relatedLabel": "Nächster Ratgeber",
+        "ctaTitle": "Schau Filme ab heute mit dualen Untertiteln",
+        "ctaText": "Installiere Lectoro AI kostenlos in Chrome und verwandle jeden Streaming-Abend in effektives Sprachtraining.",
+        "ctaButton": "Kostenlos zu Chrome hinzufügen",
+        "locale": "de"
+},
+    "language-reactor-alternative": {
+        "slug": "language-reactor-alternative",
+        "title": "Die beste Language Reactor Alternative 2026 — Lectoro AI im Vergleich",
+        "description": "Auf der Suche nach einer modernen Language Reactor (LLN) Alternative? Vergleiche Funktionen: Word-Cloud-Modus (S-Taste), Video-Lernkarten, mobile Web-Wiederholungen und Anki-Export.",
+        "eyebrow": "Erweiterungsvergleich & Test",
+        "updatedAt": "Aktualisiert am 23. September 2026",
+        "readingTime": "9 Min. Lesezeit",
+        "intro": "Language Reactor (ehemals Language Learning with Netflix) leistete Pionierarbeit beim Sprachenlernen mit Videos, doch viele Nutzer kämpfen heute mit veraltetem Design, fehlender mobiler Synchronisation und umständlichen Exporten. Lectoro AI wurde als moderne Alternative entwickelt — mit flüssigen dualen Untertiteln, dem revolutionären Word-Cloud-Modus (Taste S), automatischen Szenen-Snapshots und einer Smartphone-App.",
+        "sections": [
+                {
+                        "heading": "Warum Lerner nach Alternativen zu Language Reactor suchen",
+                        "paragraphs": [
+                                "Language Reactor war ein Meilenstein, doch die Weiterentwicklung stockt: Die Benutzeroberfläche wirkt überladen, es gibt keine native mobile Wiederholungsmöglichkeit ohne Drittanbieter-Apps, und Untertitelübersetzungen werden als monolithischer Textblock dargestellt, ohne einzelne Wörter sauber zu isolieren.",
+                                "Moderne Lerner suchen nach einer ressourcenschonenden Manifest-V3-Erweiterung, die flüssig läuft, mobiles Wiederholen auf dem Smartphone unterwegs ermöglicht und sofortige kontextbezogene KI-Erklärungen liefert."
+                        ],
+                        "bullets": [
+                                "Keine native mobile Wiederholungsplattform bei Language Reactor",
+                                "Keine automatische Aufnahme hochauflösender Filmszenen als Gedächtnisanker",
+                                "Dichter Blocktext statt interaktiver Wortkacheln"
+                        ]
+                },
+                {
+                        "heading": "Die entscheidenden Vorteile von Lectoro AI",
+                        "paragraphs": [
+                                "Lectoro AI wurde von Grund auf entwickelt, um Reibung beim Sprachenlernen mit Streaming-Diensten zu beseitigen:",
+                                "1. Word-Cloud-Modus (Taste S): Ein Tastendruck zerlegt komplexe Dialoge in einzelne interaktive Kacheln mit Aussprache und Wort-für-Wort-Bedeutung.",
+                                "2. Video-Szenen-Lernkarten (Taste Z): Statt isolierter Vokabeln bettet jede Lernkarte den Gesichtsausdruck des Schauspielers und den genauen Kontext der Szene ein.",
+                                "3. Mobile Wiederholungen (/dashboard/reviews): Übe deine Karten auf jedem Smartphone direkt im Browser als PWA mit SuperMemo SM-2 Spaced Repetition.",
+                                "4. Tiefgehende KI-Erklärungen (Q / Enter): Sofortige Aufschlüsselung von Slang, Redewendungen und Grammatik in deiner Muttersprache."
+                        ],
+                        "bullets": [
+                                "Leichte Manifest-V3-Erweiterung mit minimalem Speicherverbrauch",
+                                "Schlüsselfertiger Anki-Paketexport (.zip mit Bildern und Audio)",
+                                "Dauerhaft kostenloser Plan ohne Kreditkartenpflicht"
+                        ]
+                },
+                {
+                        "heading": "Funktionsvergleich: Lectoro AI vs. Language Reactor",
+                        "paragraphs": [
+                                "Hier ist der direkte Vergleich der wichtigsten Funktionen beider Tools im Jahr 2026:"
+                        ],
+                        "bullets": [
+                                "Duale Untertitel auf Netflix & YouTube: Lectoro AI (Ja) | Language Reactor (Ja)",
+                                "Interaktive Word Cloud (Taste S): Lectoro AI (Ja, Wortkacheln) | Language Reactor (Nein)",
+                                "Automatische HD-Szenenaufnahmen: Lectoro AI (Ja) | Language Reactor (Eingeschränkt)",
+                                "Mobile Lernkarten-Webapp: Lectoro AI (Ja, Web PWA) | Language Reactor (Erfordert Anki)",
+                                "Kostenloser Plan ohne Kreditkarte: Lectoro AI (Ja) | Language Reactor (Ja)"
+                        ]
+                }
+        ],
+        "faq": [
+                {
+                        "question": "Ist der Wechsel von Language Reactor zu Lectoro AI einfach?",
+                        "answer": "Ja, installiere einfach Lectoro AI aus dem Chrome Web Store. Keine komplizierte Einrichtung nötig — Untertitel aktivieren sich automatisch auf Netflix und YouTube."
+                },
+                {
+                        "question": "Kann ich meine Vokabeln nach Anki exportieren?",
+                        "answer": "Ja. Im Tab 'Meine Wörter' kannst du mit einem Klick ein komplettes .zip-Paket mit fertigen Anki-Dateien, Szenenbildern und Audio herunterladen."
+                },
+                {
+                        "question": "Warum ist der Word-Cloud-Modus nützlicher als reines Mouseover?",
+                        "answer": "Die S-Taste stoppt das Video und isoliert jedes Wort auf einer Kachel, sodass Grammatikstrukturen und Satzbau sofort verständlich werden."
+                }
+        ],
+        "relatedLabel": "Nächster Ratgeber",
+        "ctaTitle": "Erlebe die nächste Generation des Sprachenlernens",
+        "ctaText": "Entdecke, wie leicht Fremdsprachenlernen mit Filmen durch den Word-Cloud-Modus und Videoszenen-Lernkarten wird.",
+        "ctaButton": "Lectoro AI kostenlos testen",
+        "locale": "de"
+},
 };

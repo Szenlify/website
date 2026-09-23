@@ -38,7 +38,7 @@ export const en: Dict = {
         title: "Learn Languages with Dual Subtitles on",
         titleHighlight: "Netflix & YouTube",
         subtitle:
-            "Click any word in bilingual subtitles for instant translation, pronunciation, and contextual AI explanations. Save vocabulary with video snapshots and commit it to long-term memory with SuperMemo spaced repetition.",
+            "Watch with dual subtitles side by side. Hit the 'S' key for instant word-by-word interactive translation (Word Cloud), click words for AI explanations, and save video scene flashcards for SRS reviews.",
         installCta: "Install in Chrome",
         trialBadge: "3-Day Free Trial",
         demoCta: "Try Interactive Demo",
@@ -289,7 +289,7 @@ export const en: Dict = {
     meta: {
         homeTitle: "Lectoro AI: Dual Subtitles for Netflix & YouTube",
         homeDesc:
-            "Learn languages while watching Netflix, YouTube, Plex and TED. Click bilingual subtitles for AI explanations, save video flashcards and review them with SRS.",
+            "Learn languages watching Netflix & YouTube with dual subtitles. Press 'S' for instant word-by-word translation (Word Cloud), save video scene flashcards, and review with spaced repetition.",
         privacyTitle: "Privacy Policy — Lectoro AI",
         privacyDesc:
             "Privacy Policy for Lectoro AI Chrome Extension and web services (lectoroai.com). Chrome Web Store Limited Use Policy compliance, AI security, and data transparency.",

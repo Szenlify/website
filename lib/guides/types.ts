@@ -3,6 +3,8 @@ import type { Locale } from "@/lib/i18n/types";
 export const GUIDE_SLUGS = [
     "learn-language-netflix-youtube",
     "video-flashcards-spaced-repetition",
+    "dual-subtitles-netflix-youtube",
+    "language-reactor-alternative",
 ] as const;
 
 export type GuideSlug = (typeof GUIDE_SLUGS)[number];
