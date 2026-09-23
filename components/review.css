@@ -26,6 +26,7 @@
     --radius-xl: 24px;
     --blur: 24px;
 container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padding: 18px 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg-deep); border-radius: 24px; color: var(--text-secondary);
+}
 .review-panel {
     display: flex;
     flex-direction: column;
@@ -1215,7 +1216,6 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
 .review-edit-cancel:hover {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
-}
 }
 
 .lectoro-review .review-card { overflow: visible; }

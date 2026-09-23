@@ -142,7 +142,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                         <ul className="space-y-2.5 text-xs">
                             <li>
                                 <a
-                                    href="mailto:support@lectoroai.com"
+                                    href="mailto:lectoroai@gmail.com"
                                     className="text-slate-300 hover:text-white transition"
                                 >
                                     lectoroai@gmail.com

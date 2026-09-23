@@ -39,19 +39,20 @@ export async function loginWithGoogle(): Promise<User | null> {
     try {
         const result = await signInWithPopup(auth, googleProvider);
         return result.user;
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const fbErr = error as { code?: string; message?: string };
         console.warn("signInWithPopup error, testing fallback:", error);
 
-        if (error.code === "auth/unauthorized-domain") {
+        if (fbErr.code === "auth/unauthorized-domain") {
             const host = typeof window !== "undefined" ? window.location.hostname : "Vercel";
-            error.message = `Domena "${host}" nie jest autoryzowana w Firebase! Aby logowanie działało na Vercel: przejdź do Firebase Console (projekt: extension-eng) -> Authentication -> Ustawienia (Settings) -> Autoryzowane domeny (Authorized domains) i kliknij "Dodaj domenę" wpisując: ${host}`;
+            fbErr.message = `Domena "${host}" nie jest autoryzowana w Firebase! Aby logowanie działało na Vercel: przejdź do Firebase Console (projekt: extension-eng) -> Authentication -> Ustawienia (Settings) -> Autoryzowane domeny (Authorized domains) i kliknij "Dodaj domenę" wpisując: ${host}`;
             throw error;
         }
 
         // If popup is blocked by browser or on mobile, fallback to redirect
         if (
-            error.code === "auth/popup-blocked" ||
-            error.code === "auth/cancelled-popup-request"
+            fbErr.code === "auth/popup-blocked" ||
+            fbErr.code === "auth/cancelled-popup-request"
         ) {
             await signInWithRedirect(auth, googleProvider);
             return null;
@@ -64,9 +65,10 @@ export async function checkRedirectAuth(): Promise<User | null> {
     try {
         const result = await getRedirectResult(auth);
         return result?.user ?? null;
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const fbErr = error as { code?: string };
         console.error("checkRedirectAuth error:", error);
-        if (error.code === "auth/unauthorized-domain") {
+        if (fbErr.code === "auth/unauthorized-domain") {
             const host = typeof window !== "undefined" ? window.location.hostname : "Vercel";
             alert(`Domena "${host}" nie jest autoryzowana w Firebase! Dodaj "${host}" w Firebase Console -> Authentication -> Authorized domains.`);
         }

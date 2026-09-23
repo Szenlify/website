@@ -97,6 +97,14 @@ export default async function LocaleTermsPage({
                             {t.s3.heading}
                         </h2>
                         <div className="space-y-3 pl-2">
+                            {t.s3.sellerLabel && (
+                                <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 mb-3">
+                                    <strong className="text-white">
+                                        {t.s3.sellerLabel}
+                                    </strong>
+                                    <p className="text-slate-300 mt-1">{t.s3.sellerText}</p>
+                                </div>
+                            )}
                             <div>
                                 <strong className="text-white">
                                     {t.s3.aLabel}
@@ -121,6 +129,14 @@ export default async function LocaleTermsPage({
                                 </strong>
                                 <p className="text-slate-400">{t.s3.dText}</p>
                             </div>
+                            {t.s3.eLabel && (
+                                <div>
+                                    <strong className="text-white">
+                                        {t.s3.eLabel}
+                                    </strong>
+                                    <p className="text-slate-400">{t.s3.eText}</p>
+                                </div>
+                            )}
                         </div>
                     </section>
 

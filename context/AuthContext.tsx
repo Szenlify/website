@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import {
@@ -82,9 +82,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             const fetched = await fetchUserWords(uid);
             setWords(fetched);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error loading user words:", err);
-            setWordsError(err.message || "Błąd pobierania słówek z bazy.");
+            const message = err instanceof Error ? err.message : "Błąd pobierania słówek z bazy.";
+            setWordsError(message);
         } finally {
             setLoadingWords(false);
         }
@@ -162,9 +163,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setUser(loggedIn);
                 setViewMode("reviews");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Google sign in error:", error);
-            const msg = error.message || String(error);
+            const msg = error instanceof Error ? error.message : String(error);
             setAuthError(msg);
             alert(msg);
             throw error;
@@ -208,8 +209,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setWords(previous => previous.filter(item => item.id !== id));
     }, [user]);
 
-    const now = Date.now();
-    const rawDueWords = words.filter((w) => SRS.isDue(w, now));
+    const [reviewTimestamp, setReviewTimestamp] = useState(() => Date.now());
+
+    useEffect(() => {
+        const interval = setInterval(() => setReviewTimestamp(Date.now()), 60000);
+        const onFocus = () => setReviewTimestamp(Date.now());
+        window.addEventListener("focus", onFocus);
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener("focus", onFocus);
+        };
+    }, []);
+
+    const rawDueWords = useMemo(
+        () => words.filter((w) => SRS.isDue(w, reviewTimestamp)),
+        [words, reviewTimestamp]
+    );
     const rawDueCount = rawDueWords.length;
     // In cram mode, all words are presented for review; otherwise only due words
     const dueWords = isCramMode ? words : rawDueWords;

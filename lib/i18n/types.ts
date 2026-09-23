@@ -205,6 +205,8 @@ export interface Dict {
 
     reviews: ReviewsDict;
 
+    showcase?: ShowcaseDict;
+
     privacy: {
         breadcrumbHome: string;
         breadcrumbCurrent: string;
@@ -228,8 +230,14 @@ export interface Dict {
             intro: string;
             geminiLabel: string;
             geminiText: string;
-            elevenlabsLabel: string;
-            elevenlabsText: string;
+            cloudflareLabel?: string;
+            cloudflareText?: string;
+            firebaseLabel?: string;
+            firebaseText?: string;
+            translateLabel?: string;
+            translateText?: string;
+            elevenlabsLabel?: string;
+            elevenlabsText?: string;
             stripeLabel: string;
             stripeText: string;
         };
@@ -267,6 +275,8 @@ export interface Dict {
         s2: { heading: string; p1: string; p2: string };
         s3: {
             heading: string;
+            sellerLabel?: string;
+            sellerText?: string;
             aLabel: string;
             aText: string;
             bLabel: string;
@@ -275,6 +285,8 @@ export interface Dict {
             cText: string;
             dLabel: string;
             dText: string;
+            eLabel?: string;
+            eText?: string;
         };
         s4: {
             heading: string;
@@ -297,6 +309,57 @@ export interface Dict {
             email: string;
         };
     };
+}
+
+export interface ShowcaseDict {
+    badge: string;
+    title: string;
+    subtitle: string;
+    b1Tag: string;
+    b1Title: string;
+    b1HowTo: string;
+    b1Step1: string;
+    b1Step2: string;
+    b1Step3: string;
+    b2Tag: string;
+    b2Title: string;
+    b2HowTo: string;
+    b2Step1: string;
+    b2Step2: string;
+    b2Step3: string;
+    b3Tag: string;
+    b3Title: string;
+    b3HowTo: string;
+    b3Step1: string;
+    b3Step2: string;
+    b3Step3: string;
+    b4Tag: string;
+    b4Title: string;
+    b4HowTo: string;
+    b4K1: string;
+    b4K1Desc: string;
+    b4K2: string;
+    b4K2Desc: string;
+    b4K3: string;
+    b4K3Desc: string;
+    b4K4: string;
+    b4K4Desc: string;
+    b4K5: string;
+    b4K5Desc: string;
+    b4K6: string;
+    b4K6Desc: string;
+    b5Tag: string;
+    b5Title: string;
+    b5HowTo: string;
+    b5Step1: string;
+    b5Step2: string;
+    b5Step3: string;
+    b6Tag: string;
+    b6Title: string;
+    b6HowTo: string;
+    b6Step1: string;
+    b6Step2: string;
+    b6Step3: string;
 }
 
 export interface ReviewsDict {

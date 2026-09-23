@@ -175,7 +175,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                   </svg>
                 )}
                 <span>
-                  {isSigningIn ? "Logowanie..." : nav.signIn || "Zaloguj się"}
+                  {isSigningIn ? dict.reviews.signingIn : nav.signIn}
                 </span>
               </button>
             ) : (
@@ -183,7 +183,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                 {/* Clickable review counter badge to open reviews */}
                 <Link
                   href={getLocalizedHref("/dashboard/reviews", locale)}
-                  title={nav.reviews || "Powtórki"}
+                  title={nav.reviews}
                   className={`min-h-11 min-w-11 justify-center inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95 ${
                     pathname.includes("/dashboard/reviews")
                       ? "ring-2 ring-indigo-500/50"
@@ -191,7 +191,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                   }`}
                 >
                   <span className="hidden xs:inline">
-                    {nav.reviews || "Powtórki"}
+                    {nav.reviews}
                   </span>
                   <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono font-bold">
                     {rawDueCount}
@@ -202,7 +202,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      title="Profil użytkownika"
+                      title={user.displayName || user.email || "User"}
                       className="min-h-11 min-w-11 justify-center flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer active:scale-95"
                     >
                       {user.photoURL ? (
@@ -228,7 +228,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                   <DropdownMenuContent align="end" className="w-52">
                     <div className="px-3 py-2 border-b border-white/10">
                       <p className="text-xs font-bold text-white truncate">
-                        {user.displayName || "Użytkownik"}
+                        {user.displayName || user.email || "User"}
                       </p>
                       <p className="text-[11px] text-slate-400 truncate">
                         {user.email}
@@ -241,7 +241,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                       >
                         <div className="flex items-center gap-2">
                           <Sparkles className="size-3.5 text-indigo-400" />
-                          <span>{nav.reviews || "Powtórki"}</span>
+                          <span>{nav.reviews}</span>
                         </div>
                         <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] font-mono">
                           {rawDueCount}
@@ -254,7 +254,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                       className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2"
                     >
                       <LogOut className="size-3.5 mr-2" />
-                      <span>{nav.signOut || "Wyloguj się"}</span>
+                      <span>{nav.signOut}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -288,7 +288,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                       >
                         <div className="flex items-center gap-2.5">
                           <Sparkles className="size-4 text-indigo-400" />
-                          <span>{nav.reviews || "Powtórki"}</span>
+                          <span>{nav.reviews}</span>
                         </div>
                         <span className="px-2.5 py-0.5 rounded-full bg-indigo-500 text-white text-xs font-mono font-bold">
                           {rawDueCount}
@@ -402,8 +402,8 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                         )}
                         <span>
                           {isSigningIn
-                            ? "Logowanie..."
-                            : nav.signIn || "Zaloguj się"}
+                            ? dict.reviews.signingIn
+                            : nav.signIn}
                         </span>
                       </Button>
                     ) : (
@@ -414,7 +414,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                               "/dashboard/reviews",
                               locale,
                             )}
-                            title={nav.reviews || "Powtórki"}
+                            title={nav.reviews}
                             className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/40 transition cursor-pointer text-left active:scale-98"
                           >
                             <div className="flex items-center gap-2">
@@ -449,7 +449,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                             className="h-10 w-full rounded-xl text-xs font-bold text-red-400 border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
                           >
                             <LogOut className="size-3.5 mr-2" />
-                            <span>{nav.signOut || "Wyloguj się"}</span>
+                            <span>{nav.signOut}</span>
                           </Button>
                         </SheetClose>
                       </div>

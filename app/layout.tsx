@@ -42,7 +42,7 @@ export const metadata: Metadata = {
         "anki export",
         "web translator",
         "gemini ai tutor",
-        "elevenlabs tts",
+        "gemini tts",
         "language immersion",
     ],
     authors: [{ name: "Lectoro AI" }],

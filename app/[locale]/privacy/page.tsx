@@ -157,12 +157,38 @@ export default async function LocalePrivacyPage({
                                 </strong>{" "}
                                 {p.s4.geminiText}
                             </li>
-                            <li>
-                                <strong className="text-white">
-                                    {p.s4.elevenlabsLabel}
-                                </strong>{" "}
-                                {p.s4.elevenlabsText}
-                            </li>
+                            {p.s4.cloudflareLabel && (
+                                <li>
+                                    <strong className="text-white">
+                                        {p.s4.cloudflareLabel}
+                                    </strong>{" "}
+                                    {p.s4.cloudflareText}
+                                </li>
+                            )}
+                            {p.s4.firebaseLabel && (
+                                <li>
+                                    <strong className="text-white">
+                                        {p.s4.firebaseLabel}
+                                    </strong>{" "}
+                                    {p.s4.firebaseText}
+                                </li>
+                            )}
+                            {p.s4.translateLabel && (
+                                <li>
+                                    <strong className="text-white">
+                                        {p.s4.translateLabel}
+                                    </strong>{" "}
+                                    {p.s4.translateText}
+                                </li>
+                            )}
+                            {p.s4.elevenlabsLabel && (
+                                <li>
+                                    <strong className="text-white">
+                                        {p.s4.elevenlabsLabel}
+                                    </strong>{" "}
+                                    {p.s4.elevenlabsText}
+                                </li>
+                            )}
                             <li>
                                 <strong className="text-white">
                                     {p.s4.stripeLabel}

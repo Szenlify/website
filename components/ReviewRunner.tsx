@@ -25,7 +25,214 @@ interface ReviewRunnerProps {
   locale: Locale;
 }
 
+const REVIEW_RUNNER_COPY: Record<Locale, {
+  review: string;
+  edit: string;
+  delete: string;
+  confirmDelete: string;
+  cancel: string;
+  save: string;
+  original: string;
+  translation: string;
+  sentence: string;
+  sentenceTranslation: string;
+  loadingAudio: string;
+  unsupportedAudio: string;
+  retryAudioTap: string;
+  playbackFailed: string;
+  listenSlowly: string;
+}> = {
+  pl: {
+    review: "Powtórki",
+    edit: "Edytuj",
+    delete: "Usuń",
+    confirmDelete: "Usunąć tę fiszkę?",
+    cancel: "Anuluj",
+    save: "Zapisz",
+    original: "Oryginał",
+    translation: "Tłumaczenie",
+    sentence: "Zdanie",
+    sentenceTranslation: "Tłumaczenie zdania",
+    loadingAudio: "Wczytywanie nagrania…",
+    unsupportedAudio: "Ta przeglądarka nie obsługuje wymowy.",
+    retryAudioTap: "Dotknij głośnika, aby spróbować ponownie.",
+    playbackFailed: "Nie udało się odtworzyć nagrania. Spróbuj ponownie.",
+    listenSlowly: "Słuchaj wolniej (0,75×)",
+  },
+  en: {
+    review: "Review",
+    edit: "Edit",
+    delete: "Delete",
+    confirmDelete: "Delete this flashcard?",
+    cancel: "Cancel",
+    save: "Save",
+    original: "Original",
+    translation: "Translation",
+    sentence: "Sentence",
+    sentenceTranslation: "Sentence translation",
+    loadingAudio: "Loading recording…",
+    unsupportedAudio: "Speech is unavailable in this browser.",
+    retryAudioTap: "Tap the speaker to try again.",
+    playbackFailed: "Could not play recording. Try again.",
+    listenSlowly: "Listen slowly (0.75×)",
+  },
+  de: {
+    review: "Wiederholung",
+    edit: "Bearbeiten",
+    delete: "Löschen",
+    confirmDelete: "Diese Karteikarte löschen?",
+    cancel: "Abbrechen",
+    save: "Speichern",
+    original: "Original",
+    translation: "Übersetzung",
+    sentence: "Satz",
+    sentenceTranslation: "Satzübersetzung",
+    loadingAudio: "Lade Aufnahme…",
+    unsupportedAudio: "Sprachausgabe wird in diesem Browser nicht unterstützt.",
+    retryAudioTap: "Tippe auf den Lautsprecher, um es erneut zu versuchen.",
+    playbackFailed: "Aufnahme konnte nicht abgespielt werden. Bitte erneut versuchen.",
+    listenSlowly: "Langsamer anhören (0,75×)",
+  },
+  es: {
+    review: "Repaso",
+    edit: "Editar",
+    delete: "Eliminar",
+    confirmDelete: "¿Eliminar esta tarjeta?",
+    cancel: "Cancelar",
+    save: "Guardar",
+    original: "Original",
+    translation: "Traducción",
+    sentence: "Oración",
+    sentenceTranslation: "Traducción de la oración",
+    loadingAudio: "Cargando audio…",
+    unsupportedAudio: "La pronunciación no está disponible en este navegador.",
+    retryAudioTap: "Toca el altavoz para intentarlo de nuevo.",
+    playbackFailed: "No se pudo reproducir el audio. Inténtalo de nuevo.",
+    listenSlowly: "Escuchar más lento (0,75×)",
+  },
+  fr: {
+    review: "Révision",
+    edit: "Modifier",
+    delete: "Supprimer",
+    confirmDelete: "Supprimer cette flashcard ?",
+    cancel: "Annuler",
+    save: "Enregistrer",
+    original: "Original",
+    translation: "Traduction",
+    sentence: "Phrase",
+    sentenceTranslation: "Traduction de la phrase",
+    loadingAudio: "Chargement de l'audio…",
+    unsupportedAudio: "La synthèse vocale n'est pas prise en charge dans ce navigateur.",
+    retryAudioTap: "Touchez le haut-parleur pour réessayer.",
+    playbackFailed: "Impossible de lire l'enregistrement. Réessayez.",
+    listenSlowly: "Écouter plus lentement (0,75×)",
+  },
+  it: {
+    review: "Ripasso",
+    edit: "Modifica",
+    delete: "Elimina",
+    confirmDelete: "Eliminare questa flashcard?",
+    cancel: "Annulla",
+    save: "Salva",
+    original: "Originale",
+    translation: "Traduzione",
+    sentence: "Frase",
+    sentenceTranslation: "Traduzione della frase",
+    loadingAudio: "Caricamento audio…",
+    unsupportedAudio: "La pronuncia non è disponibile in questo browser.",
+    retryAudioTap: "Tocca l'altoparlante per riprovare.",
+    playbackFailed: "Impossibile riprodurre la registrazione. Riprova.",
+    listenSlowly: "Ascolta più lentamente (0,75×)",
+  },
+  cs: {
+    review: "Opakování",
+    edit: "Upravit",
+    delete: "Smazat",
+    confirmDelete: "Smazat tuto kartičku?",
+    cancel: "Zrušit",
+    save: "Uložit",
+    original: "Originál",
+    translation: "Překlad",
+    sentence: "Věta",
+    sentenceTranslation: "Překlad věty",
+    loadingAudio: "Načítání nahrávky…",
+    unsupportedAudio: "Hlasový výstup není v tomto prohlížeči podporován.",
+    retryAudioTap: "Klepnutím na reproduktor zkuste znovu.",
+    playbackFailed: "Nahrávku se nepodařilo přehrát. Zkuste to znovu.",
+    listenSlowly: "Poslouchat pomaleji (0,75×)",
+  },
+  nl: {
+    review: "Herhaling",
+    edit: "Bewerken",
+    delete: "Verwijderen",
+    confirmDelete: "Deze flashcard verwijderen?",
+    cancel: "Annuleren",
+    save: "Opslaan",
+    original: "Origineel",
+    translation: "Vertaling",
+    sentence: "Zin",
+    sentenceTranslation: "Zinsvertaling",
+    loadingAudio: "Opname laden…",
+    unsupportedAudio: "Spraaksynthese is niet beschikbaar in deze browser.",
+    retryAudioTap: "Tik op de luidspreker om opnieuw te proberen.",
+    playbackFailed: "Kon opname niet afspelen. Probeer het opnieuw.",
+    listenSlowly: "Langzamer luisteren (0,75×)",
+  },
+  pt: {
+    review: "Revisão",
+    edit: "Editar",
+    delete: "Excluir",
+    confirmDelete: "Excluir este flashcard?",
+    cancel: "Cancelar",
+    save: "Salvar",
+    original: "Original",
+    translation: "Tradução",
+    sentence: "Frase",
+    sentenceTranslation: "Tradução da frase",
+    loadingAudio: "Carregando áudio…",
+    unsupportedAudio: "A pronúncia não é suportada neste navegador.",
+    retryAudioTap: "Toque no alto-falante para tentar novamente.",
+    playbackFailed: "Não foi possível reproduzir o áudio. Tente novamente.",
+    listenSlowly: "Ouvir mais devagar (0,75×)",
+  },
+  ja: {
+    review: "復習",
+    edit: "編集",
+    delete: "削除",
+    confirmDelete: "このカードを削除しますか？",
+    cancel: "キャンセル",
+    save: "保存",
+    original: "原文",
+    translation: "翻訳",
+    sentence: "例文",
+    sentenceTranslation: "例文の翻訳",
+    loadingAudio: "音声を読み込み中…",
+    unsupportedAudio: "このブラウザは音声読み上げに対応していません。",
+    retryAudioTap: "スピーカーをタップして再試行してください。",
+    playbackFailed: "音声を再生できませんでした。もう一度お試しください。",
+    listenSlowly: "ゆっくり再生 (0.75×)",
+  },
+  ko: {
+    review: "복습",
+    edit: "수정",
+    delete: "삭제",
+    confirmDelete: "이 카드를 삭제하시겠습니까?",
+    cancel: "취소",
+    save: "저장",
+    original: "원문",
+    translation: "번역",
+    sentence: "예문",
+    sentenceTranslation: "예문 번역",
+    loadingAudio: "오디오 불러오는 중…",
+    unsupportedAudio: "이 브라우저는 음성 재생을 지원하지 않습니다.",
+    retryAudioTap: "스피커를 탭하여 다시 시도하세요.",
+    playbackFailed: "오디오를 재생하지 못했습니다. 다시 시도해 주세요.",
+    listenSlowly: "느리게 듣기 (0.75×)",
+  },
+};
+
 export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
+  const rc = REVIEW_RUNNER_COPY[locale] || REVIEW_RUNNER_COPY.en;
   const {
     user,
     words,
@@ -44,7 +251,18 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const [queue, setQueue] = useState<ReviewWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answerShown, setAnswerShown] = useState(false);
-  const [direction, setDirection] = useState<"normal" | "reverse">("normal");
+  const [direction, setDirection] = useState<"normal" | "reverse">(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return localStorage.getItem("reviewDirection") === "reverse"
+          ? "reverse"
+          : "normal";
+      } catch {
+        return "normal";
+      }
+    }
+    return "normal";
+  });
   const [flipPhase, setFlipPhase] = useState<"" | "flipping">("");
   const busy = useRef(false);
   const [saving, setSaving] = useState(false);
@@ -59,7 +277,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const [audioMessage, setAudioMessage] = useState("");
   const [audioLoading, setAudioLoading] = useState(false);
   const session = useRef("");
-  const pl = locale === "pl";
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [swipeClass, setSwipeClass] = useState<string>("");
 
@@ -89,20 +306,13 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   }, [dueWords, isCramMode, loadingWords, user?.uid]);
 
   useEffect(() => {
-    try {
-      setDirection(
-        localStorage.getItem("reviewDirection") === "reverse"
-          ? "reverse"
-          : "normal",
-      );
-    } catch {
-      /* Storage may be unavailable in private browsing. */
-    }
+    const speechReq = speechRequest;
+    const cache = audioCache;
     return () => {
-      speechRequest.current++;
+      speechReq.current++;
       audioRef.current?.pause();
       window.speechSynthesis?.cancel();
-      audioCache.current.clear();
+      cache.current.clear();
     };
   }, []);
 
@@ -118,10 +328,12 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   // Ask the same server that enforces Lectoro plan entitlements. Fail closed.
   useEffect(() => {
     const controller = new AbortController();
-    setPremiumVoices([]);
     const checkAccess = async () => {
       try {
-        if (!user) return;
+        if (!user) {
+          setPremiumVoices([]);
+          return;
+        }
         const token = await user.getIdToken();
         const response = await fetch(
           "https://geminiproxy-gyagzflbra-ew.a.run.app",
@@ -138,7 +350,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
             }),
           },
         );
-        if (!response.ok) return;
+        if (!response.ok) {
+          setPremiumVoices([]);
+          return;
+        }
         const data = await response.json();
         if (!controller.signal.aborted && Array.isArray(data.voices)) {
           setPremiumVoices(
@@ -146,6 +361,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           );
         }
       } catch {
+        setPremiumVoices([]);
         /* Keep premium locked when entitlement cannot be verified. */
       }
     };
@@ -155,17 +371,24 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
   useEffect(() => {
     const cache = audioCache.current;
-    return () => { cache.clear(); speechRequest.current++; audioRef.current?.pause(); window.speechSynthesis?.cancel(); };
+    const speechReq = speechRequest;
+    return () => { cache.clear(); speechReq.current++; audioRef.current?.pause(); window.speechSynthesis?.cancel(); };
   }, [user?.uid]);
+
+  const activeCardKey = `${currentCard?.id || ""}:${currentCard?.original || ""}:${direction}:${answerShown}`;
+  const [prevCardKey, setPrevCardKey] = useState(activeCardKey);
+  if (prevCardKey !== activeCardKey) {
+    setPrevCardKey(activeCardKey);
+    setIsSpeaking(false);
+    setAudioLoading(false);
+    setAudioMessage("");
+  }
 
   useEffect(() => {
     speechRequest.current++;
     audioRef.current?.pause();
     window.speechSynthesis?.cancel();
-    setIsSpeaking(false);
-    setAudioLoading(false);
-    setAudioMessage("");
-  }, [currentCard?.id, currentCard?.original, currentCard?.translated, currentCard?.sentence, currentCard?.sentenceTranslated, direction, answerShown]);
+  }, [activeCardKey]);
 
   useEffect(() => {
     if (!premiumVoices.includes(REVIEW_VOICE)) return;
@@ -197,7 +420,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     if (request !== speechRequest.current) return;
     const synth = window.speechSynthesis;
     if (!synth || !window.SpeechSynthesisUtterance) {
-      setAudioMessage(pl ? "Ta przeglądarka nie obsługuje wymowy." : "Speech is unavailable in this browser.");
+      setAudioMessage(rc.unsupportedAudio);
       return;
     }
     const available = synth.getVoices();
@@ -219,7 +442,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
       utteranceRef.current = null;
       setIsSpeaking(false);
       if (event.error !== "interrupted" && event.error !== "canceled") {
-        setAudioMessage(pl ? "Dotknij głośnika, aby ponowić odsłuch." : "Tap the speaker to retry playback.");
+        setAudioMessage(rc.retryAudioTap);
       }
     };
     try {
@@ -228,9 +451,9 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
       synth.resume();
     } catch {
       setIsSpeaking(false);
-      setAudioMessage(pl ? "Nie udało się odtworzyć wymowy." : "Could not play speech.");
+      setAudioMessage(rc.playbackFailed);
     }
-  }, [pl]);
+  }, [rc]);
 
   const speakText = useCallback(async (text: string, lang = "en", rate = 1) => {
     if (!text) return;
@@ -252,27 +475,31 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
       speakFallback(text, lang, rate, request);
       return;
     }
-    const audio = audioRef.current || new Audio();
-    audioRef.current = audio;
-    audio.src = url;
-    audio.playbackRate = rate;
-    audio.preservesPitch = true;
-    audio.onended = () => { if (request === speechRequest.current) setIsSpeaking(false); };
-    audio.onerror = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
+    }
+    const sound = new Audio(url);
+    sound.playbackRate = rate;
+    sound.preservesPitch = true;
+    sound.onended = () => { if (request === speechRequest.current) setIsSpeaking(false); };
+    sound.onerror = () => {
       if (request !== speechRequest.current) return;
       setIsSpeaking(false);
-      setAudioMessage(pl ? "Nie udało się odtworzyć nagrania. Spróbuj ponownie." : "Could not play recording. Try again.");
+      setAudioMessage(rc.playbackFailed);
     };
+    audioRef.current = sound;
     try {
-      await audio.play();
+      await sound.play();
       if (request === speechRequest.current) setIsSpeaking(true);
     } catch {
       if (request === speechRequest.current) {
         setIsSpeaking(false);
-        setAudioMessage(pl ? "Dotknij głośnika, aby spróbować ponownie." : "Tap the speaker to try again.");
+        setAudioMessage(rc.retryAudioTap);
       }
     }
-  }, [premiumVoices, speakFallback, pl]);
+  }, [premiumVoices, speakFallback, rc]);
 
   const flipCard = useCallback(() => {
     if (busy.current || !currentCard || editing) return;
@@ -789,7 +1016,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     if (
       !user ||
       busy.current ||
-      !window.confirm(pl ? "Usunąć tę fiszkę?" : "Delete this flashcard?")
+      !window.confirm(rc.confirmDelete)
     )
       return;
     busy.current = true;
@@ -813,7 +1040,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         <div className="review-header">
           <span className="review-icon">🧠</span>
           <span className="review-title">
-            {pl ? "Powtórki" : "Review"}
+            {rc.review}
           </span>
           <span className="review-count" aria-live="polite">
             {currentIndex + 1}/{queue.length}
@@ -839,7 +1066,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           </button>
         </div>
         {(audioLoading || audioMessage) && <p className="review-audio-status" role="status">
-          {audioLoading ? (pl ? "Wczytywanie nagrania…" : "Loading recording…") : audioMessage}
+          {audioLoading ? rc.loadingAudio : audioMessage}
         </p>}
         <div
           className="review-progress"
@@ -873,12 +1100,12 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
             <form className="review-edit-form" onSubmit={saveEdit}>
               {(
                 [
-                  ["original", pl ? "Oryginał" : "Original"],
-                  ["translated", pl ? "Tłumaczenie" : "Translation"],
-                  ["sentence", pl ? "Zdanie" : "Sentence"],
+                  ["original", rc.original],
+                  ["translated", rc.translation],
+                  ["sentence", rc.sentence],
                   [
                     "sentenceTranslated",
-                    pl ? "Tłumaczenie zdania" : "Sentence translation",
+                    rc.sentenceTranslation,
                   ],
                 ] as const
               ).map(([key, label]) => (
@@ -901,10 +1128,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                   disabled={saving}
                   onClick={() => setEditing(null)}
                 >
-                  {pl ? "Anuluj" : "Cancel"}
+                  {rc.cancel}
                 </button>
                 <button className="review-edit-save" disabled={saving}>
-                  {pl ? "Zapisz" : "Save"}
+                  {rc.save}
                 </button>
               </div>
             </form>
@@ -979,11 +1206,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                 <button
                                   type="button"
                                   className="review-speak-btn review-speak-slow-btn"
-                                  aria-label={
-                                    pl
-                                      ? "Słuchaj wolniej (0,75×)"
-                                      : "Listen slowly (0.75×)"
-                                  }
+                                  aria-label={rc.listenSlowly}
                                   title="0.75×"
                                   onClick={() =>
                                     void speakText(text, language, 0.75)
@@ -1010,7 +1233,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                   key={screenshotUrl}
                                   src={screenshotUrl}
                                   alt={r.movieSnapshotAlt}
-                                  pl={pl}
+                                  locale={locale}
                                   active={active}
                                 />
                               )}
@@ -1040,7 +1263,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
               >
                 <div className="review-rating">
                   <div className="review-rating-label">
-                    {pl ? "Czy znasz odpowiedź?" : "Did you know the answer?"}
+                    {r.knowWordPrompt}
                   </div>
                   <div className="review-rating-buttons review-rating-buttons-2">
                     {([1, 2] as const).map((grade) => (
@@ -1057,13 +1280,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                         </span>
                         <span className="rate-copy">
                           <span className="rate-label">
-                            {grade === 1
-                              ? pl
-                                ? "Nie znam"
-                                : "Don't know"
-                              : pl
-                                ? "Znam"
-                                : "Know"}
+                            {grade === 1 ? r.btnAgain : r.btnGood}
                           </span>
                           <span className="review-next-info">
                             {grade === 1 ? labelAgain : labelGood}
@@ -1094,7 +1311,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     disabled={saving || !!flipPhase}
                     onClick={() => setEditing({ ...currentCard })}
                   >
-                    ✏️ {pl ? "Edytuj" : "Edit"}
+                    ✏️ {rc.edit}
                   </button>
                   <button
                     type="button"
@@ -1102,7 +1319,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     disabled={saving || !!flipPhase}
                     onClick={() => void removeCard()}
                   >
-                    🗑 {pl ? "Usuń" : "Delete"}
+                    🗑 {rc.delete}
                   </button>
                 </div>
               </div>
