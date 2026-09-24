@@ -1101,6 +1101,18 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
   if (!currentCard) return null;
 
+  const speakVisibleCard = (rate = 1) => {
+    if (busy.current) return;
+    const original = isNormal !== answerShown;
+    const word = original ? currentCard.original : currentCard.translated;
+    const sentence = original ? currentCard.sentence : currentCard.sentenceTranslated;
+    const language = original ? currentCard.srcLang || "en" : currentCard.tgtLang || "pl";
+    const text = sentence && sentence.trim().toLowerCase() !== word.trim().toLowerCase()
+      ? `${word}. ${sentence}`
+      : word;
+    void speakText(text, language, rate);
+  };
+
   const progressPercent = Math.round((currentIndex / queue.length) * 100);
   const saveEdit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -1339,7 +1351,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                       {word}
                                     </span>
                                     <div
-                                      className="flex items-center gap-2 my-2"
+                                      className="review-inline-audio flex items-center gap-2 my-2"
                                       onPointerDown={(event) => event.stopPropagation()}
                                       onPointerUp={(event) => event.stopPropagation()}
                                       onClick={(event) => event.stopPropagation()}
@@ -1401,19 +1413,43 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                   );
                 })}
               </div>
-              <button
-                type="button"
-                className="review-flip-btn"
-                disabled={saving || !!flipPhase}
-                onClick={flipCard}
-              >
-                <span className="review-flip-keys">
-                  <kbd>↓</kbd> <kbd>S</kbd>
-                </span>
-                <span>
-                  {answerShown ? r.flipShowQuestion : r.flipShowAnswer}
-                </span>
-              </button>
+              <div className="review-card-actions">
+                <button
+                  type="button"
+                  className="review-flip-btn"
+                  disabled={saving || !!flipPhase}
+                  onClick={flipCard}
+                >
+                  <span className="review-flip-keys">
+                    <kbd>↓</kbd> <kbd>S</kbd>
+                  </span>
+                  <span>
+                    {answerShown ? r.flipShowQuestion : r.flipShowAnswer}
+                  </span>
+                </button>
+                <div className="review-mobile-audio" role="group" aria-label={r.listenAudio}>
+                  <button
+                    type="button"
+                    className="review-speak-btn review-speak-slow-btn"
+                    disabled={saving || !!flipPhase}
+                    aria-label={rc.listenSlowly}
+                    title={rc.listenSlowly}
+                    onClick={() => speakVisibleCard(0.75)}
+                  >
+                    <Turtle aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`review-speak-btn review-speak-primary ${isSpeaking ? "speaking" : ""}`}
+                    disabled={saving || !!flipPhase}
+                    aria-label={r.listenAudio}
+                    title={r.listenAudio}
+                    onClick={() => speakVisibleCard()}
+                  >
+                    <Volume2 aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
               <div
                 className="review-controls"
               >

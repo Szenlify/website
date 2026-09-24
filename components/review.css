@@ -1423,6 +1423,9 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     line-height: 1.4;
 }
 
+.lectoro-review .review-card-actions { display: contents; }
+.lectoro-review .review-mobile-audio { display: none; }
+
 /* A single mobile viewport with a floating menu and anchored review actions. */
 @media (max-width: 640px) {
     body > div:has([data-reviews-screen]) {
@@ -1524,6 +1527,42 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     .lectoro-review .review-screenshot-box,
     .lectoro-review .review-screenshot-box .review-screenshot-img { max-height: 24dvh; min-height: 0; }
     .lectoro-review .review-flip-btn { min-height: 44px; margin-block: 4px; font-size: 13px; }
+    .lectoro-review .review-inline-audio { display: none; }
+    .lectoro-review .review-card-actions {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        gap: 12px;
+        padding: 4px 2px 10px;
+    }
+    .lectoro-review .review-card-actions .review-flip-btn {
+        flex: 1;
+        min-width: 0;
+        min-height: 52px;
+        margin: 0;
+    }
+    .lectoro-review .review-mobile-audio {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .lectoro-review .review-mobile-audio .review-speak-btn {
+        min-inline-size: 52px;
+        min-block-size: 52px;
+        border-radius: 16px;
+        touch-action: manipulation;
+        transition: transform .15s ease, background-color .15s ease;
+    }
+    .lectoro-review .review-mobile-audio .review-speak-primary {
+        background: var(--accent-mid);
+        border-color: var(--accent);
+    }
+    .lectoro-review .review-mobile-audio .review-speak-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+    .lectoro-review .review-mobile-audio .review-speak-btn:hover { transform: none; }
+    .lectoro-review .review-mobile-audio .review-speak-btn:active:not(:disabled) { transform: scale(.94); }
     .lectoro-review .review-controls { max-width: none; padding: 0; box-shadow: none; }
     .lectoro-review .review-rating-label { margin-bottom: 8px; font-weight: 500; }
     .lectoro-review .review-controls .review-rating-buttons-2 { gap: 12px; }
