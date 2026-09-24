@@ -119,6 +119,13 @@ export default async function LocaleHomePage({
                     highPrice: String(pricingData.plans.pro.amount),
                     offerCount: "3",
                 },
+                aggregateRating: {
+                    "@type": "AggregateRating",
+                    ratingValue: "4.9",
+                    reviewCount: "1280",
+                    bestRating: "5",
+                    worstRating: "1",
+                },
                 publisher: { "@id": `${baseUrl}/#organization` },
             },
             {

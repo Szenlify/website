@@ -55,58 +55,58 @@ export default function FeatureShowcase({
   const sc = dict.showcase || en.showcase!;
 
   return (
-    <section className="py-14 sm:py-24 relative z-10 overflow-clip" id="features">
+    <section className="py-24 sm:py-36 lg:py-44 relative z-10 overflow-clip" id="features">
       {/* Header sekcji */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-28 text-center">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-xs font-semibold text-indigo-400 mb-4 tracking-wider uppercase">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-28 text-center">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-xs font-semibold text-indigo-400 mb-5 tracking-wider uppercase">
           <Sparkles className="size-3.5" />
           <span>{sc.badge}</span>
         </div>
-        <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight mb-5 max-w-3xl mx-auto">
+        <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight mb-5 max-w-3xl mx-auto text-balance">
           {sc.title}
         </h2>
-        <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+        <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed text-balance">
           {sc.subtitle}
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 sm:space-y-36 lg:space-y-48">
         {/* ========================================================================= */}
         {/* BLOK 1: PODWÓJNE NAPISY (NETFLIX & YOUTUBE)                              */}
         {/* ========================================================================= */}
-        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
-          <div data-reveal-side="left" className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 text-green-200 text-xs font-mono font-bold">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
+          <div data-reveal-side="left" className="lg:col-span-6 space-y-6 sm:space-y-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold uppercase tracking-wider">
               <span>{sc.b1Tag}</span>
             </div>
 
-            <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
+            <h3 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15]">
               {sc.b1Title}
             </h3>
 
             {/* Jak używać */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">
                 {sc.b1HowTo}
               </h4>
-              <ul className="space-y-2.5 text-sm text-slate-300">
-                <li className="flex items-start gap-3">
-                  <span className="size-5 rounded-full bg-green-300/15 border border-green-300/30 text-green-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+              <ul className="space-y-3 text-sm sm:text-base text-slate-200">
+                <li className="flex items-start gap-3.5">
+                  <span className="size-6 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5">
                     1
                   </span>
-                  <span>{sc.b1Step1}</span>
+                  <span className="leading-relaxed">{sc.b1Step1}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="size-5 rounded-full bg-green-300/15 border border-green-300/30 text-green-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                <li className="flex items-start gap-3.5">
+                  <span className="size-6 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5">
                     2
                   </span>
-                  <span>{sc.b1Step2}</span>
+                  <span className="leading-relaxed">{sc.b1Step2}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="size-5 rounded-full bg-green-300/15 border border-green-300/30 text-green-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                <li className="flex items-start gap-3.5">
+                  <span className="size-6 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5">
                     3
                   </span>
-                  <span>{sc.b1Step3}</span>
+                  <span className="leading-relaxed">{sc.b1Step3}</span>
                 </li>
               </ul>
             </div>
@@ -114,14 +114,14 @@ export default function FeatureShowcase({
 
           {/* Ramka na zdjęcie 1 */}
           <div data-reveal-side="right" className="lg:col-span-6">
-            <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
-              <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+            <div className="group relative rounded-2xl sm:rounded-3xl bg-[#0A0D18] border border-white/[0.1] shadow-2xl shadow-black/80 overflow-hidden">
+              <div className="bg-[#0D101C] px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <span className="size-2.5 rounded-full bg-red-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-amber-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
+                <span className="text-xs font-mono text-slate-300 font-medium truncate max-w-[200px] sm:max-w-none">
                   {FEATURE_IMAGE_SLOTS.slot1_dualSubtitles.windowTitle}
                 </span>
               </div>
@@ -142,16 +142,16 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 2: INTERAKTYWNY SŁOWNIK I WYMOWA AUDIO (ODWRÓCONY UKŁAD)             */}
         {/* ========================================================================= */}
-        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
           <div data-reveal-side="left" className="lg:col-span-6 order-2 lg:order-1">
-            <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
-              <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+            <div className="group relative rounded-2xl sm:rounded-3xl bg-[#0A0D18] border border-white/[0.1] shadow-2xl shadow-black/80 overflow-hidden">
+              <div className="bg-[#0D101C] px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <span className="size-2.5 rounded-full bg-red-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-amber-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
+                <span className="text-xs font-mono text-slate-300 font-medium truncate max-w-[200px] sm:max-w-none">
                   {FEATURE_IMAGE_SLOTS.slot2_dictionaryAudio.windowTitle}
                 </span>
               </div>
@@ -168,31 +168,31 @@ export default function FeatureShowcase({
             </div>
           </div>
 
-          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 order-1 lg:order-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 text-cyan-200 text-xs font-mono font-bold">
+          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 sm:space-y-8 order-1 lg:order-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider">
               <span>{sc.b2Tag}</span>
             </div>
 
-            <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
+            <h3 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15]">
               {sc.b2Title}
             </h3>
 
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">
                 {sc.b2HowTo}
               </h4>
-              <ul className="space-y-2.5 text-sm text-slate-300">
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <span>{sc.b2Step1}</span>
+              <ul className="space-y-3 text-sm sm:text-base text-slate-200">
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-cyan-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b2Step1}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <span>{sc.b2Step2}</span>
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-cyan-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b2Step2}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <span>{sc.b2Step3}</span>
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-cyan-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b2Step3}</span>
                 </li>
               </ul>
             </div>
@@ -202,52 +202,52 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 3: KONTEKSTOWE WYJAŚNIENIA AI                                        */}
         {/* ========================================================================= */}
-        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
-          <div data-reveal-side="left" className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 text-purple-200 text-xs font-mono font-bold">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
+          <div data-reveal-side="left" className="lg:col-span-6 space-y-6 sm:space-y-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-mono font-bold uppercase tracking-wider">
               <span>{sc.b3Tag}</span>
             </div>
 
-            <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
+            <h3 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15]">
               {sc.b3Title}
             </h3>
 
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">
                 {sc.b3HowTo}
               </h4>
-              <ul className="space-y-2.5 text-sm text-slate-300">
-                <li className="flex items-start gap-3">
-                  <span className="size-5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+              <ul className="space-y-3 text-sm sm:text-base text-slate-200">
+                <li className="flex items-start gap-3.5">
+                  <span className="size-6 rounded-full bg-purple-500/15 border border-purple-500/35 text-purple-300 flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5">
                     ✓
                   </span>
-                  <span>{sc.b3Step1}</span>
+                  <span className="leading-relaxed">{sc.b3Step1}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="size-5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                <li className="flex items-start gap-3.5">
+                  <span className="size-6 rounded-full bg-purple-500/15 border border-purple-500/35 text-purple-300 flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5">
                     ✓
                   </span>
-                  <span>{sc.b3Step2}</span>
+                  <span className="leading-relaxed">{sc.b3Step2}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="size-5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                <li className="flex items-start gap-3.5">
+                  <span className="size-6 rounded-full bg-purple-500/15 border border-purple-500/35 text-purple-300 flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5">
                     ✓
                   </span>
-                  <span>{sc.b3Step3}</span>
+                  <span className="leading-relaxed">{sc.b3Step3}</span>
                 </li>
               </ul>
             </div>
           </div>
 
           <div data-reveal-side="right" className="lg:col-span-6">
-            <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
-              <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+            <div className="group relative rounded-2xl sm:rounded-3xl bg-[#0A0D18] border border-white/[0.1] shadow-2xl shadow-black/80 overflow-hidden">
+              <div className="bg-[#0D101C] px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <span className="size-2.5 rounded-full bg-red-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-amber-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
+                <span className="text-xs font-mono text-slate-300 font-medium truncate max-w-[200px] sm:max-w-none">
                   {FEATURE_IMAGE_SLOTS.slot3_aiExplanation.windowTitle}
                 </span>
               </div>
@@ -269,16 +269,16 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 4: SKRÓTY KLAWISZOWE & PRECYZYJNA NAWIGACJA                          */}
         {/* ========================================================================= */}
-        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
           <div data-reveal-side="left" className="lg:col-span-6 order-2 lg:order-1">
-            <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
-              <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+            <div className="group relative rounded-2xl sm:rounded-3xl bg-[#0A0D18] border border-white/[0.1] shadow-2xl shadow-black/80 overflow-hidden">
+              <div className="bg-[#0D101C] px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <span className="size-2.5 rounded-full bg-red-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-amber-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
+                <span className="text-xs font-mono text-slate-300 font-medium truncate max-w-[200px] sm:max-w-none">
                   {FEATURE_IMAGE_SLOTS.slot4_keyboardShortcuts.windowTitle}
                 </span>
               </div>
@@ -296,22 +296,22 @@ export default function FeatureShowcase({
             </div>
           </div>
 
-          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 order-1 lg:order-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 text-amber-200 text-xs font-mono font-bold">
+          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 sm:space-y-8 order-1 lg:order-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
               <Command className="size-3.5" />
               <span>{sc.b4Tag}</span>
             </div>
 
-            <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
+            <h3 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15]">
               {sc.b4Title}
             </h3>
 
             {/* Wypisane skróty w czytelnych kafelkach kbd */}
             <div className="space-y-4">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">
                 {sc.b4HowTo}
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
                 {[
                   { keys: ["W", "↑"], desc: sc.b4K1Desc },
                   { keys: ["A", "←"], desc: sc.b4K2Desc },
@@ -322,12 +322,12 @@ export default function FeatureShowcase({
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 sm:p-4 rounded-2xl bg-linear-to-b from-white/[0.04] to-white/[0.015] hover:from-white/[0.07] hover:to-white/[0.03] border border-white/[0.08] hover:border-amber-500/40 transition-all duration-200 flex items-center gap-3.5 sm:gap-4 group shadow-xs hover:shadow-lg hover:shadow-amber-500/5"
+                    className="p-4 rounded-2xl bg-gradient-to-b from-white/[0.05] to-white/[0.015] hover:from-white/[0.08] hover:to-white/[0.03] border border-white/[0.1] hover:border-amber-500/40 transition-all duration-200 flex items-center gap-4 group shadow-sm hover:shadow-lg hover:shadow-amber-500/5"
                   >
                     <div className="inline-flex items-center gap-1.5 shrink-0 select-none">
                       {item.keys.map((k, kIdx) => (
                         <span key={k} className="inline-flex items-center gap-1.5">
-                          <kbd className="relative inline-flex items-center justify-center min-w-[30px] sm:min-w-[32px] h-8 px-2 sm:px-2.5 font-mono font-extrabold text-xs sm:text-[13px] text-amber-200/95 tracking-wide bg-linear-to-b from-[#242c44] via-[#181e32] to-[#0f1424] border border-white/[0.12] rounded-lg shadow-[inset_0_1px_0_0_rgba(255,255,255,0.22),inset_0_-1px_0_0_rgba(0,0,0,0.5),0_3px_0_0_#090c17,0_4px_8px_rgba(0,0,0,0.6)] transition-all duration-150 group-hover:border-amber-500/40 group-hover:text-amber-100">
+                          <kbd className="relative inline-flex items-center justify-center min-w-[32px] h-8 px-2 sm:px-2.5 font-mono font-extrabold text-xs sm:text-[13px] text-amber-200 tracking-wide bg-gradient-to-b from-[#242c44] via-[#181e32] to-[#0f1424] border border-white/[0.15] rounded-lg shadow-[inset_0_1px_0_0_rgba(255,255,255,0.22),inset_0_-1px_0_0_rgba(0,0,0,0.5),0_3px_0_0_#090c17,0_4px_8px_rgba(0,0,0,0.6)] transition-all duration-150 group-hover:border-amber-500/50 group-hover:text-amber-100">
                             {k}
                           </kbd>
                           {kIdx < item.keys.length - 1 && (
@@ -338,7 +338,7 @@ export default function FeatureShowcase({
                         </span>
                       ))}
                     </div>
-                    <span className="text-xs sm:text-sm font-medium text-slate-200 group-hover:text-white transition-colors leading-snug">
+                    <span className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors leading-snug">
                       {item.desc}
                     </span>
                   </div>
@@ -351,47 +351,47 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 5: FISZKI WIDEO & POWTÓRKI SRS (SPACED REPETITION)                  */}
         {/* ========================================================================= */}
-        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
-          <div data-reveal-side="left" className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 text-emerald-200 text-xs font-mono font-bold">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
+          <div data-reveal-side="left" className="lg:col-span-6 space-y-6 sm:space-y-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold uppercase tracking-wider">
               <Layers className="size-3.5" />
               <span>{sc.b5Tag}</span>
             </div>
 
-            <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
+            <h3 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15]">
               {sc.b5Title}
             </h3>
 
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">
                 {sc.b5HowTo}
               </h4>
-              <ul className="space-y-2.5 text-sm text-slate-300">
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span>{sc.b5Step1}</span>
+              <ul className="space-y-3 text-sm sm:text-base text-slate-200">
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b5Step1}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span>{sc.b5Step2}</span>
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b5Step2}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span>{sc.b5Step3}</span>
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b5Step3}</span>
                 </li>
               </ul>
             </div>
           </div>
 
           <div data-reveal-side="right" className="lg:col-span-6">
-            <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
-              <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+            <div className="group relative rounded-2xl sm:rounded-3xl bg-[#0A0D18] border border-white/[0.1] shadow-2xl shadow-black/80 overflow-hidden">
+              <div className="bg-[#0D101C] px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <span className="size-2.5 rounded-full bg-red-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-amber-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
+                <span className="text-xs font-mono text-slate-300 font-medium truncate max-w-[200px] sm:max-w-none">
                   {FEATURE_IMAGE_SLOTS.slot5_flashcardsSRS.windowTitle}
                 </span>
               </div>
@@ -413,16 +413,16 @@ export default function FeatureShowcase({
         {/* ========================================================================= */}
         {/* BLOK 6: TŁUMACZENIE STRON WWW & ARTYKUŁÓW (ODWRÓCONY UKŁAD)               */}
         {/* ========================================================================= */}
-        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-14 items-center">
+        <div data-feature-reveal className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
           <div data-reveal-side="left" className="lg:col-span-6 order-2 lg:order-1">
-            <div className="group relative rounded-2xl bg-[#0A0D18] border border-white/[0.08] shadow-2xl shadow-black/80 overflow-hidden">
-              <div className="bg-[#0D101C] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+            <div className="group relative rounded-2xl sm:rounded-3xl bg-[#0A0D18] border border-white/[0.1] shadow-2xl shadow-black/80 overflow-hidden">
+              <div className="bg-[#0D101C] px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <span className="size-2.5 rounded-full bg-red-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-amber-500/70 inline-block" />
                   <span className="size-2.5 rounded-full bg-emerald-500/70 inline-block" />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 truncate max-w-[200px] sm:max-w-none">
+                <span className="text-xs font-mono text-slate-300 font-medium truncate max-w-[200px] sm:max-w-none">
                   {FEATURE_IMAGE_SLOTS.slot6_webReader.windowTitle}
                 </span>
               </div>
@@ -440,31 +440,31 @@ export default function FeatureShowcase({
             </div>
           </div>
 
-          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 order-1 lg:order-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 text-blue-200 text-xs font-mono font-bold">
+          <div data-reveal-side="right" className="lg:col-span-6 space-y-6 sm:space-y-8 order-1 lg:order-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 text-xs font-mono font-bold uppercase tracking-wider">
               <span>{sc.b6Tag}</span>
             </div>
 
-            <h3 className="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight">
+            <h3 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15]">
               {sc.b6Title}
             </h3>
 
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">
                 {sc.b6HowTo}
               </h4>
-              <ul className="space-y-2.5 text-sm text-slate-300">
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-blue-400 shrink-0 mt-0.5" />
-                  <span>{sc.b6Step1}</span>
+              <ul className="space-y-3 text-sm sm:text-base text-slate-200">
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-blue-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b6Step1}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-blue-400 shrink-0 mt-0.5" />
-                  <span>{sc.b6Step2}</span>
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-blue-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b6Step2}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <Check className="size-4 text-blue-400 shrink-0 mt-0.5" />
-                  <span>{sc.b6Step3}</span>
+                <li className="flex items-start gap-3.5">
+                  <Check className="size-5 text-blue-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{sc.b6Step3}</span>
                 </li>
               </ul>
             </div>

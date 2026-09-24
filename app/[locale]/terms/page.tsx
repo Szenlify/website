@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Scale, Mail, CheckCircle2 } from "lucide-react";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { getLanguageAlternates } from "@/lib/routing";
 
@@ -49,160 +50,158 @@ export default async function LocaleTermsPage({
     const homeHref = locale === "en" ? "/" : `/${locale}`;
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
             {/* Breadcrumb Bar */}
-            <div className="flex items-center gap-2 text-xs text-slate-400 mb-6">
-                <Link href={homeHref} className="hover:text-white transition">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-8">
+                <Link href={homeHref} className="hover:text-white transition-colors">
                     {t.breadcrumbHome}
                 </Link>
-                <span>/</span>
-                <span className="text-indigo-400 font-semibold">
+                <span aria-hidden="true" className="text-slate-600">/</span>
+                <span className="text-indigo-400 font-semibold" aria-current="page">
                     {t.breadcrumbCurrent}
                 </span>
-            </div>
+            </nav>
 
-            <div className="glass-panel p-8 sm:p-12 shadow-2xl">
+            <article className="rounded-3xl border border-white/[0.08] bg-[#0c1020]/75 p-6 sm:p-12 backdrop-blur-2xl shadow-2xl shadow-black/80">
                 {/* Document Header */}
-                <div className="border-b border-white/10 pb-8 mb-8">
-                    <div className="inline-block px-3 py-1 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 text-xs font-bold uppercase tracking-wider mb-3">
-                        {t.badge}
+                <header className="border-b border-white/[0.08] pb-8 mb-10">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 text-xs font-bold uppercase tracking-wider mb-4">
+                        <Scale className="size-3.5" />
+                        <span>{t.badge}</span>
                     </div>
-                    <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-2">
+                    <h1 className="font-display font-black text-3xl sm:text-5xl text-white mb-3 tracking-tight">
                         {t.title}
                     </h1>
                     <p className="text-xs text-slate-400 font-mono">
                         {t.updatedAt}
                     </p>
-                </div>
+                </header>
 
                 {/* Terms Sections */}
-                <div className="space-y-8 text-sm text-slate-300 leading-relaxed">
-                    <section>
-                        <h2 className="font-display font-bold text-xl text-white mb-3">
+                <div className="space-y-12 text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+                    <section className="border-b border-white/[0.06] pb-10">
+                        <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-4">
                             {t.s1.heading}
                         </h2>
                         <p>{t.s1.p1}</p>
                     </section>
 
-                    <section>
-                        <h2 className="font-display font-bold text-xl text-white mb-3">
+                    <section className="border-b border-white/[0.06] pb-10">
+                        <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-4">
                             {t.s2.heading}
                         </h2>
-                        <p>{t.s2.p1}</p>
-                        <p className="mt-2">{t.s2.p2}</p>
+                        <div className="space-y-3">
+                            <p>{t.s2.p1}</p>
+                            <p>{t.s2.p2}</p>
+                        </div>
                     </section>
 
-                    <section>
-                        <h2 className="font-display font-bold text-xl text-white mb-3">
+                    <section className="border-b border-white/[0.06] pb-10">
+                        <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-4">
                             {t.s3.heading}
                         </h2>
-                        <div className="space-y-3 pl-2">
+                        <div className="space-y-4">
                             {t.s3.sellerLabel && (
-                                <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 mb-3">
-                                    <strong className="text-white">
+                                <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-5">
+                                    <strong className="text-white block mb-1 font-semibold">
                                         {t.s3.sellerLabel}
                                     </strong>
-                                    <p className="text-slate-300 mt-1">{t.s3.sellerText}</p>
+                                    <p className="text-slate-300 text-sm leading-relaxed">{t.s3.sellerText}</p>
                                 </div>
                             )}
-                            <div>
-                                <strong className="text-white">
-                                    {t.s3.aLabel}
-                                </strong>
-                                <p className="text-slate-400">{t.s3.aText}</p>
+                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+                                <strong className="text-white block mb-1 font-semibold">{t.s3.aLabel}</strong>
+                                <p className="text-slate-300 text-sm">{t.s3.aText}</p>
                             </div>
-                            <div>
-                                <strong className="text-white">
-                                    {t.s3.bLabel}
-                                </strong>
-                                <p className="text-slate-400">{t.s3.bText}</p>
+                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+                                <strong className="text-white block mb-1 font-semibold">{t.s3.bLabel}</strong>
+                                <p className="text-slate-300 text-sm">{t.s3.bText}</p>
                             </div>
-                            <div>
-                                <strong className="text-white">
-                                    {t.s3.cLabel}
-                                </strong>
-                                <p className="text-slate-400">{t.s3.cText}</p>
+                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+                                <strong className="text-white block mb-1 font-semibold">{t.s3.cLabel}</strong>
+                                <p className="text-slate-300 text-sm">{t.s3.cText}</p>
                             </div>
-                            <div>
-                                <strong className="text-white">
-                                    {t.s3.dLabel}
-                                </strong>
-                                <p className="text-slate-400">{t.s3.dText}</p>
+                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+                                <strong className="text-white block mb-1 font-semibold">{t.s3.dLabel}</strong>
+                                <p className="text-slate-300 text-sm">{t.s3.dText}</p>
                             </div>
                             {t.s3.eLabel && (
-                                <div>
-                                    <strong className="text-white">
-                                        {t.s3.eLabel}
-                                    </strong>
-                                    <p className="text-slate-400">{t.s3.eText}</p>
+                                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+                                    <strong className="text-white block mb-1 font-semibold">{t.s3.eLabel}</strong>
+                                    <p className="text-slate-300 text-sm">{t.s3.eText}</p>
                                 </div>
                             )}
                         </div>
                     </section>
 
-                    <section>
-                        <h2 className="font-display font-bold text-xl text-white mb-3">
+                    <section className="border-b border-white/[0.06] pb-10">
+                        <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-4">
                             {t.s4.heading}
                         </h2>
-                        <p>{t.s4.intro}</p>
-                        <ul className="list-disc pl-5 space-y-1.5 mt-2 text-slate-400">
-                            <li>{t.s4.l1}</li>
-                            <li>{t.s4.l2}</li>
-                            <li>{t.s4.l3}</li>
-                            <li>{t.s4.l4}</li>
+                        <p className="mb-4">{t.s4.intro}</p>
+                        <ul className="space-y-2.5">
+                            {[t.s4.l1, t.s4.l2, t.s4.l3, t.s4.l4].map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-3">
+                                    <CheckCircle2 className="size-4 text-indigo-400 shrink-0 mt-1" />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
                         </ul>
                     </section>
 
-                    <section>
-                        <h2 className="font-display font-bold text-xl text-white mb-3">
+                    <section className="border-b border-white/[0.06] pb-10">
+                        <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-4">
                             {t.s5.heading}
                         </h2>
                         <p>{t.s5.p1}</p>
                     </section>
 
-                    <section>
-                        <h2 className="font-display font-bold text-xl text-white mb-3">
+                    <section className="border-b border-white/[0.06] pb-10">
+                        <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-4">
                             {t.s6.heading}
                         </h2>
-                        <p>{t.s6.p1}</p>
-                        <p className="mt-2">{t.s6.p2}</p>
+                        <div className="space-y-3">
+                            <p>{t.s6.p1}</p>
+                            <p>{t.s6.p2}</p>
+                        </div>
                     </section>
 
-                    <section>
-                        <h2 className="font-display font-bold text-xl text-white mb-3">
+                    <section className="border-b border-white/[0.06] pb-10">
+                        <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-4">
                             {t.s7.heading}
                         </h2>
                         <p>{t.s7.p1}</p>
                     </section>
 
                     <section>
-                        <h2 className="font-display font-bold text-xl text-white mb-3">
+                        <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-4">
                             {t.s8.heading}
                         </h2>
-                        <p>{t.s8.p1}</p>
-                        <div className="mt-3 p-4 rounded-xl bg-white/[0.04] border border-white/10">
-                            <div className="font-bold text-white">
+                        <p className="mb-4">{t.s8.p1}</p>
+                        <div className="rounded-2xl border border-white/10 bg-linear-to-br from-indigo-950/40 via-[#0e1329] to-transparent p-6 sm:p-8">
+                            <div className="font-display font-bold text-lg text-white mb-2">
                                 {t.s8.teamName}
                             </div>
-                            <div className="text-slate-400 text-xs mt-1">
-                                {t.s8.domainLabel}{" "}
-                                <span className="text-indigo-400">
-                                    {t.s8.domain}
-                                </span>
-                            </div>
-                            <div className="text-slate-400 text-xs">
-                                {t.s8.emailLabel}{" "}
-                                <a
-                                    href={`mailto:${t.s8.email}`}
-                                    className="text-indigo-400 font-mono"
-                                >
-                                    {t.s8.email}
-                                </a>
+                            <div className="space-y-1.5 text-sm text-slate-300">
+                                <div>
+                                    <span className="text-slate-500 mr-2">{t.s8.domainLabel}</span>
+                                    <span className="text-indigo-300 font-medium">{t.s8.domain}</span>
+                                </div>
+                                <div>
+                                    <span className="text-slate-500 mr-2">{t.s8.emailLabel}</span>
+                                    <a
+                                        href={`mailto:${t.s8.email}`}
+                                        className="text-indigo-400 hover:text-indigo-300 font-mono transition-colors inline-flex items-center gap-1.5"
+                                    >
+                                        <Mail className="size-3.5" />
+                                        <span>{t.s8.email}</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </section>
                 </div>
-            </div>
-        </div>
+            </article>
+        </main>
     );
 }

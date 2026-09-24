@@ -1,17 +1,15 @@
 import "./guides.css";
-import { ArrowUpRight, ArrowRight, Clock3 } from "lucide-react";
+import { ArrowUpRight, ArrowRight, Clock3, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getGuideCatalogCopy } from "@/lib/guides/catalog";
-import { getGuides, GUIDE_IMAGES, GUIDE_SLUGS } from "@/lib/guides";
+import { getGuides, getGuideMeta, GUIDE_IMAGES, GUIDE_SLUGS } from "@/lib/guides";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { LOCALE_CONFIG } from "@/lib/i18n/types";
 import { getLanguageAlternates, getLocalizedHref } from "@/lib/routing";
 
-// Wspólna konfiguracja zdjęć poradników (dla podstrony poradnika i katalogu /guides):
-// Edytuj plik: lib/guides/images.ts (lub app/[locale]/guides/guide-images.ts)
 const BASE_URL = "https://lectoroai.com";
 
 export async function generateMetadata({
@@ -84,7 +82,7 @@ export default async function GuidesPage({
                 inLanguage: locale,
                 mainEntity: {
                     "@type": "ItemList",
-                    itemListElement: GUIDE_SLUGS.map((slug, index) => ({
+                    itemListElement: GUIDE_SLUGS.filter((slug) => Boolean(guides[slug])).map((slug, index) => ({
                         "@type": "ListItem",
                         position: index + 1,
                         url: `${BASE_URL}${getLocalizedHref(`/guides/${slug}`, locale)}`,
@@ -140,37 +138,59 @@ export default async function GuidesPage({
                 </nav>
 
                 <header className="guides-header">
-                    <p className="guides-eyebrow"><span aria-hidden="true" />{copy.eyebrow}</p>
+                    <p className="guides-eyebrow">
+                        <span aria-hidden="true" />
+                        {copy.eyebrow}
+                    </p>
                     <div className="guides-intro">
                         <h1>{copy.title}</h1>
                         <p>{copy.description}</p>
                     </div>
                 </header>
 
-                <div className="guides-section-label"><span>{copy.label}</span><span className="guides-count">{String(GUIDE_SLUGS.length).padStart(2, "0")}</span></div>
+                <div className="guides-section-label">
+                    <span>{copy.label}</span>
+                    <span className="guides-count">{String(GUIDE_SLUGS.length).padStart(2, "0")}</span>
+                </div>
+
                 <div className="guides-list">
                     {GUIDE_SLUGS.map((slug, index) => {
                         const guide = guides[slug];
+                        if (!guide) return null;
+                        const meta = getGuideMeta(slug);
                         const href = getLocalizedHref(`/guides/${slug}`, locale);
+                        const categoryLabel = meta?.category || guide.eyebrow;
+
                         return (
                             <article key={slug} className="guide-entry">
-                                <Link href={href} className="guide-link">
+                                <Link href={href} className="guide-link group">
                                     <div className="guide-cover">
                                         <Image
-                                            src={GUIDE_IMAGES[slug] || "/showcase/11.jpg"}
-                                            alt=""
+                                            src={GUIDE_IMAGES[slug] || meta?.image || "/showcase/11.jpg"}
+                                            alt={guide.title}
                                             width={1280}
                                             height={800}
                                             loading={index === 0 ? "eager" : "lazy"}
                                             sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 1100px) 34vw, 352px"
                                         />
-                                        <span className="guide-cover-arrow" aria-hidden="true"><ArrowUpRight size={20} /></span>
+                                        <span className="guide-cover-arrow" aria-hidden="true">
+                                            <ArrowUpRight size={20} />
+                                        </span>
                                     </div>
                                     <div className="guide-copy">
-                                        <div className="guide-meta"><span>{guide.eyebrow}</span><span><Clock3 size={13} aria-hidden="true" />{guide.readingTime}</span></div>
+                                        <div className="guide-meta">
+                                            <span className="guide-category-tag">{categoryLabel}</span>
+                                            <span className="guide-reading-time">
+                                                <Clock3 size={13} aria-hidden="true" />
+                                                {meta?.readingTime || guide.readingTime}
+                                            </span>
+                                        </div>
                                         <h2>{guide.title}</h2>
                                         <p>{guide.description}</p>
-                                        <span className="guide-read">{copy.readGuide}<ArrowRight size={16} aria-hidden="true" /></span>
+                                        <span className="guide-read">
+                                            {copy.readGuide}
+                                            <ArrowRight size={16} aria-hidden="true" />
+                                        </span>
                                     </div>
                                 </Link>
                             </article>

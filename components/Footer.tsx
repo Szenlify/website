@@ -86,7 +86,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                                     {guideCatalog.label}
                                 </Link>
                             </li>
-                            {GUIDE_SLUGS.map((slug) => (
+                            {GUIDE_SLUGS.filter((slug) => Boolean(guides[slug])).map((slug) => (
                                 <li key={slug}>
                                     <Link
                                         href={getLocalizedHref(

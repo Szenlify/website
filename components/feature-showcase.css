@@ -15,6 +15,9 @@
     }
 
     #features [data-feature-reveal] > [data-reveal-side] {
+      will-change: transform, opacity;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
       animation: feature-slide-together auto cubic-bezier(0.22, 0.61, 0.36, 1) both;
       animation-timeline: view(block);
       animation-range: entry 0% entry 100%;

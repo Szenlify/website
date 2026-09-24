@@ -1,6 +1,6 @@
 .intro {
-    --enter-distance: 12px;
-    --enter-duration: 650ms;
+    --enter-distance: 24px;
+    --enter-duration: 850ms;
 }
 
 .waveform {
@@ -27,99 +27,220 @@
     block-size: 10px;
 }
 
-.demoAccent {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 8%;
-    block-size: 1px;
-    z-index: 1;
-    overflow: hidden;
-    pointer-events: none;
-    background: linear-gradient(90deg, transparent, var(--primary-light), var(--accent-cyan), transparent);
+/* Badge Glow & Shine */
+.badge {
+    position: relative;
+    box-shadow: 0 0 25px -4px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
 }
 
-.demoAccent::after {
-    content: "";
-    position: absolute;
-    inset: 0 auto 0 0;
-    inline-size: 30%;
-    background: linear-gradient(90deg, transparent, #e0e7ff, transparent);
-    opacity: 0;
+.badge:hover {
+    transform: translateY(-1px);
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 32px -2px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-/* Finite, compositor-friendly motion: no timers or persistent animation layers. */
+/* Shimmering Radiant Text Highlight */
+.gradientHighlight {
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #c7d2fe 22%,
+        #818cf8 45%,
+        #38bdf8 68%,
+        #c084fc 86%,
+        #ffffff 100%
+    );
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-    .badge,
-    .subtitle,
-    .actions,
-    .trust {
-        animation: enter var(--enter-duration) cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    .gradientHighlight {
+        animation: textShimmer 7s ease-in-out infinite;
     }
 
-    /* Keep the main heading fully visible from its first paint. */
+    /* Staggered Cinematic Blur & Rise Entrance */
+    .badge {
+        animation: heroEntrance 750ms cubic-bezier(0.16, 1, 0.3, 1) 0ms backwards;
+    }
+
     .title {
-        animation: rise var(--enter-duration) cubic-bezier(0.22, 1, 0.36, 1) 60ms backwards;
+        animation: heroEntrance 850ms cubic-bezier(0.16, 1, 0.3, 1) 100ms backwards;
     }
 
     .subtitle {
-        animation-delay: 120ms;
+        animation: heroEntrance 850ms cubic-bezier(0.16, 1, 0.3, 1) 220ms backwards;
     }
 
     .actions {
-        animation-delay: 200ms;
+        animation: heroEntrance 850ms cubic-bezier(0.16, 1, 0.3, 1) 340ms backwards;
     }
 
     .trust {
-        animation-delay: 280ms;
+        animation: heroEntrance 850ms cubic-bezier(0.16, 1, 0.3, 1) 460ms backwards;
     }
 
+    /* Equalizer Waveform pulse */
     .waveform > span {
-        animation: wave 1100ms ease-in-out 350ms 2;
+        animation: wavePulse 1.4s ease-in-out infinite alternate;
+    }
+
+    .waveform > span:nth-child(1) {
+        animation-delay: 0s;
     }
 
     .waveform > span:nth-child(2) {
-        animation-delay: 500ms;
+        animation-delay: 0.25s;
     }
 
     .waveform > span:nth-child(3) {
-        animation-delay: 650ms;
+        animation-delay: 0.5s;
     }
+}
 
-    .demoAccent::after {
-        animation: trace 1800ms cubic-bezier(0.22, 1, 0.36, 1) 600ms;
+@keyframes heroEntrance {
+    0% {
+        opacity: 0;
+        transform: translateY(var(--enter-distance));
+        filter: blur(8px);
     }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes textShimmer {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes wavePulse {
+    0% {
+        transform: scaleY(0.4);
+        opacity: 0.65;
+    }
+    100% {
+        transform: scaleY(1.15);
+        opacity: 1;
+    }
+}
+
+@keyframes __qt_ai_border_sweep {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Chrome Install CTA Outer Shell */
+.chromeInstallBtn {
+    position: relative;
+    padding: 2px;
+    border-radius: 1rem; /* 16px */
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 10px 30px -8px rgba(99, 102, 241, 0.4),
+        0 0 20px -4px rgba(168, 85, 247, 0.25);
+    text-decoration: none;
+    isolation: isolate;
+}
+
+.chromeInstallBtn:hover {
+    box-shadow:
+        0 16px 36px -6px rgba(99, 102, 241, 0.55),
+        0 0 28px -2px rgba(168, 85, 247, 0.4);
+}
+
+/* The light beam that travels in a circle around the border */
+.borderSweep {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 280%;
+    aspect-ratio: 1 / 1;
+    min-width: 480px;
+    min-height: 480px;
+    transform: translate(-50%, -50%) rotate(0deg);
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 240deg,
+        rgba(168, 85, 247, 0.25) 265deg,
+        #a855f7 295deg,
+        #4ecdc4 325deg,
+        #ffffff 348deg,
+        #a855f7 358deg,
+        transparent 360deg
+    );
+    animation: __qt_ai_border_sweep 3s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.chromeInstallBtn:hover .borderSweep {
+    animation-duration: 2s;
+}
+
+/* Inner Button Content & Gradient */
+.btnInner {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem;
+    width: 100%;
+    min-height: 52px;
+    padding: 0.95rem 2.25rem;
+    border-radius: calc(1rem - 2px); /* 14px */
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 45%, #9333ea 100%);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    transition: background 0.3s ease, filter 0.3s ease;
+}
+
+.chromeInstallBtn:hover .btnInner {
+    background: linear-gradient(135deg, #4338ca 0%, #4f46e5 45%, #7e22ce 100%);
+    filter: brightness(1.08);
 }
 
 @media (max-width: 640px) {
     .intro {
-        --enter-distance: 6px;
-        --enter-duration: 420ms;
+        --enter-distance: 14px;
     }
 }
 
-@keyframes enter {
-    from {
-        opacity: 0.4;
-        transform: translateY(var(--enter-distance));
+@media (prefers-reduced-motion: reduce) {
+    .badge,
+    .title,
+    .subtitle,
+    .actions,
+    .trust,
+    .gradientHighlight,
+    .waveform > span {
+        animation: none !important;
+        transform: none !important;
+        filter: none !important;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .borderSweep {
+        animation: none !important;
+        transform: translate(-50%, -50%) rotate(135deg);
+        opacity: 0.6;
     }
 }
 
-@keyframes rise {
-    from { transform: translateY(var(--enter-distance)); }
-    to { transform: translateY(0); }
-}
-
-@keyframes wave {
-    0%, 100% { transform: scaleY(1); }
-    50% { transform: scaleY(0.4); }
-}
-
-@keyframes trace {
-    0% { opacity: 0; transform: translateX(-100%); }
-    20%, 70% { opacity: 1; }
-    100% { opacity: 0; transform: translateX(340%); }
-}

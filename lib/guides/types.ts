@@ -1,13 +1,16 @@
 import type { Locale } from "@/lib/i18n/types";
 
-export const GUIDE_SLUGS = [
-    "learn-language-netflix-youtube",
-    "video-flashcards-spaced-repetition",
-    "dual-subtitles-netflix-youtube",
-    "language-reactor-alternative",
-] as const;
+export type GuideSlug = string;
 
-export type GuideSlug = (typeof GUIDE_SLUGS)[number];
+export interface GuideMeta {
+    slug: string;
+    image: string;
+    category: string;
+    publishedAt: string;
+    updatedAt: string;
+    readingTime: string;
+    featured?: boolean;
+}
 
 export interface GuideSection {
     heading: string;
@@ -31,6 +34,8 @@ export interface GuideContent {
     ctaTitle: string;
     ctaText: string;
     ctaButton: string;
+    category?: string;
+    author?: string;
 }
 
-export type GuideDictionary = Record<GuideSlug, GuideContent>;
+export type GuideDictionary = Record<string, GuideContent>;
