@@ -14,7 +14,7 @@ export default function Hero({ dict }: HeroProps) {
         <section className="relative pt-12 pb-0 sm:pt-20 sm:pb-0 lg:pt-28 lg:pb-0 text-center overflow-hidden">
             <div className={`${styles.intro} max-w-5xl mx-auto px-4 sm:px-6 lg:px-8`}>
                 {/* Live Pill Badge */}
-                <div className={`${styles.badge} inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-light text-amber-200 uppercase mb-6 sm:mb-8 shadow-xs`}>
+                <div className={`${styles.badge} inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 sm:text-xs text-[11px] font-light text-amber-200 uppercase mb-6 sm:mb-8`}>
                     <span className={styles.waveform} aria-hidden="true">
                         <span />
                         <span />

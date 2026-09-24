@@ -34,7 +34,7 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
     ];
 
     return (
-        <section className="py-24 sm:py-36 lg:py-44 relative z-10" id="how-it-works">
+        <section className="pb-24 sm:pb-36 lg:pb-44 relative z-10" id="how-it-works">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">

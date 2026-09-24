@@ -10,7 +10,7 @@ interface FinalCTAProps {
 export default function FinalCTA({ dict }: FinalCTAProps) {
     const { finalCta } = dict;
     return (
-        <section className="py-24 sm:py-36 lg:py-44 relative z-10" id="download">
+        <section className="pb-24 sm:pb-36 lg:pb-44 relative z-10" id="download">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="relative rounded-3xl p-10 sm:p-20 text-center overflow-hidden border border-indigo-500/30 bg-gradient-to-b from-[#12162e]/90 via-[#0d1024]/90 to-[#070913]/90 backdrop-blur-2xl shadow-2xl shadow-indigo-950/70">
                     {/* Subtle ambient lighting behind text */}
@@ -20,14 +20,9 @@ export default function FinalCTA({ dict }: FinalCTAProps) {
                     />
 
                     <div className="relative z-10">
-                        {/* Pill Tag */}
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-xs font-bold text-indigo-300 mb-8 uppercase tracking-wider">
-                            <Sparkles className="size-3.5" />
-                            <span>Instant Access • No Credit Card</span>
-                        </div>
 
                         {/* Title */}
-                        <h2 className="font-display font-black text-3xl sm:text-5xl lg:text-6xl text-white mb-6 tracking-tight leading-tight text-balance">
+                        <h2 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl text-white mb-6 tracking-tight leading-tight text-balance">
                             {finalCta.title1}{" "}
                             <span className="text-gradient">
                                 {finalCta.title2}
