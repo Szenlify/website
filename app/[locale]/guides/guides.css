@@ -49,7 +49,9 @@
 .article-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); align-items: start; gap: 64px; margin-top: 64px; }
 .article-sidebar { align-self: stretch; }
 .article-index { position: sticky; top: 110px; max-height: calc(100dvh - 140px); overflow-y: auto; }
-.article-back { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: #c7d2fe; font-size: 13px; font-weight: 600; }
+.article-back { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; height: auto; white-space: normal; color: #c7d2fe; font-size: 13px; font-weight: 600; }
+.article-back[data-slot="button"] { justify-content: flex-start; padding: 0; border-radius: 0; background: transparent; }
+.article-back[data-slot="button"]:hover { color: #c7d2fe; background: transparent; }
 .article-index ol { margin-top: 20px; padding-top: 20px; border-top: 1px solid #ffffff14; list-style: none; }
 .article-index li a { display: flex; align-items: baseline; gap: 12px; padding: 12px 8px; border-radius: 8px; color: #94a3b8; font-size: 12px; line-height: 1.7; transition: color .2s, background .2s; }
 .article-index li a > span { font-size: 10px; color: #818cf8; font-variant-numeric: tabular-nums; }
@@ -71,12 +73,10 @@
 .article-steps p { margin-top: 8px; font-size: 15px; line-height: 1.85; color: #b6c2d5; }
 .article-faq { padding-top: 36px; border-top: 1px solid #ffffff14; }
 .article-faq h2 { margin-bottom: 24px; }
-.article-faq details { border-bottom: 1px solid #ffffff14; }
-.article-faq summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 22px; cursor: pointer; list-style: none; color: #e2e8f0; font-size: 16px; font-weight: 600; line-height: 1.6; }
-.article-faq summary::-webkit-details-marker { display: none; }
-.article-faq summary svg { flex-shrink: 0; color: #a5b4fc; transition: transform .2s; }
-.article-faq details[open] summary svg { transform: rotate(180deg); }
-.article-faq details p { padding-bottom: 24px; color: #b6c2d5; font-size: 15px; line-height: 1.85; }
+.article-faq [data-slot="accordion-item"] { border-bottom: 1px solid #ffffff14; }
+.article-faq [data-slot="accordion-trigger"] { align-items: center; gap: 20px; padding-block: 22px; border-radius: 0; cursor: pointer; color: #e2e8f0; font-size: 1rem; font-weight: 600; line-height: 1.6; text-decoration: none; }
+.article-faq [data-slot="accordion-trigger"] svg { width: 18px; height: 18px; margin-top: 0; color: #a5b4fc; }
+.article-faq .article-faq-answer { padding-bottom: 24px; color: #b6c2d5; font-size: .9375rem; line-height: 1.85; }
 .article-cta { padding: clamp(24px, 4vw, 40px); border: 1px solid #818cf845; border-radius: 24px; background: radial-gradient(ellipse at top right, #6366f125, transparent 75%), #101327; }
 .article-cta h2 { margin-top: 18px; }
 .article-cta p { margin-block: 16px 28px; font-size: 16px; color: #bdc8d9; line-height: 1.8; }
@@ -89,7 +89,8 @@
 .article-related-copy h2 { margin-top: 10px; font-size: 20px; }
 .article-related-copy .guide-read { margin-top: 6px; }
 .article-related > .article-back { margin-top: 20px; }
-:is(.guides-library, .guide-article) :is(a, summary):focus-visible { outline: 2px solid #a5b4fc; outline-offset: 5px; border-radius: 8px; }
+:is(.guides-library, .guide-article) :is(a, button):focus-visible { outline: 2px solid #a5b4fc; outline-offset: 5px; border-radius: 8px; }
+.guide-article :is(.article-back, [data-slot="accordion-trigger"]):focus-visible { box-shadow: none; }
 
 @media (hover: hover) {
     .guide-entry:hover, .article-related-card:hover { border-color: #818cf866; box-shadow: 0 12px 36px #00000020; }
@@ -135,6 +136,7 @@
     .article-related-copy { padding: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
+    .article-faq [data-slot="accordion-content"] { animation: none !important; }
     :is(.guides-library, .guide-article) *,
     :is(.guides-library, .guide-article) *::before,
     :is(.guides-library, .guide-article) *::after { transition: none !important; }

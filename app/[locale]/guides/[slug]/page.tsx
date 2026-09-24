@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Clock3, Calendar, CheckCircle2, ChevronDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock3, Calendar, CheckCircle2 } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import ChromeInstallButton from "@/components/ChromeInstallButton";
 import { getGuide, getGuides, getGuideMeta, GUIDE_IMAGES, GUIDE_SLUGS } from "@/lib/guides";
 import { getGuideCatalogCopy } from "@/lib/guides/catalog";
@@ -190,10 +192,12 @@ export default async function GuidePage({
                 <div className="article-layout">
                     <aside className="article-sidebar">
                         <nav aria-label={guide.title} className="article-index">
-                            <Link href={guidesHref} className="article-back">
-                                <ArrowLeft size={16} aria-hidden="true" />
-                                {catalogCopy.label}
-                            </Link>
+                            <Button asChild variant="ghost" className="article-back">
+                                <Link href={guidesHref}>
+                                    <ArrowLeft size={16} aria-hidden="true" />
+                                    {catalogCopy.label}
+                                </Link>
+                            </Button>
                             <ol>
                                 {guide.sections.map((section, index) => (
                                     <li key={section.heading}>
@@ -240,12 +244,16 @@ export default async function GuidePage({
                         {guide.faq.length > 0 && (
                             <section id="faq" className="article-faq article-section">
                                 <h2>{dict.faq.title}</h2>
-                                {guide.faq.map((item, index) => (
-                                    <details key={item.question} open={index === 0}>
-                                        <summary>{item.question}<ChevronDown size={18} aria-hidden="true" /></summary>
-                                        <p>{item.answer}</p>
-                                    </details>
-                                ))}
+                                <Accordion type="multiple" defaultValue={["question-0"]}>
+                                    {guide.faq.map((item, index) => (
+                                        <AccordionItem key={item.question} value={`question-${index}`}>
+                                            <AccordionTrigger>{item.question}</AccordionTrigger>
+                                            <AccordionContent className="article-faq-answer">
+                                                <p>{item.answer}</p>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    ))}
+                                </Accordion>
                             </section>
                         )}
 
@@ -274,7 +282,9 @@ export default async function GuidePage({
                                         <span className="guide-read">{catalogCopy.readGuide}<ArrowRight size={16} aria-hidden="true" /></span>
                                     </div>
                                 </Link>
-                                <Link href={guidesHref} className="article-back"><ArrowLeft size={16} aria-hidden="true" />{catalogCopy.label}</Link>
+                                <Button asChild variant="ghost" className="article-back">
+                                    <Link href={guidesHref}><ArrowLeft size={16} aria-hidden="true" />{catalogCopy.label}</Link>
+                                </Button>
                             </nav>
                         )}
                     </div>
