@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { CHROME_STORE_URL } from "@/lib/config";
 import type { Dict } from "@/lib/i18n/types";
 import styles from "./Hero.module.css";
@@ -66,12 +67,15 @@ export default function Hero({ dict }: HeroProps) {
                 </div>
 
                 {/* Trust signals */}
-                <div className={`${styles.trust} flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm font-medium`}>
-                    <span className="text-slate-400">{hero.builtFor}</span>
-                    <span className="text-slate-600 hidden xs:inline" aria-hidden="true">•</span>
-                    <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-teal-500/10 text-teal-300 border border-teal-500/30 shadow-xs tracking-wide">
-                        <span className="size-1.5 rounded-full bg-teal-400" aria-hidden="true" />
-                        {hero.trialBadge}
+                <div className={`${styles.trust} flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs sm:text-sm font-medium`}>
+                    <span className="inline-flex items-center gap-2 text-slate-300">
+                        <Check className="size-3.5 text-emerald-400 shrink-0" aria-hidden="true" />
+                        <span>{hero.builtFor}</span>
+                    </span>
+                    <span className="size-1 rounded-full bg-slate-700 hidden sm:inline-block shrink-0" aria-hidden="true" />
+                    <span className="inline-flex items-center gap-2 text-emerald-300">
+                        <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)] shrink-0" aria-hidden="true" />
+                        <span className="font-semibold tracking-wide">{hero.trialBadge}</span>
                     </span>
                 </div>
             </div>

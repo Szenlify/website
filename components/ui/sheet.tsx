@@ -20,11 +20,11 @@ function SheetContent({
 }: ComponentProps<typeof DialogPrimitive.Content>) {
     return (
         <DialogPrimitive.Portal>
-            <DialogPrimitive.Overlay className="sheet-backdrop fixed inset-0 z-50 bg-black/65 backdrop-blur-sm" />
+            <DialogPrimitive.Overlay className="sheet-backdrop fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
             <DialogPrimitive.Content
                 data-slot="sheet-content"
                 className={cn(
-                    "sheet-drawer fixed inset-y-0 right-0 z-50 flex h-dvh w-[88%] max-w-sm flex-col border-l border-white/10 bg-[#070913]/98 shadow-2xl outline-none",
+                    "sheet-drawer fixed inset-y-0 right-0 z-50 flex h-dvh w-[75%] max-w-sm flex-col border-l border-white/10 bg-[#10171a]/85 shadow-2xl outline-none",
                     className,
                 )}
                 {...props}

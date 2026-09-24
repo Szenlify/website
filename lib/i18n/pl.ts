@@ -40,7 +40,7 @@ export const pl: Dict = {
         subtitle:
             "Oglądaj filmy z dwoma językami naraz. Wciśnij klawisz „S”, aby natychmiast zobaczyć tłumaczenie słowo po słowie (Word Cloud), klikaj nieznane słowa dla wyjaśnień AI i twórz fiszki ze zrzutami scen do powtórek SRS.",
         installCta: "Zainstaluj w Chrome",
-        trialBadge: "3 dni trial",
+        trialBadge: "3 dni za darmo",
         demoCta: "Wypróbuj interaktywne demo",
         noCard: "Bezpłatny plan bez karty kredytowej",
         builtFor: "Stworzony dla Google Chrome",
