@@ -10,7 +10,7 @@ export const es: Dict = {
         pricing: "Precios",
         faq: "FAQ",
         addToChrome: "Añadir a Chrome",
-        addToChromeFree: "Añadir a Chrome — Gratis",
+        addToChromeFree: "Añadir a Chrome Gratis",
         privacyPolicy: "Política de privacidad",
         termsOfService: "Términos de servicio",
         signIn: "Iniciar sesión",
@@ -289,13 +289,13 @@ export const es: Dict = {
         homeTitle: "Lectoro AI: Subtítulos dobles para Netflix y YouTube",
         homeDesc:
             "Aprende idiomas viendo Netflix, YouTube, Plex y TED. Haz clic en subtítulos bilingües para explicaciones con IA, guarda tarjetas con capturas de fotogramas y repasa con SRS.",
-        privacyTitle: "Política de privacidad — Lectoro AI",
+        privacyTitle: "Política de privacidad Lectoro AI",
         privacyDesc:
             "Política de privacidad de Lectoro AI (lectoroai.com). Cumplimiento con Chrome Web Store Limited Use, RGPD y protección de datos con IA.",
-        termsTitle: "Términos de servicio — Lectoro AI",
+        termsTitle: "Términos de servicio Lectoro AI",
         termsDesc:
             "Términos de servicio de Lectoro AI (lectoroai.com). Condiciones de suscripción, prueba de 3 días gratuita, pagos BLIK y directrices de uso.",
-        reviewsTitle: "Repaso de vocabulario y tarjetas Spaced Repetition — Lectoro AI",
+        reviewsTitle: "Repaso de vocabulario y tarjetas Spaced Repetition Lectoro AI",
         reviewsDesc:
             "Repasa y afianza el vocabulario guardado de Netflix y YouTube con tarjetas de vídeo y el algoritmo SuperMemo SM-2.",
     },

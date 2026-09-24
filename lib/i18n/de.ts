@@ -10,7 +10,7 @@ export const de: Dict = {
         pricing: "Preise",
         faq: "FAQ",
         addToChrome: "Zu Chrome hinzufügen",
-        addToChromeFree: "Zu Chrome hinzufügen — Kostenlos",
+        addToChromeFree: "Zu Chrome hinzufügen Kostenlos",
         privacyPolicy: "Datenschutzerklärung",
         termsOfService: "Nutzungsbedingungen",
         signIn: "Anmelden",
@@ -289,13 +289,13 @@ export const de: Dict = {
         homeTitle: "Lectoro AI: Zweisprachige Untertitel für Netflix & YouTube",
         homeDesc:
             "Lerne Sprachen beim Schauen von Netflix, YouTube, Plex und TED. Klicke auf zweisprachige Untertitel für KI-Erklärungen, speichere Video-Karteikarten und wiederhole sie mit SRS.",
-        privacyTitle: "Datenschutzerklärung — Lectoro AI",
+        privacyTitle: "Datenschutzerklärung Lectoro AI",
         privacyDesc:
             "Datenschutzerklärung für Lectoro AI (lectoroai.com). Konformität mit den Chrome Web Store Limited Use Richtlinien, DSGVO und AI KI.",
-        termsTitle: "Nutzungsbedingungen — Lectoro AI",
+        termsTitle: "Nutzungsbedingungen Lectoro AI",
         termsDesc:
             "Nutzungsbedingungen für Lectoro AI (lectoroai.com). Abonnementregeln, 3-Tage-Testphase, BLIK-Zahlungen und Lizenzbestimmungen.",
-        reviewsTitle: "Vokabel-Wiederholungen & Spaced Repetition — Lectoro AI",
+        reviewsTitle: "Vokabel-Wiederholungen & Spaced Repetition Lectoro AI",
         reviewsDesc:
             "Wiederhole und festige aus Netflix und YouTube gespeicherte Vokabeln mit SuperMemo SM-2 Spaced Repetition Video-Karteikarten.",
     },
@@ -329,7 +329,7 @@ export const de: Dict = {
             l1: "Wir überwachen nicht deinen allgemeinen Browserverlauf und erfassen keine Webseiten außerhalb aktiver Übersetzungen.",
             l2: "Wir erfassen, speichern oder übertragen keine Passwörter oder Anmeldedaten für Netflix, YouTube oder andere Streamingdienste.",
             l3: "Wir zeichnen keine Tastatureingaben (kein Keylogger) in privaten Formularen, Passwortfeldern oder Online-Banking auf.",
-            l4: "Wir speichern keine Kreditkartendaten — alle Zahlungen werden über den zertifizierten Anbieter Stripe (PCI-DSS Level 1) abgewickelt.",
+            l4: "Wir speichern keine Kreditkartendaten alle Zahlungen werden über den zertifizierten Anbieter Stripe (PCI-DSS Level 1) abgewickelt.",
         },
         s4: {
             heading: "4. Infrastrukturpartner & KI-Verarbeitung",

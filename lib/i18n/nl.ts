@@ -10,7 +10,7 @@ export const nl: Dict = {
         pricing: "Prijzen",
         faq: "Veelgestelde vragen",
         addToChrome: "Toevoegen aan Chrome",
-        addToChromeFree: "Toevoegen aan Chrome — Gratis",
+        addToChromeFree: "Toevoegen aan Chrome Gratis",
         privacyPolicy: "Privacybeleid",
         termsOfService: "Servicevoorwaarden",
         signIn: "Inloggen",
@@ -289,13 +289,13 @@ export const nl: Dict = {
         homeTitle: "Lectoro AI: Dubbele ondertiteling voor Netflix & YouTube",
         homeDesc:
             "Leer talen tijdens het kijken naar Netflix, YouTube, Plex en TED. Klik op tweetalige ondertitels voor AI-uitleg, bewaar videoflashcards en herhaal met SRS.",
-        privacyTitle: "Privacybeleid — Lectoro AI",
+        privacyTitle: "Privacybeleid Lectoro AI",
         privacyDesc:
             "Privacybeleid voor Lectoro AI (lectoroai.com). Naleving van Chrome Web Store Limited Use richtlijnen, AVG/GDPR en veilige AI-verwerking.",
-        termsTitle: "Servicevoorwaarden — Lectoro AI",
+        termsTitle: "Servicevoorwaarden Lectoro AI",
         termsDesc:
             "Servicevoorwaarden voor Lectoro AI (lectoroai.com). Abonnementsvoorwaarden, 3 dagen gratis proefperiode, BLIK-betalingen en gebruiksregels.",
-        reviewsTitle: "Woordenschat herhalingen & Spaced Repetition flashcards — Lectoro AI",
+        reviewsTitle: "Woordenschat herhalingen & Spaced Repetition flashcards Lectoro AI",
         reviewsDesc:
             "Herhaal en versterk opgeslagen woordenschat van Netflix en YouTube met video-flashcards en het SuperMemo SM-2 algoritme.",
     },

@@ -10,7 +10,7 @@ export const it: Dict = {
         pricing: "Prezzi",
         faq: "FAQ",
         addToChrome: "Aggiungi a Chrome",
-        addToChromeFree: "Aggiungi a Chrome — Gratis",
+        addToChromeFree: "Aggiungi a Chrome Gratis",
         privacyPolicy: "Informativa sulla privacy",
         termsOfService: "Termini di servizio",
         signIn: "Accedi",
@@ -289,13 +289,13 @@ export const it: Dict = {
         homeTitle: "Lectoro AI: Sottotitoli doppi per Netflix e YouTube",
         homeDesc:
             "Impara le lingue guardando Netflix, YouTube, Plex e TED. Clicca sui sottotitoli bilingui per spiegazioni con IA, salva flashcard video e ripassa con SRS.",
-        privacyTitle: "Informativa sulla privacy — Lectoro AI",
+        privacyTitle: "Informativa sulla privacy Lectoro AI",
         privacyDesc:
             "Informativa sulla privacy di Lectoro AI (lectoroai.com). Conformità con le regole del Chrome Web Store Limited Use, GDPR e trattamento sicuro dei dati.",
-        termsTitle: "Termini di servizio — Lectoro AI",
+        termsTitle: "Termini di servizio Lectoro AI",
         termsDesc:
             "Termini di servizio di Lectoro AI (lectoroai.com). Condizioni di abbonamento, prova gratuita di 3 giorni, pagamenti BLIK e linee guida d'uso.",
-        reviewsTitle: "Ripasso vocaboli e flashcard Spaced Repetition — Lectoro AI",
+        reviewsTitle: "Ripasso vocaboli e flashcard Spaced Repetition Lectoro AI",
         reviewsDesc:
             "Ripassa e consolida il vocabolario salvato da Netflix e YouTube grazie alle flashcard video e all'algoritmo SuperMemo SM-2.",
     },

@@ -1,5 +1,5 @@
 import "./guides.css";
-import { ArrowUpRight, ArrowRight, Clock3, Sparkles } from "lucide-react";
+import { ArrowUpRight, ArrowRight, Clock3 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -159,10 +159,10 @@ export default async function GuidesPage({
                         if (!guide) return null;
                         const meta = getGuideMeta(slug);
                         const href = getLocalizedHref(`/guides/${slug}`, locale);
-                        const categoryLabel = meta?.category || guide.eyebrow;
+                        const categoryLabel = guide.category || guide.eyebrow;
 
                         return (
-                            <article key={slug} className="guide-entry">
+                            <article key={slug} className={`guide-entry ${index === 0 ? "guide-entry-featured" : ""}`}>
                                 <Link href={href} className="guide-link group">
                                     <div className="guide-cover">
                                         <Image
@@ -171,7 +171,7 @@ export default async function GuidesPage({
                                             width={1280}
                                             height={800}
                                             loading={index === 0 ? "eager" : "lazy"}
-                                            sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 1100px) 34vw, 352px"
+                                            sizes={index === 0 ? "(max-width: 760px) calc(100vw - 40px), 560px" : "(max-width: 640px) calc(100vw - 40px), (max-width: 960px) 45vw, 360px"}
                                         />
                                         <span className="guide-cover-arrow" aria-hidden="true">
                                             <ArrowUpRight size={20} />
@@ -182,7 +182,7 @@ export default async function GuidesPage({
                                             <span className="guide-category-tag">{categoryLabel}</span>
                                             <span className="guide-reading-time">
                                                 <Clock3 size={13} aria-hidden="true" />
-                                                {meta?.readingTime || guide.readingTime}
+                                                {guide.readingTime}
                                             </span>
                                         </div>
                                         <h2>{guide.title}</h2>

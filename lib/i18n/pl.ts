@@ -10,7 +10,7 @@ export const pl: Dict = {
         pricing: "Cennik",
         faq: "FAQ",
         addToChrome: "Dodaj do Chrome",
-        addToChromeFree: "Dodaj do Chrome — Bezpłatnie",
+        addToChromeFree: "Dodaj do Chrome Bezpłatnie",
         privacyPolicy: "Polityka prywatności",
         termsOfService: "Regulamin",
         signIn: "Zaloguj się",
@@ -59,12 +59,12 @@ export const pl: Dict = {
         b1Title: "Oglądaj filmy z napisami w dwóch językach jednocześnie",
         b1HowTo: "Jak tego używać krok po kroku:",
         b1Step1: "Zainstaluj rozszerzenie i wybierz język nauki oraz swój język ojczysty (lub kliknij ⇄ Swap).",
-        b1Step2: "Otwórz dowolny film lub serial na Netflixie, YouTube, TED lub Plex — estetyczny pasek napisów pojawi się automatycznie.",
+        b1Step2: "Otwórz dowolny film lub serial na Netflixie, YouTube, TED lub Plex estetyczny pasek napisów pojawi się automatycznie.",
         b1Step3: "Skup wzrok na oryginalnej linijce dialogowej, a tłumaczenia używaj tylko wtedy, gdy ucho zgubi sens wypowiedzi.",
         b2Tag: "02 KLIKALNY SŁOWNIK & AUDIO",
         b2Title: "Kliknij dowolne słowo, aby poznać znaczenie i wymowę",
         b2HowTo: "Jak tego używać w praktyce:",
-        b2Step1: "Kliknij nieznane słowo w napisach — wideo zatrzyma się automatycznie w ułamku sekundy.",
+        b2Step1: "Kliknij nieznane słowo w napisach wideo zatrzyma się automatycznie w ułamku sekundy.",
         b2Step2: "Kliknij ikonę głośnika, aby odsłuchać poprawną wymowę i naturalną intonację lektora.",
         b2Step3: "Wciśnij klawisz Z, aby błyskawicznie zapisać słówko wraz ze zrzutem klatki do bazy powtórek.",
         b3Tag: "03 GŁĘBOKIE WYJAŚNIENIA AI",
@@ -97,14 +97,14 @@ export const pl: Dict = {
         b6Tag: "06 CZYTNIK STRON & INTELIGENTNY LEKTOR",
         b6Title: "Ucz się języka czytając artykuły, wiadomości i wpisy w sieci",
         b6HowTo: "Jak używać na stronach WWW:",
-        b6Step1: "Zaznacz kursorem dowolny fragment tekstu na stronie — obok pojawi się pływający pasek Lectoro.",
+        b6Step1: "Zaznacz kursorem dowolny fragment tekstu na stronie obok pojawi się pływający pasek Lectoro.",
         b6Step2: "Kliknij ikonę tłumaczenia dla pełnego słownika z synonimami lub głośnik dla lektora z podświetlaniem tekstu na żywo.",
         b6Step3: "Wszystkie słówka zapisane ze stron trafiają do tej samej, zsynchronizowanej bazy Google Cloud Firestore.",
     },
 
     features: {
         tag: "Kompletny ekosystem nauki",
-        title: "Jedno rozszerzenie do nauki języków — od immersji po powtórki",
+        title: "Jedno rozszerzenie do nauki języków od immersji po powtórki",
         subtitle:
             "Zamień autentyczne filmy i strony internetowe w interaktywne lekcje z klikalnymi napisami, pomocą AI i fiszkami ze spaced repetition.",
         f1: {
@@ -265,7 +265,7 @@ export const pl: Dict = {
         title2: "Zacznij żyć językiem już dziś.",
         subtitle:
             "Ucz się angielskiego, hiszpańskiego, niemieckiego, japońskiego i innych języków z seriali Netflix, filmów YouTube i artykułów, które już teraz uwielbiasz.",
-        cta: "Dodaj Lectoro AI do Chrome — Za darmo",
+        cta: "Dodaj do chrome",
     },
 
     footer: {
@@ -288,16 +288,16 @@ export const pl: Dict = {
     },
 
     meta: {
-        homeTitle: "Lectoro AI — Podwójne napisy dla Netflix i YouTube, Wyjaśnienia AI i Fiszki SRS",
+        homeTitle: "Lectoro AI Podwójne napisy dla Netflix i YouTube, Wyjaśnienia AI i Fiszki SRS",
         homeDesc:
             "Ucz się języków oglądając Netflix i YouTube z podwójnymi napisami. Wciśnij klawisz S dla tłumaczenia słowo po słowie (Word Cloud), twórz fiszki ze zrzutem sceny i powtarzaj z algorytmem SRS.",
-        privacyTitle: "Polityka prywatności — Lectoro AI",
+        privacyTitle: "Polityka prywatności Lectoro AI",
         privacyDesc:
             "Polityka prywatności rozszerzenia Chrome Lectoro AI oraz serwisu lectoroai.com. Zgodność z Chrome Web Store Limited Use Policy, RODO i ochrona danych.",
-        termsTitle: "Regulamin usługi — Lectoro AI",
+        termsTitle: "Regulamin usługi Lectoro AI",
         termsDesc:
-            "Regulamin usługi Lectoro AI — zasady licencji, 3-dniowy okres próbny, płatności Stripe i BLIK, warunki subskrypcji i zasady użytkowania.",
-        reviewsTitle: "Powtórki słówek i fiszki Spaced Repetition — Lectoro AI",
+            "Regulamin usługi Lectoro AI zasady licencji, 3-dniowy okres próbny, płatności Stripe i BLIK, warunki subskrypcji i zasady użytkowania.",
+        reviewsTitle: "Powtórki słówek i fiszki Spaced Repetition Lectoro AI",
         reviewsDesc:
             "Powtarzaj i utrwalaj słownictwo zapisane z Netflixa i YouTube dzięki fiszkom wideo z algorytmem SuperMemo SM-2.",
     },
@@ -332,7 +332,7 @@ export const pl: Dict = {
             l1: "NIE monitorujemy ogólnej historii przeglądania stron ani nie rejestrujemy odwiedzanych witryn niezwiązanych z aktywnym tłumaczeniem.",
             l2: "NIE przechwytujemy, nie znamy ani nie przechowujemy Twoich haseł ani danych logowania do serwisów YouTube, Netflix czy innych platform streamingowych.",
             l3: "NIE rejestrujemy naciśnięć klawiszy (keylogger) w formularzach prywatnych, polach haseł, czatach ani bankowości.",
-            l4: "NIE przechowujemy pełnych numerów kart płatniczych — płatności są procesowane w 100% przez certyfikowanego operatora Stripe (PCI-DSS Level 1).",
+            l4: "NIE przechowujemy pełnych numerów kart płatniczych płatności są procesowane w 100% przez certyfikowanego operatora Stripe (PCI-DSS Level 1).",
         },
         s4: {
             heading: "4. Zewnętrzni dostawcy infrastruktury i przetwarzanie AI",

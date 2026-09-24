@@ -10,7 +10,7 @@ export const pt: Dict = {
         pricing: "Preços",
         faq: "FAQ",
         addToChrome: "Adicionar ao Chrome",
-        addToChromeFree: "Adicionar ao Chrome — Grátis",
+        addToChromeFree: "Adicionar ao Chrome Grátis",
         privacyPolicy: "Política de Privacidade",
         termsOfService: "Termos de Serviço",
         signIn: "Entrar",
@@ -289,13 +289,13 @@ export const pt: Dict = {
         homeTitle: "Lectoro AI: Legendas duplas para Netflix e YouTube",
         homeDesc:
             "Aprenda idiomas assistindo a Netflix, YouTube, Plex e TED. Clique em legendas bilíngues para explicações de IA, salve flashcards em vídeo e revise com SRS.",
-        privacyTitle: "Política de Privacidade — Lectoro AI",
+        privacyTitle: "Política de Privacidade Lectoro AI",
         privacyDesc:
             "Política de Privacidade do Lectoro AI (lectoroai.com). Conformidade com os requisitos de Uso Limitado da Chrome Web Store, LGPD/GDPR e proteção de dados com IA.",
-        termsTitle: "Termos de Serviço — Lectoro AI",
+        termsTitle: "Termos de Serviço Lectoro AI",
         termsDesc:
             "Termos de Serviço do Lectoro AI (lectoroai.com). Condições de assinatura, teste grátis de 3 dias, pagamentos BLIK e regras de uso.",
-        reviewsTitle: "Revisão de vocabulário e flashcards Spaced Repetition — Lectoro AI",
+        reviewsTitle: "Revisão de vocabulário e flashcards Spaced Repetition Lectoro AI",
         reviewsDesc:
             "Revise e consolide o vocabulário salvo da Netflix e do YouTube com flashcards em vídeo e o algoritmo SuperMemo SM-2.",
     },

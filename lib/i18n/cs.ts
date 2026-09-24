@@ -10,7 +10,7 @@ export const cs: Dict = {
         pricing: "Ceník",
         faq: "Časté dotazy",
         addToChrome: "Přidat do Chrome",
-        addToChromeFree: "Přidat do Chrome — Zdarma",
+        addToChromeFree: "Přidat do Chrome Zdarma",
         privacyPolicy: "Zásady ochrany osobních údajů",
         termsOfService: "Podmínky služby",
         signIn: "Přihlásit se",
@@ -289,13 +289,13 @@ export const cs: Dict = {
         homeTitle: "Lectoro AI: Dvojité titulky pro Netflix a YouTube",
         homeDesc:
             "Učte se jazyky při sledování Netflixu, YouTube, Plexu a TED. Klikněte na bilingvní titulky pro AI vysvětlení, ukládejte videokartičky a opakujte s algoritmem SRS.",
-        privacyTitle: "Zásady ochrany osobních údajů — Lectoro AI",
+        privacyTitle: "Zásady ochrany osobních údajů Lectoro AI",
         privacyDesc:
             "Zásady ochrany osobních údajů pro Lectoro AI (lectoroai.com). Dodržování zásad Chrome Web Store Limited Use, GDPR a ochrana dat s AI.",
-        termsTitle: "Podmínky služby — Lectoro AI",
+        termsTitle: "Podmínky služby Lectoro AI",
         termsDesc:
             "Podmínky služby Lectoro AI (lectoroai.com). Pravidla předplatného, 3denní zkušební verze zdarma, platby BLIK a pravidla užívání.",
-        reviewsTitle: "Opakování slovíček a kartičky Spaced Repetition — Lectoro AI",
+        reviewsTitle: "Opakování slovíček a kartičky Spaced Repetition Lectoro AI",
         reviewsDesc:
             "Opakujte a upevňujte si slovní zásobu uloženou z Netflixu a YouTube pomocí videokartiček a algoritmu SuperMemo SM-2.",
     },

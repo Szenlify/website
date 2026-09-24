@@ -1,7 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Check } from "lucide-react";
-import { CHROME_STORE_URL } from "@/lib/config";
+import ChromeInstallButton from "./ChromeInstallButton";
 import type { Dict } from "@/lib/i18n/types";
 import styles from "./Hero.module.css";
 
@@ -37,33 +36,7 @@ export default function Hero({ dict }: HeroProps) {
 
                 {/* Hero CTA */}
                 <div className={`${styles.actions} flex items-center justify-center mb-8 sm:mb-12`}>
-                    <Link
-                        href={CHROME_STORE_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`${styles.chromeInstallBtn} group w-full sm:w-auto inline-flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0`}
-                    >
-                        {/* Animated rotating border sweep */}
-                        <span className={styles.borderSweep} aria-hidden="true" />
-
-                        {/* Button inner content */}
-                        <span className={styles.btnInner}>
-                            <svg
-                                height={26}
-                                width={26}
-                                fill="white"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                className="shrink-0 transition-transform duration-300 group-hover:scale-105"
-                            >
-                                <path d="M188.8 255.93a67.2 67.2 0 1 0 67.2-67.18 67.38 67.38 0 0 0-67.2 67.18" />
-                                <path d="M476.75 217.79v.05a207 207 0 0 0-7-28.84h-.11a202 202 0 0 1 7.07 29 203.5 203.5 0 0 0-7.07-29h-155.4c19.05 17 31.36 40.17 31.36 67.05a86.55 86.55 0 0 1-12.31 44.73L231 478.45a2 2 0 0 1 0 .27v.28-.26a224 224 0 0 0 25 1.26c6.84 0 13.61-.39 20.3-1a223 223 0 0 0 29.78-4.74C405.68 451.52 480 362.4 480 255.94a225 225 0 0 0-3.25-38.15" />
-                                <path d="M256 345.5c-33.6 0-61.6-17.91-77.29-44.79L76 123.05l-.14-.24A224 224 0 0 0 207.4 474.55v-.05l77.69-134.6a84.1 84.1 0 0 1-29.09 5.6" />
-                                <path d="m91.29 104.57 77.35 133.25A89.19 89.19 0 0 1 256 166h205.17a246.5 246.5 0 0 0-25.78-43.94l.12.08A245.3 245.3 0 0 1 461.17 166h.17a246 246 0 0 0-25.66-44 2.6 2.6 0 0 1-.35-.26 223.93 223.93 0 0 0-344.19-17.4l.14.24Z" />
-                            </svg>
-                            <span>{hero.installCta}</span>
-                        </span>
-                    </Link>
+                    <ChromeInstallButton label={hero.installCta} />
                 </div>
 
                 {/* Trust signals */}
