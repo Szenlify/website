@@ -1,4 +1,5 @@
 import React from "react";
+import motion from "./LandingMotion.module.css";
 import type { Dict } from "@/lib/i18n/types";
 import { Sparkles } from "lucide-react";
 
@@ -37,7 +38,7 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
         <section className="pb-24 sm:pb-36 lg:pb-44 relative z-10" id="how-it-works">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
+                <div className={`${motion.heading} text-center max-w-3xl mx-auto mb-16 sm:mb-24`}>
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-xs font-bold text-cyan-300 mb-5 tracking-wider uppercase">
                         <Sparkles className="size-3.5" />
                         <span>{hiw.tag}</span>
@@ -55,7 +56,7 @@ export default function HowItWorks({ dict }: HowItWorksProps) {
                     {steps.map((step) => (
                         <li
                             key={step.num}
-                            className="group relative rounded-3xl border border-white/[0.08] bg-[#0c1020]/75 p-8 sm:p-10 backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:bg-[#0f152a]/90 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-950/40"
+                            className={`${motion.step} group relative rounded-3xl border border-white/[0.08] bg-[#0c1020]/75 p-8 sm:p-10 backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:bg-[#0f152a]/90 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-950/40`}
                         >
                             {/* Subtle ambient gradient inside card */}
                             <div

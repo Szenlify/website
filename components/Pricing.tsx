@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { auth, loginWithGoogle } from "@/lib/firebase";
 import { BILLING_PLANS, getBillingUrl, type PaidPlan, type PaymentMode } from "@/lib/billing";
+import motion from "./LandingMotion.module.css";
 import type { Dict, Locale } from "@/lib/i18n/types";
 import { getLocalizedPricing } from "@/lib/pricing";
 import { CHROME_STORE_URL } from "@/lib/config";
@@ -546,7 +547,7 @@ export default function Pricing({ dict, locale }: PricingProps) {
 
         return (
             <article
-                className={`subscription-plan-card ${isRecommended ? "is-recommended" : ""} ${
+                className={`${motion.plan} subscription-plan-card ${isRecommended ? "is-recommended" : ""} ${
                     paid ? "has-trial-offer" : ""
                 }`}
             >
@@ -679,7 +680,7 @@ export default function Pricing({ dict, locale }: PricingProps) {
             id="pricing"
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+                <div className={`${motion.heading} text-center max-w-3xl mx-auto mb-12 sm:mb-16`}>
                 
                     <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white mb-4 tracking-tight text-balance">
                         {pricing.title}
@@ -711,7 +712,7 @@ export default function Pricing({ dict, locale }: PricingProps) {
                             align: "center",
                             loop: false,
                         }}
-                        className="w-full"
+                        className={`${motion.carousel} w-full`}
                         aria-label={pricing.title}
                         aria-busy={!!pending}
                     >

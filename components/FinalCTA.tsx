@@ -1,7 +1,8 @@
 import React from "react";
+import motion from "./LandingMotion.module.css";
 import type { Dict } from "@/lib/i18n/types";
 import { CHROME_STORE_URL } from "@/lib/config";
-import { Sparkles } from "lucide-react";
+import heroStyles from "./Hero.module.css";
 
 interface FinalCTAProps {
     dict: Pick<Dict, "finalCta">;
@@ -12,7 +13,10 @@ export default function FinalCTA({ dict }: FinalCTAProps) {
     return (
         <section className="pb-24 sm:pb-36 lg:pb-44 relative z-10" id="download">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="relative rounded-3xl p-10 sm:p-20 text-center overflow-hidden border border-indigo-500/30 bg-gradient-to-b from-[#12162e]/90 via-[#0d1024]/90 to-[#070913]/90 backdrop-blur-2xl shadow-2xl shadow-indigo-950/70">
+                <div className={`${motion.finalCard} relative rounded-3xl p-10 sm:p-20 text-center overflow-hidden border border-indigo-500/30 bg-gradient-to-b from-[#12162e]/90 via-[#0d1024]/90 to-[#070913]/90 backdrop-blur-2xl shadow-2xl shadow-indigo-950/70`}>
+                    <div className={motion.frameBorder} aria-hidden="true">
+                        <span className={heroStyles.borderSweep} />
+                    </div>
                     {/* Subtle ambient lighting behind text */}
                     <div
                         aria-hidden="true"

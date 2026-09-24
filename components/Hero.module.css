@@ -62,7 +62,7 @@
         animation: textShimmer 7s ease-in-out infinite;
     }
 
-    /* Staggered Cinematic Blur & Rise Entrance */
+    /* Staggered entrance using compositor-friendly opacity and transforms. */
     .badge {
         animation: heroEntrance 750ms cubic-bezier(0.16, 1, 0.3, 1) 0ms backwards;
     }
@@ -81,6 +81,36 @@
 
     .trust {
         animation: heroEntrance 850ms cubic-bezier(0.16, 1, 0.3, 1) 460ms backwards;
+    }
+
+    .trust > span:not([aria-hidden]) {
+        animation: trustEntrance 650ms cubic-bezier(0.16, 1, 0.3, 1) 620ms backwards;
+    }
+
+    .trust > span:last-child {
+        animation-delay: 760ms;
+    }
+
+    .showcase {
+        animation: showcaseEntrance 1100ms cubic-bezier(0.16, 1, 0.3, 1) 280ms backwards;
+    }
+
+    .ambientGlow {
+        animation: glowDrift 9s ease-in-out infinite alternate;
+    }
+
+    .frameHighlight {
+        transform-origin: center;
+        animation: frameEntrance 1200ms cubic-bezier(0.16, 1, 0.3, 1) 600ms backwards;
+    }
+
+    .artworkShine {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.08) 48%, transparent 66%);
+        animation: artworkShine 1800ms ease-out 700ms both;
     }
 
     /* Equalizer Waveform pulse */
@@ -105,13 +135,37 @@
     0% {
         opacity: 0;
         transform: translateY(var(--enter-distance));
-        filter: blur(8px);
     }
     100% {
         opacity: 1;
         transform: translateY(0);
-        filter: blur(0);
     }
+}
+
+@keyframes trustEntrance {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes showcaseEntrance {
+    from { opacity: 0; transform: translateY(28px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes glowDrift {
+    from { transform: translateX(-1%) scale(0.98); opacity: 0.45; }
+    to { transform: translateX(1%) scale(1.025); opacity: 0.7; }
+}
+
+@keyframes frameEntrance {
+    from { transform: scaleX(0.2); opacity: 0; }
+    to { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes artworkShine {
+    0% { transform: translateX(-75%); opacity: 0; }
+    25% { opacity: 1; }
+    100% { transform: translateX(75%); opacity: 0; }
 }
 
 @keyframes textShimmer {
@@ -243,4 +297,3 @@
         opacity: 0.6;
     }
 }
-

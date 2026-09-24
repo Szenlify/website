@@ -81,11 +81,11 @@ export default function Hero({ dict }: HeroProps) {
             </div>
 
             {/* Hero Image Showcase - Flush to bottom section */}
-            <div className="relative mx-auto mt-12 sm:mt-16 lg:mt-20 max-w-6xl">
+            <div className={`${styles.showcase} relative mx-auto mt-12 sm:mt-16 lg:mt-20 max-w-6xl`}>
                 {/* Ambient dual-tone glow matching the cyan and amber energy in hero.png */}
                 <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute -inset-x-4 sm:-inset-x-8 -top-8 sm:-top-16 bottom-0 rounded-t-3xl bg-linear-to-r from-cyan-500/25 via-indigo-500/20 to-amber-500/25 blur-3xl opacity-60"
+                    className={`${styles.ambientGlow} pointer-events-none absolute -inset-x-4 sm:-inset-x-8 -top-8 sm:-top-16 bottom-0 rounded-t-3xl bg-linear-to-r from-cyan-500/25 via-indigo-500/20 to-amber-500/25 blur-3xl opacity-60`}
                 />
 
                 {/* Glassmorphic Frame - rounded top, flush bottom */}
@@ -93,8 +93,10 @@ export default function Hero({ dict }: HeroProps) {
                     {/* Top specular highlight line */}
                     <div
                         aria-hidden="true"
-                        className="pointer-events-none absolute top-0 inset-x-0 h-[1px] bg-linear-to-r from-transparent via-white/35 to-transparent z-10"
+                        className={`${styles.frameHighlight} pointer-events-none absolute top-0 inset-x-0 h-[1px] bg-linear-to-r from-transparent via-white/35 to-transparent z-10`}
                     />
+
+                    <div className={styles.artworkShine} aria-hidden="true" />
 
                     {/* Hero Artwork Image */}
                     <Image

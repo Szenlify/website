@@ -4,6 +4,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import motion from "./LandingMotion.module.css";
 import type { Dict } from "@/lib/i18n/types";
 import { HelpCircle } from "lucide-react";
 
@@ -21,7 +22,7 @@ export default function FAQ({ dict }: FAQProps) {
         >
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+                <div className={`${motion.heading} text-center max-w-3xl mx-auto mb-16 sm:mb-20`}>
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-xs font-bold text-indigo-300 mb-5 tracking-wider uppercase">
                         <HelpCircle className="size-3.5" />
                         <span>{faq.tag}</span>
@@ -42,7 +43,7 @@ export default function FAQ({ dict }: FAQProps) {
                         <AccordionItem
                             key={item.question}
                             value={`faq-${index}`}
-                            className="overflow-hidden rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0c1020]/75 backdrop-blur-xl transition-all duration-200 hover:border-indigo-500/35"
+                            className={`${motion.faq} overflow-hidden rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0c1020]/75 backdrop-blur-xl transition-all duration-200 hover:border-indigo-500/35`}
                         >
                             <AccordionTrigger className="px-6 py-5 sm:px-8 sm:py-6 font-display text-lg sm:text-xl font-bold text-white hover:no-underline hover:text-indigo-200 text-left transition-colors [&>svg]:size-5 [&>svg]:text-indigo-400">
                                 {item.question}

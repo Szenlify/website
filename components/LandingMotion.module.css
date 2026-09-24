@@ -1,0 +1,71 @@
+/* Decorative progressive enhancement: content stays visible without timelines. */
+@media (prefers-reduced-motion: no-preference) {
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+        .heading,
+        .step,
+        .plan,
+        .quote,
+        .faq,
+        .finalCard {
+            animation: sectionEntrance auto cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation-timeline: view(block);
+            /* Finish early, even when a card is taller than the viewport. */
+            animation-range: entry 0% entry 75%;
+        }
+
+        .heading { --motion-y: 18px; }
+        .step { --motion-y: 28px; }
+        .step:nth-child(2) { animation-range-end: entry 85%; }
+        .step:nth-child(3) { animation-range-end: entry 95%; }
+        .plan { --motion-y: 20px; --motion-scale: 0.97; }
+        .quote { --motion-x: 20px; --motion-y: 8px; }
+        .faq { --motion-x: -14px; }
+        .faq:nth-child(even) { --motion-x: 14px; }
+        .finalCard { --motion-y: 24px; --motion-scale: 0.98; }
+
+        /* Track the outer carousel, outside Embla's overflow-hidden viewport. */
+        .carousel {
+            view-timeline: --landing-carousel block;
+        }
+
+        .carousel :is(.plan, .quote) {
+            animation-timeline: --landing-carousel;
+        }
+
+        /* Keyboard navigation must never land on faded content. */
+        :is(.heading, .step, .plan, .quote, .faq, .finalCard):focus-within {
+            animation: none;
+        }
+    }
+}
+
+@keyframes sectionEntrance {
+    from {
+        opacity: 0;
+        translate: var(--motion-x, 0px) var(--motion-y, 0px);
+        scale: var(--motion-scale, 1);
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+        scale: 1;
+    }
+}
+
+/* Mask only the border; reuse the Chrome button's exact beam and timing. */
+.frameBorder {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 2px;
+    border-radius: inherit;
+    overflow: hidden;
+    pointer-events: none;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+}
+
+.frameBorder > span {
+    width: 140%;
+    min-width: 900px;
+}

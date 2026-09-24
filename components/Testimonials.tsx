@@ -1,3 +1,4 @@
+import motion from "./LandingMotion.module.css";
 import type { Dict } from "@/lib/i18n/types";
 import {
     Carousel,
@@ -41,7 +42,7 @@ export default function Testimonials({ dict }: TestimonialsProps) {
 
             <div className="mx-auto">
                 {/* Header Section */}
-                <div className="mx-auto px-4 mb-14 sm:mb-20 max-w-3xl text-center">
+                <div className={`${motion.heading} mx-auto px-4 mb-14 sm:mb-20 max-w-3xl text-center`}>
                     <span className="mb-4 inline-block rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-amber-200">
                         {testimonials.tag}
                     </span>
@@ -55,7 +56,7 @@ export default function Testimonials({ dict }: TestimonialsProps) {
                         align: "center",
                         loop: false,
                     }}
-                    className="w-full"
+                    className={`${motion.carousel} w-full`}
                     aria-label={testimonials.title}
                 >
                     <CarouselContent className="-ml-4 flex items-stretch">
@@ -70,7 +71,7 @@ export default function Testimonials({ dict }: TestimonialsProps) {
                                 key={item.name}
                                 className="flex pl-4 basis-[85%] sm:basis-[380px] lg:basis-[500px]"
                             >
-                                <article className="relative flex min-h-[300px] w-full flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-slate-900/65 p-8 sm:p-10 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-slate-900/85 hover:shadow-2xl hover:shadow-indigo-500/15">
+                                <article className={`${motion.quote} relative flex min-h-[300px] w-full flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-slate-900/65 p-8 sm:p-10 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-slate-900/85 hover:shadow-2xl hover:shadow-indigo-500/15`}>
                                     <div>
                                         {/* Stars Rating */}
                                         <div
