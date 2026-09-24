@@ -300,6 +300,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const [swipeClass, setSwipeClass] = useState<string>("");
 
   const cardRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const drag = useRef({ x: 0, lastX: 0, time: 0, velocity: 0 });
 
   // Shared touch, pen and mouse drag state
@@ -597,39 +598,49 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         "(prefers-reduced-motion: reduce)",
       ).matches;
       const flight = card?.animate(
-        [
+        reduced ? [{ opacity: 1 }, { opacity: 0 }] : [
           {
             transform: `translate3d(${start}px, 0, 0) rotate(${start * 0.035}deg)`,
             opacity: 1,
           },
           {
-            transform: `translate3d(${destination}px, 12px, 0) rotate(${sign * 12}deg)`,
+            transform: `translate3d(${start + (destination - start) * 0.65}px, 6px, 0) rotate(${sign * 7}deg)`,
             opacity: 1,
+            offset: 0.65,
+          },
+          {
+            transform: `translate3d(${destination}px, 14px, 0) rotate(${sign * 10}deg)`,
+            opacity: 0,
           },
         ],
         {
-          duration: reduced
-            ? 1
-            : Math.max(
-                300,
-                Math.min(
-                  420,
-                  Math.abs(destination - start) /
-                    Math.max(1.9, Math.abs(drag.current.velocity)),
-                ),
-              ),
-          easing: "cubic-bezier(.25,.65,.45,1)",
+          duration: reduced ? 100 : 640,
+          easing: "cubic-bezier(.32,.08,.3,1)",
           fill: "forwards",
         },
       );
+      const entrance = previewRef.current?.animate(
+        reduced ? [{ opacity: 0 }, { opacity: 1 }] : [
+          { transform: "translate3d(0, 28px, 0) scale(.955)", opacity: 0 },
+          { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
+        ],
+        {
+          duration: reduced ? 100 : 560,
+          delay: reduced ? 0 : 120,
+          easing: "cubic-bezier(.22,1,.36,1)",
+          // Release transforms at the end so the promoted card can be dragged.
+          fill: "backwards",
+        },
+      );
       try {
-        // Start the save during the flight, but always finish the flight before swapping cards.
+        // Keep both cards mounted until the save and both animations finish.
         const [result] = await Promise.all([
           recordWordRating(currentCard, grade).then(
             () => null,
             (error) => error,
           ),
           flight?.finished.catch(() => {}),
+          entrance?.finished.catch(() => {}),
         ]);
         if (result) throw result;
         speechRequest.current++;
@@ -639,6 +650,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         setCurrentIndex((prev) => prev + 1);
       } catch (error) {
         flight?.cancel();
+        entrance?.cancel();
         setActionError(
           error instanceof Error ? error.message : "Could not save review",
         );
@@ -1248,7 +1260,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                   const screenshotUrl = resolveImageUrl(currentCard.screenshot);
                   return (
                     <div
-                      ref={preview ? undefined : cardRef}
+                      ref={preview ? previewRef : cardRef}
                       key={currentCard.id}
                       aria-hidden={preview || undefined}
                       inert={preview}

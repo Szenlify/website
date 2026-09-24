@@ -1294,7 +1294,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     inset: 12px 12px auto;
     width: calc(100% - 24px);
     z-index: 1;
-    transform: translate3d(0, 10px, 0) scale(.99);
+    transform: translate3d(0, 28px, 0) scale(.955);
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
@@ -1303,7 +1303,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     visibility: visible;
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
-    transition: opacity 360ms ease-out, transform 420ms cubic-bezier(.22, 1, .36, 1);
+    /* The runner synchronizes entry and exit with the Web Animations API. */
 }
 .lectoro-review .review-flashcard.review-dragging {
     cursor: grabbing;
