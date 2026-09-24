@@ -567,7 +567,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     const duration = window.matchMedia("(prefers-reduced-motion: reduce)")
       .matches
       ? 1
-      : 400;
+      : 520;
     setTimeout(() => {
       setFlipPhase("");
       busy.current = false;
@@ -611,11 +611,11 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           duration: reduced
             ? 1
             : Math.max(
-                220,
+                300,
                 Math.min(
-                  320,
+                  420,
                   Math.abs(destination - start) /
-                    Math.max(2.5, Math.abs(drag.current.velocity)),
+                    Math.max(1.9, Math.abs(drag.current.velocity)),
                 ),
               ),
           easing: "cubic-bezier(.25,.65,.45,1)",
@@ -869,7 +869,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           boxShadow: dynamicShadow,
           borderColor: dynamicBorder,
           transition:
-            "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease, border-color 0.25s ease",
+            "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease, border-color 0.25s ease",
         };
 
   const isNormal = direction === "normal";
