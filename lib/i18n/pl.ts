@@ -281,10 +281,7 @@ export const pl: Dict = {
         privacyLink: "Polityka prywatności",
         termsLink: "Regulamin usługi",
         faqLink: "Często zadawane pytania",
-        copyright:
-            "© 2026 Lectoro AI (Softileo). Wszelkie prawa zastrzeżone.",
-        disclaimer:
-            "YouTube™ i Google™ są znakami towarowymi Google LLC. Netflix™ jest znakiem towarowym Netflix, Inc. TED™ jest znakiem towarowym TED Conferences LLC. Lectoro AI jest niezależnym oprogramowaniem edukacyjnym i nie jest powiązane z tymi podmiotami.",
+        copyright: "© 2026 Lectoro AI. Wszelkie prawa zastrzeżone.",
     },
 
     meta: {

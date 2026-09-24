@@ -151,11 +151,8 @@ export default function Footer({ dict, locale }: FooterProps) {
                         </ul>
                     </div>
                 </div>
-                <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <div className="border-t border-white/10 pt-8 flex items-center justify-center text-center text-xs text-slate-500">
                     <div>{footer.copyright}</div>
-                    <div className="text-center sm:text-right max-w-md">
-                        {footer.disclaimer}
-                    </div>
                 </div>
             </div>
         </footer>

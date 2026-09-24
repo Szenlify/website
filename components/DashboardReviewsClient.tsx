@@ -102,7 +102,7 @@ export default function DashboardReviewsClient({
 
     // Authenticated Reviews View
     return (
-        <div data-reviews-page className="w-full max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-8 min-h-screen flex flex-col">
+        <div data-reviews-page className="w-full overflow-hidden h-screen max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-8 min-h-screen flex flex-col">
             <div className="grow flex flex-col justify-start">
                 <ReviewRunner dict={dict} locale={locale} />
             </div>

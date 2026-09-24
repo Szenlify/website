@@ -280,9 +280,7 @@ export const en: Dict = {
         privacyLink: "Privacy Policy",
         termsLink: "Terms of Service",
         faqLink: "FAQ",
-        copyright: "© 2026 Lectoro AI (lectoroai.com). All rights reserved.",
-        disclaimer:
-            "Netflix and YouTube are registered trademarks of their respective owners. Lectoro AI is an independent software extension and is not affiliated with Netflix Inc. or Google LLC.",
+        copyright: "© 2026 Lectoro AI. All rights reserved.",
     },
 
     meta: {

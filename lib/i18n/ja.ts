@@ -280,9 +280,7 @@ export const ja: Dict = {
         privacyLink: "プライバシーポリシー",
         termsLink: "利用規約",
         faqLink: "よくある質問",
-        copyright: "© 2026 Lectoro AI (lectoroai.com). All rights reserved.",
-        disclaimer:
-            "NetflixおよびYouTubeは各社の登録商標です。Lectoro AIは独立した拡張機能であり、Netflix Inc.またはGoogle LLCと提携関係にはありません。",
+        copyright: "© 2026 Lectoro AI. All rights reserved.",
     },
 
     meta: {

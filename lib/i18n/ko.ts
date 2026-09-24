@@ -280,9 +280,7 @@ export const ko: Dict = {
         privacyLink: "개인정보 처리방침",
         termsLink: "이용약관",
         faqLink: "자주 묻는 질문",
-        copyright: "© 2026 Lectoro AI (lectoroai.com). All rights reserved.",
-        disclaimer:
-            "Netflix와 YouTube는 각 소유권자의 등록 상표입니다. Lectoro AI는 독립 소프트웨어 확장 프로그램이며 Netflix Inc. 또는 Google LLC와 제휴 관계가 아닙니다.",
+        copyright: "© 2026 Lectoro AI. All rights reserved.",
     },
 
     meta: {

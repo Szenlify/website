@@ -280,9 +280,7 @@ export const cs: Dict = {
         privacyLink: "Zásady ochrany osobních údajů",
         termsLink: "Podmínky služby",
         faqLink: "Časté dotazy",
-        copyright: "© 2026 Lectoro AI (lectoroai.com). Všechna práva vyhrazena.",
-        disclaimer:
-            "Netflix a YouTube jsou registrované ochranné známky svých příslušných vlastníků. Lectoro AI je nezávislé softwarové rozšíření a není nijak spojeno se společnostmi Netflix Inc. ani Google LLC.",
+        copyright: "© 2026 Lectoro AI. Všechna práva vyhrazena.",
     },
 
     meta: {

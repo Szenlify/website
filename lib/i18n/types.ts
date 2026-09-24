@@ -188,7 +188,6 @@ export interface Dict {
         termsLink: string;
         faqLink: string;
         copyright: string;
-        disclaimer: string;
     };
 
     meta: {
