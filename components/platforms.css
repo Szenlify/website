@@ -1,0 +1,26 @@
+@keyframes marquee-ltr {
+    0% {
+        transform: translate3d(-50%, 0, 0);
+    }
+    100% {
+        transform: translate3d(0%, 0, 0);
+    }
+}
+
+.platforms-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: marquee-ltr 48s linear infinite;
+}
+
+.platforms-track:hover {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .platforms-track {
+        animation: none;
+        transform: none;
+    }
+}
