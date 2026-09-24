@@ -179,86 +179,79 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                 </span>
               </button>
             ) : (
-              <div className="flex items-center gap-2 sm:gap-2.5">
-                {/* Clickable review counter badge to open reviews */}
-                <Link
-                  href={getLocalizedHref("/dashboard/reviews", locale)}
-                  title={nav.reviews}
-                  className={`min-h-11 min-w-11 justify-center inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 hover:border-indigo-500/50 text-indigo-300 font-bold text-xs transition cursor-pointer shadow-sm hover:shadow-indigo-500/20 active:scale-95 ${
-                    pathname.includes("/dashboard/reviews")
-                      ? "ring-2 ring-indigo-500/50"
-                      : ""
-                  }`}
-                >
-                  <span className="hidden xs:inline">
-                    {nav.reviews}
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] tabular-nums font-mono font-bold">
-                    {rawDueCount}
-                  </span>
-                </Link>
-
-                <DropdownMenu modal={false}>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      title={user.displayName || user.email || "User"}
-                      className="min-h-11 min-w-11 justify-center flex items-center gap-1.5 p-1 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition cursor-pointer active:scale-95"
-                    >
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    title={user.displayName || user.email || "User"}
+                    className={`relative min-h-11 min-w-11 justify-center flex items-center gap-1.5 p-1 sm:px-2 rounded-xl hover:bg-white/5 border transition cursor-pointer active:scale-95 ${
+                      pathname.includes("/dashboard/reviews")
+                        ? "border-violet-500/40 bg-violet-500/10"
+                        : "border-transparent hover:border-white/10"
+                    }`}
+                  >
+                    <div className="size-7 shrink-0">
                       {user.photoURL ? (
                         /* eslint-disable-next-line @next/next/no-img-element */
                         <img
                           src={user.photoURL}
                           alt={user.displayName || "User"}
-                          className="size-7 rounded-full border border-indigo-400/40 object-cover"
+                          className="size-7 rounded-full border border-violet-400/30 object-cover"
                         />
                       ) : (
-                        <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+                        <div className="size-7 rounded-full bg-violet-600 flex items-center justify-center text-xs font-bold text-white">
                           {(user.displayName ||
                             user.email ||
                             "U")[0].toUpperCase()}
                         </div>
                       )}
-                      <span className="hidden md:inline text-xs font-semibold text-slate-300 max-w-[100px] truncate">
-                        {user.displayName || user.email}
-                      </span>
-                      <ChevronDown className="size-3 text-slate-400" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-52">
-                    <div className="px-3 py-2 border-b border-white/10">
-                      <p className="text-xs font-bold text-white truncate">
-                        {user.displayName || user.email || "User"}
-                      </p>
-                      <p className="text-[11px] text-slate-400 truncate">
-                        {user.email}
-                      </p>
                     </div>
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href={getLocalizedHref("/dashboard/reviews", locale)}
-                        className="text-indigo-300 hover:text-white hover:bg-indigo-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between w-full"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="size-3.5 text-indigo-400" />
-                          <span>{nav.reviews}</span>
-                        </div>
-                        <span className="px-1.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] font-mono">
+                    <span className="hidden md:inline text-xs font-semibold text-slate-300 max-w-[100px] truncate">
+                      {user.displayName || user.email}
+                    </span>
+                    <ChevronDown className="size-3 text-slate-400" />
+                    {rawDueCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-violet-600 text-white text-[9.5px] font-bold font-mono flex items-center justify-center tabular-nums pointer-events-none">
+                        {rawDueCount}
+                      </span>
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  <div className="px-3 py-2 border-b border-white/10">
+                    <p className="text-xs font-bold text-white truncate">
+                      {user.displayName || user.email || "User"}
+                    </p>
+                    <p className="text-[11px] text-slate-400 truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={getLocalizedHref("/dashboard/reviews", locale)}
+                      className="text-violet-300 hover:text-white hover:bg-violet-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between w-full"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="size-3.5 text-violet-400" />
+                        <span>{nav.reviews}</span>
+                      </div>
+                      {rawDueCount > 0 && (
+                        <span className="px-1.5 py-0.5 rounded-full bg-violet-600 text-white text-[10px] font-mono font-bold">
                           {rawDueCount}
                         </span>
-                      </Link>
-                    </DropdownMenuItem>
+                      )}
+                    </Link>
+                  </DropdownMenuItem>
 
-                    <DropdownMenuItem
-                      onClick={() => void signOut()}
-                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2"
-                    >
-                      <LogOut className="size-3.5 mr-2" />
-                      <span>{nav.signOut}</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                  <DropdownMenuItem
+                    onClick={() => void signOut()}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2"
+                  >
+                    <LogOut className="size-3.5 mr-2" />
+                    <span>{nav.signOut}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
 
             {/* Mobile Menu Hamburger */}
@@ -290,7 +283,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                           <Sparkles className="size-4 text-indigo-400" />
                           <span>{nav.reviews}</span>
                         </div>
-                        <span className="px-2.5 py-0.5 rounded-full bg-indigo-500 text-white text-xs font-mono font-bold">
+                        <span className="px-2.5 py-0.5 rounded-full bg-violet-600 text-white text-xs font-mono font-bold">
                           {rawDueCount}
                         </span>
                       </Link>
@@ -436,7 +429,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                                 {user.displayName || user.email}
                               </span>
                             </div>
-                            <span className="px-2 py-0.5 rounded-full bg-indigo-500 text-white text-[11px] font-bold">
+                            <span className="px-2 py-0.5 rounded-full bg-violet-600 text-white text-[11px] font-bold">
                               {rawDueCount}
                             </span>
                           </Link>

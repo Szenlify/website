@@ -1256,6 +1256,11 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
  .lectoro-review .review-actions-row { margin-top: 16px; }
 }
 @media (max-width: 640px) {
+    html:has([data-reviews-page]),
+    body:has([data-reviews-page]) {
+        overflow: hidden;
+        overscroll-behavior: none;
+    }
  .lectoro-review { padding: 16px 12px max(16px, env(safe-area-inset-bottom)); }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1279,18 +1284,33 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     -webkit-user-select: none;
     animation: none;
 }
-.lectoro-review .review-flashcard.review-entering {
-    animation: reviewDealIn 360ms cubic-bezier(.2,.8,.2,1) both;
+.lectoro-review .review-flashcard.review-active {
+    position: relative;
+    z-index: 2;
 }
-.lectoro-review .review-flashcard.review-dragging,
-.lectoro-review .review-flashcard.review-flying { animation: none; }
-@keyframes reviewDealIn {
-    from { opacity: 0; transform: translate3d(0, 24px, 0) scale(.94); }
-    to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+.lectoro-review .review-flashcard.review-preview {
+    position: absolute;
+    inset: 12px 12px auto;
+    width: calc(100% - 24px);
+    z-index: 1;
+    transform: translate3d(0, 0, 0);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+.lectoro-review .review-flashcard.review-flying ~ .review-preview {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 180ms ease-out;
+}
+.lectoro-review .review-flashcard.review-dragging {
+    cursor: grabbing;
 }
 
 /* Clip throws at the card stage, leaving the voice menu outside the clip. */
 .lectoro-review .review-card-viewport {
+    position: relative;
+    isolation: isolate;
     width: 100%;
     overflow: hidden;
     padding: 12px;
@@ -1357,6 +1377,9 @@ body:has([data-reviews-page]) { overflow-x: clip; }
 .lectoro-review .review-flip-face {
     grid-area: 1 / 1;
     min-width: 0;
+    background: #101322;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     padding: 16px 20px 24px;
     box-shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 32px rgba(0,0,0,.12);
     backface-visibility: hidden;
@@ -1369,66 +1392,51 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     -webkit-transform: rotateY(180deg);
 }
 
-/* Mobile swipe action stamps */
+/* Quiet swipe feedback; opacity follows the gesture. */
 .review-swipe-stamp {
     position: absolute;
-    top: 20px;
+    top: 16px;
     z-index: 50;
-    padding: 6px 14px;
-    border-radius: 12px;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: 500;
     pointer-events: none;
-    border: 2.5px solid;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid;
+    background: #101322;
     user-select: none;
     -webkit-user-select: none;
-    animation: stampPop 0.15s ease-out;
 }
 .review-swipe-stamp-again {
-    right: 20px;
-    color: #f87171;
-    border-color: #ef4444;
-    background: rgba(239, 68, 68, 0.22);
-    transform: rotate(8deg);
+    right: 16px;
+    color: #fca5a5;
+    border-color: rgb(248 113 113 / .18);
 }
 .review-swipe-stamp-good {
-    left: 20px;
-    color: #34d399;
-    border-color: #10b981;
-    background: rgba(16, 185, 129, 0.22);
-    transform: rotate(-8deg);
+    left: 16px;
+    color: #6ee7b7;
+    border-color: rgb(52 211 153 / .18);
 }
 .review-swipe-stamp .stamp-title {
-    font-size: 1.05rem;
-    line-height: 1.2;
-}
-.review-swipe-stamp .stamp-sub {
-    font-size: 0.75rem;
-    font-weight: 600;
-    opacity: 0.85;
-}
-@keyframes stampPop {
-    from { transform: scale(0.85); opacity: 0; }
-    to { opacity: 1; }
+    font-size: .8125rem;
+    line-height: 1.4;
 }
 
 /* A single mobile viewport with a floating menu and anchored review actions. */
 @media (max-width: 640px) {
     body > div:has([data-reviews-screen]) {
-        height: 85vh;
+        height: 100dvh;
         min-height: 0;
     }
     body:has([data-reviews-screen]) #main-content {
         flex: 1;
         min-height: 0;
         display: flex;
+    }
+    body:has([data-reviews-page]) #main-content {
+        position: fixed;
+        inset: 0;
+        height: 100dvh;
+        overflow: hidden;
     }
     body:has([data-reviews-screen]) header + div[aria-hidden="true"] {
         flex-shrink: 0;
@@ -1444,9 +1452,12 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     }
     [data-reviews-page] {
         flex: 1;
+        height: auto;
         min-height: 0;
+        overflow: hidden;
         padding: 0;
     }
+    [data-reviews-screen]:has([data-reviews-page]) { overflow: hidden; }
     [data-reviews-page] > div {
         min-height: 0;
         flex: 1;
@@ -1462,8 +1473,15 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     }
     .lectoro-review .review-header {
         min-height: 44px;
-        padding-inline-end: 52px;
+        padding-inline-end: 56px;
+        gap: 8px;
+        margin-bottom: 8px;
     }
+    .lectoro-review .review-icon { display: none; }
+    .lectoro-review .review-title { font-size: 16px; }
+    .lectoro-review .review-count { padding-inline: 4px; font-size: 12px; }
+    .lectoro-review .review-dir-btn { padding-inline: 10px; }
+    .lectoro-review .review-progress { margin-bottom: 12px; }
     .lectoro-review .review-panel,
     .lectoro-review .review-card { min-height: 0; }
     .lectoro-review .review-header,
@@ -1475,13 +1493,18 @@ body:has([data-reviews-page]) { overflow-x: clip; }
         flex: 1;
         min-height: 0;
         margin: 0;
-        padding: 0;
+        padding: 14px;
         box-sizing: border-box;
     }
     .lectoro-review .review-flashcard,
     .lectoro-review .review-flip-scene,
     .lectoro-review .review-flip-inner { height: 100%; min-height: 0; }
-    .lectoro-review .review-flashcard { margin-bottom: 0; }
+    .lectoro-review .review-flashcard { margin-bottom: 0; touch-action: pinch-zoom; }
+    .lectoro-review .review-flashcard.review-preview {
+        inset: 14px;
+        width: calc(100% - 28px);
+        height: calc(100% - 28px);
+    }
     .lectoro-review .review-flip-inner { grid-template-rows: minmax(0, 1fr); }
     .lectoro-review .review-flip-face {
         min-height: 0;
@@ -1492,10 +1515,24 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     }
     .lectoro-review .review-flip-face::-webkit-scrollbar { display: none; }
     .lectoro-review .review-question { margin-block: auto; }
+    .lectoro-review .review-word-row { flex-direction: column; gap: 8px; }
+    .lectoro-review .review-word { font-size: clamp(24px, 7vw, 32px); line-height: 1.2; }
+    .lectoro-review .review-context { font-size: 14px; line-height: 1.6; }
+    .lectoro-review .review-speak-btn { width: 44px; height: 44px; }
     .lectoro-review .review-screenshot-box,
     .lectoro-review .review-screenshot-box .review-screenshot-img { max-height: 24dvh; min-height: 0; }
-    .lectoro-review .review-flip-btn { min-height: 44px; margin-block: 4px; }
-    .lectoro-review .review-controls { padding: 0; }
+    .lectoro-review .review-flip-btn { min-height: 44px; margin-block: 4px; font-size: 13px; }
+    .lectoro-review .review-controls { max-width: none; padding: 0; box-shadow: none; }
+    .lectoro-review .review-rating-label { margin-bottom: 8px; font-weight: 500; }
+    .lectoro-review .review-controls .review-rating-buttons-2 { gap: 12px; }
+    .lectoro-review .review-controls .review-rating-buttons-2 .review-rate-btn {
+        min-height: 60px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        box-shadow: none;
+    }
+    .lectoro-review .review-controls .rate-label { font-size: 15px; font-weight: 600; }
+    .lectoro-review .review-next-info { font-size: 11px; }
     .lectoro-review .review-flip-keys,
     .lectoro-review .rate-key-pair,
     .lectoro-review .review-shortcuts { display: none; }
@@ -1505,7 +1542,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     .lectoro-review .review-voice-btn { min-height: 44px; }
     .lectoro-review .review-edit-form { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
     .lectoro-review .review-edit-form input { font-size: 16px; }
-    .lectoro-review .review-voice-menu { max-height: calc(85vh - 150px); overflow-y: auto; overscroll-behavior: contain; }
+    .lectoro-review .review-voice-menu { max-height: calc(100dvh - 150px); overflow-y: auto; overscroll-behavior: contain; }
 }
 
 .lectoro-review .review-audio-status {

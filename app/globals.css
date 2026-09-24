@@ -596,6 +596,7 @@ h6 {
 @media (max-width: 640px) {
     header[data-review-navigation="true"] {
         inset: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) auto auto;
+        padding-top: 0;
         width: auto;
         background: transparent;
         border: 0;
@@ -604,6 +605,8 @@ h6 {
 
     header[data-review-navigation="true"] > div {
         padding: 0;
+        height: 44px;
+        min-height: 0;
     }
 
     header[data-review-navigation="true"] > div > :not(.navbar-actions),

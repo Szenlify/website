@@ -300,10 +300,9 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const [swipeClass, setSwipeClass] = useState<string>("");
 
   const cardRef = useRef<HTMLDivElement>(null);
-  const [enteredCard, setEnteredCard] = useState<string | null>(null);
   const drag = useRef({ x: 0, lastX: 0, time: 0, velocity: 0 });
 
-  // Mobile touch tracking
+  // Shared touch, pen and mouse drag state
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [touchDeltaX, setTouchDeltaX] = useState<number>(0);
@@ -563,7 +562,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const flipCard = useCallback(() => {
     if (busy.current || !currentCard || editing) return;
     busy.current = true;
-    setEnteredCard(currentCard.id);
     setFlipPhase("flipping");
     setAnswerShown((prev) => !prev);
     const duration = window.matchMedia("(prefers-reduced-motion: reduce)")
@@ -594,18 +592,18 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
       const sign = grade === 1 ? -1 : 1;
       const start = drag.current.x;
       const destination =
-        sign * (window.innerWidth + (card?.offsetWidth || 480));
+        sign * ((card?.offsetWidth || 480) * 1.25);
       const reduced = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
       const flight = card?.animate(
         [
           {
-            transform: `translate3d(${start}px, 0, 0) rotate(${start * 0.08}deg)`,
+            transform: `translate3d(${start}px, 0, 0) rotate(${start * 0.035}deg)`,
             opacity: 1,
           },
           {
-            transform: `translate3d(${destination}px, 60px, 0) rotate(${sign * 32}deg)`,
+            transform: `translate3d(${destination}px, 12px, 0) rotate(${sign * 12}deg)`,
             opacity: 1,
           },
         ],
@@ -613,9 +611,9 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           duration: reduced
             ? 1
             : Math.max(
-                280,
+                220,
                 Math.min(
-                  480,
+                  320,
                   Math.abs(destination - start) /
                     Math.max(2.5, Math.abs(drag.current.velocity)),
                 ),
@@ -740,17 +738,19 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   ]);
 
   const touchStartTime = useRef(0);
-  const touchStartPos = useRef({ x: 0, y: 0 });
+  const suppressClickUntil = useRef(0);
+  const pointerId = useRef<number | null>(null);
 
-  // Touch handlers for mobile swipe & tap
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (busy.current || (e.target as HTMLElement).closest("button, input, textarea, a")) return;
-    setEnteredCard(currentCard?.id || null);
-    const clientX = e.touches[0].clientX;
-    const clientY = e.touches[0].clientY;
+  // Pointer capture keeps a swipe continuous outside the card bounds.
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (busy.current || !e.isPrimary || e.button !== 0 || pointerId.current !== null ||
+      (e.target as HTMLElement).closest("button, input, textarea, a")) return;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
     const now = performance.now();
     touchStartTime.current = now;
-    touchStartPos.current = { x: clientX, y: clientY };
+    pointerId.current = e.pointerId;
+    e.currentTarget.setPointerCapture(e.pointerId);
 
     drag.current = {
       x: 0,
@@ -763,15 +763,18 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     setIsDragging(true);
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (busy.current || touchStartX === null || touchStartY === null) return;
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (busy.current || e.pointerId !== pointerId.current || touchStartX === null || touchStartY === null) return;
+    const currentX = e.clientX;
+    const currentY = e.clientY;
     const deltaX = currentX - touchStartX;
     const deltaY = currentY - touchStartY;
 
     // If movement is predominantly vertical, cancel horizontal drag so user can scroll smoothly
     if (Math.abs(deltaY) > 14 && Math.abs(deltaY) > Math.abs(deltaX) * 1.3) {
+      suppressClickUntil.current = performance.now() + 500;
+      pointerId.current = null;
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
       setTouchStartX(null);
       setTouchStartY(null);
       setIsDragging(false);
@@ -789,8 +792,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     setTouchDeltaX(deltaX);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX === null) return;
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (e.pointerId !== pointerId.current || touchStartX === null) return;
+    pointerId.current = null;
+    suppressClickUntil.current = performance.now() + 500;
     setIsDragging(false);
 
     const x = drag.current.x;
@@ -826,7 +831,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-    if (busy.current) return;
+    if (busy.current || performance.now() < suppressClickUntil.current) return;
     const target = e.target as HTMLElement;
     if (target.closest("button, input, textarea, a")) return;
     if (Math.abs(touchDeltaX) > 10) return;
@@ -840,21 +845,21 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   const dynamicShadow =
     isDragging && touchDeltaX !== 0
       ? isSwipingLeft
-        ? `0 20px 50px -10px rgba(239, 68, 68, ${0.35 + swipeIntensity * 0.5}), 0 0 35px -5px rgba(239, 68, 68, ${swipeIntensity * 0.45})`
-        : `0 20px 50px -10px rgba(16, 185, 129, ${0.35 + swipeIntensity * 0.5}), 0 0 35px -5px rgba(16, 185, 129, ${swipeIntensity * 0.45})`
+        ? `0 8px 24px -6px rgba(239, 68, 68, ${swipeIntensity * 0.32}), 0 0 12px rgba(239, 68, 68, ${swipeIntensity * 0.12})`
+        : `0 8px 24px -6px rgba(16, 185, 129, ${swipeIntensity * 0.32}), 0 0 12px rgba(16, 185, 129, ${swipeIntensity * 0.12})`
       : undefined;
 
   const dynamicBorder =
     isDragging && touchDeltaX !== 0
       ? isSwipingLeft
-        ? `rgba(239, 68, 68, ${0.45 + swipeIntensity * 0.55})`
-        : `rgba(16, 185, 129, ${0.45 + swipeIntensity * 0.55})`
+        ? `rgba(239, 68, 68, ${swipeIntensity * 0.2})`
+        : `rgba(16, 185, 129, ${swipeIntensity * 0.2})`
       : undefined;
 
   const cardTransformStyle: React.CSSProperties =
     isDragging || !!swipeClass
       ? {
-          transform: `translate3d(${touchDeltaX}px, 0, 0) rotate(${touchDeltaX * 0.09}deg)`,
+          transform: `translate3d(${touchDeltaX}px, 0, 0) rotate(${touchDeltaX * 0.035}deg)`,
           boxShadow: dynamicShadow,
           borderColor: dynamicBorder,
           transition: "none",
@@ -1085,7 +1090,6 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   if (!currentCard) return null;
 
   const progressPercent = Math.round((currentIndex / queue.length) * 100);
-  const screenshotUrl = resolveImageUrl(currentCard?.screenshot);
   const saveEdit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!editing || !user || busy.current) return;
@@ -1239,142 +1243,146 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           ) : (
             <>
               <div className="review-card-viewport">
-                <div
-                  ref={cardRef}
-                  key={currentCard.id}
-                  onAnimationEnd={(event) => {
-                    if (event.animationName === "reviewDealIn")
-                      setEnteredCard(currentCard.id);
-                  }}
-                  className={`review-flashcard ${enteredCard !== currentCard.id ? "review-entering" : ""} ${isDragging ? "review-dragging" : ""} ${flipPhase} ${swipeClass}`}
-                  style={cardTransformStyle}
-                  onClick={handleCardClick}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                  onTouchCancel={() => {
-                    if (busy.current) return;
-                    drag.current.x = 0;
-                    setTouchStartX(null);
-                    setTouchDeltaX(0);
-                    setIsDragging(false);
-                  }}
-                >
-                  {/* Dynamic Swipe Action Stamps on Mobile */}
-                  {isDragging && touchDeltaX !== 0 && (
-                    <>
-                      {touchDeltaX < -15 && (
-                        <div
-                          className="review-swipe-stamp review-swipe-stamp-again"
-                          style={{ opacity: Math.min(1, (Math.abs(touchDeltaX) - 15) / 50) }}
-                        >
-                          <span className="stamp-title">↺ {r.btnAgain}</span>
-                          <span className="stamp-sub">{labelAgain}</span>
-                        </div>
-                      )}
-                      {touchDeltaX > 15 && (
-                        <div
-                          className="review-swipe-stamp review-swipe-stamp-good"
-                          style={{ opacity: Math.min(1, (Math.abs(touchDeltaX) - 15) / 50) }}
-                        >
-                          <span className="stamp-title">✓ {r.btnGood}</span>
-                          <span className="stamp-sub">{labelGood}</span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  <div className="review-flip-scene">
+                {queue.slice(currentIndex, currentIndex + 2).map((currentCard, offset) => {
+                  const preview = offset > 0;
+                  const screenshotUrl = resolveImageUrl(currentCard.screenshot);
+                  return (
                     <div
-                      className={`review-flip-inner ${answerShown ? "is-flipped" : ""}`}
+                      ref={preview ? undefined : cardRef}
+                      key={currentCard.id}
+                      aria-hidden={preview || undefined}
+                      inert={preview}
+                      className={`review-flashcard ${preview ? "review-preview" : "review-active"} ${!preview && isDragging ? "review-dragging" : ""} ${preview ? "" : flipPhase} ${preview ? "" : swipeClass}`}
+                      style={preview ? undefined : cardTransformStyle}
+                      onClick={preview ? undefined : handleCardClick}
+                      onPointerDown={preview ? undefined : handlePointerDown}
+                      onPointerMove={preview ? undefined : handlePointerMove}
+                      onPointerUp={preview ? undefined : handlePointerUp}
+                      onPointerCancel={() => {
+                        if (busy.current) return;
+                        pointerId.current = null;
+                        suppressClickUntil.current = performance.now() + 500;
+                        drag.current.x = 0;
+                        setTouchStartX(null);
+                        setTouchStartY(null);
+                        setTouchDeltaX(0);
+                        setIsDragging(false);
+                      }}
                     >
-                      {([false, true] as const).map((back) => {
-                        const original = isNormal !== back;
-                        const word = original
-                          ? currentCard.original
-                          : currentCard.translated;
-                        const sentence = original
-                          ? currentCard.sentence
-                          : currentCard.sentenceTranslated;
-                        const language = original
-                          ? currentCard.srcLang || "en"
-                          : currentCard.tgtLang || "pl";
-                        const text =
-                          sentence &&
-                          sentence.trim().toLowerCase() !==
-                            word.trim().toLowerCase()
-                            ? `${word}. ${sentence}`
-                            : word;
-                        const active = back === answerShown;
-                        return (
-                          <div
-                            key={String(back)}
-                            className={`review-flip-face ${back ? "review-flip-back" : "review-flip-front"}`}
-                            aria-hidden={!active}
-                            inert={!active}
-                          >
-                            <div className="review-question">
-                              <div className="review-word-row">
-                                <span
-                                  className={`review-word ${original ? "__qt_original" : "__qt_translated"}`}
-                                >
-                                  {word}
-                                </span>
-                                <div className="flex items-center gap-2 my-2"><button
-                                  type="button"
-                                  className={`review-speak-btn ${isSpeaking && active ? "speaking" : ""}`}
-                                  aria-label={r.listenAudio}
-                                  title={r.listenAudio}
-                                  onClick={() => void speakText(text, language)}
-                                >
-                                  <Volume2 />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="review-speak-btn review-speak-slow-btn"
-                                  aria-label={rc.listenSlowly}
-                                  title="0.75×"
-                                  onClick={() =>
-                                    void speakText(text, language, 0.75)
-                                  }
-                                >
-                                  <Turtle />
-                                </button>
-                              </div>
-                              </div>
-                              {sentence &&
-                                sentence.trim().toLowerCase() !==
-                                  word.trim().toLowerCase() && (
-                                  <div className="review-context-row">
-                                    <span className="review-context">
-                                      {renderHighlightedSentence(
-                                        sentence,
-                                        word,
-                                        original,
-                                      )}
-                                    </span>
-                                  </div>
-                                )}
-                              {screenshotUrl && (
-                                <ReviewScreenshot
-                                  key={screenshotUrl}
-                                  src={screenshotUrl}
-                                  alt={r.movieSnapshotAlt}
-                                  locale={locale}
-                                  active={active}
-                                  onClick={flipCard}
-                                />
-                              )}
+                      {/* Dynamic Swipe Action Stamps on Mobile */}
+                      {!preview && isDragging && touchDeltaX !== 0 && (
+                        <>
+                          {touchDeltaX < -15 && (
+                            <div
+                              className="review-swipe-stamp review-swipe-stamp-again"
+                              style={{ opacity: Math.min(1, (Math.abs(touchDeltaX) - 15) / 50) }}
+                            >
+                              <span className="stamp-title">{r.btnAgain}</span>
                             </div>
-                          </div>
-                        );
-                      })}
+                          )}
+                          {touchDeltaX > 15 && (
+                            <div
+                              className="review-swipe-stamp review-swipe-stamp-good"
+                              style={{ opacity: Math.min(1, (Math.abs(touchDeltaX) - 15) / 50) }}
+                            >
+                              <span className="stamp-title">{r.btnGood}</span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      <div className="review-flip-scene">
+                        <div
+                          className={`review-flip-inner ${!preview && answerShown ? "is-flipped" : ""}`}
+                        >
+                          {([false, true] as const).map((back) => {
+                            const original = isNormal !== back;
+                            const word = original
+                              ? currentCard.original
+                              : currentCard.translated;
+                            const sentence = original
+                              ? currentCard.sentence
+                              : currentCard.sentenceTranslated;
+                            const language = original
+                              ? currentCard.srcLang || "en"
+                              : currentCard.tgtLang || "pl";
+                            const text =
+                              sentence &&
+                              sentence.trim().toLowerCase() !==
+                                word.trim().toLowerCase()
+                                ? `${word}. ${sentence}`
+                                : word;
+                            const active = !preview && back === answerShown;
+                            return (
+                              <div
+                                key={String(back)}
+                                className={`review-flip-face ${back ? "review-flip-back" : "review-flip-front"}`}
+                                aria-hidden={!active}
+                                inert={!active}
+                              >
+                                <div className="review-question">
+                                  <div className="review-word-row">
+                                    <span
+                                      className={`review-word ${original ? "__qt_original" : "__qt_translated"}`}
+                                    >
+                                      {word}
+                                    </span>
+                                    <div className="flex items-center gap-2 my-2"><button
+                                      type="button"
+                                      className={`review-speak-btn ${isSpeaking && active ? "speaking" : ""}`}
+                                      aria-label={r.listenAudio}
+                                      title={r.listenAudio}
+                                      onClick={() => void speakText(text, language)}
+                                    >
+                                      <Volume2 />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="review-speak-btn review-speak-slow-btn"
+                                      aria-label={rc.listenSlowly}
+                                      title="0.75×"
+                                      onClick={() =>
+                                        void speakText(text, language, 0.75)
+                                      }
+                                    >
+                                      <Turtle />
+                                    </button>
+                                  </div>
+                                  </div>
+                                  {sentence &&
+                                    sentence.trim().toLowerCase() !==
+                                      word.trim().toLowerCase() && (
+                                      <div className="review-context-row">
+                                        <span className="review-context">
+                                          {renderHighlightedSentence(
+                                            sentence,
+                                            word,
+                                            original,
+                                          )}
+                                        </span>
+                                      </div>
+                                    )}
+                                  {screenshotUrl && (
+                                    <ReviewScreenshot
+                                      key={screenshotUrl}
+                                      src={screenshotUrl}
+                                      alt={r.movieSnapshotAlt}
+                                      locale={locale}
+                                      active={active}
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
               <button
                 type="button"
-                className={`review-flip-btn ${swipeClass ? "qt-fade-out" : ""}`}
+                className="review-flip-btn"
                 disabled={saving || !!flipPhase}
                 onClick={flipCard}
               >
@@ -1386,7 +1394,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                 </span>
               </button>
               <div
-                className={`review-controls ${swipeClass ? "qt-fade-out" : ""}`}
+                className="review-controls"
               >
                 <div className="review-rating">
                   <div className="review-rating-label">
