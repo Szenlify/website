@@ -869,7 +869,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
           boxShadow: dynamicShadow,
           borderColor: dynamicBorder,
           transition:
-            "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease, border-color 0.25s ease",
+            "transform 0.4s cubic-bezier(.22, 1, .36, 1), opacity 0.36s ease-out, box-shadow 0.25s ease, border-color 0.25s ease",
         };
 
   const isNormal = direction === "normal";
@@ -1326,12 +1326,20 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                     >
                                       {word}
                                     </span>
-                                    <div className="flex items-center gap-2 my-2"><button
+                                    <div
+                                      className="flex items-center gap-2 my-2"
+                                      onPointerDown={(event) => event.stopPropagation()}
+                                      onPointerUp={(event) => event.stopPropagation()}
+                                      onClick={(event) => event.stopPropagation()}
+                                    ><button
                                       type="button"
                                       className={`review-speak-btn ${isSpeaking && active ? "speaking" : ""}`}
                                       aria-label={r.listenAudio}
                                       title={r.listenAudio}
-                                      onClick={() => void speakText(text, language)}
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        void speakText(text, language);
+                                      }}
                                     >
                                       <Volume2 />
                                     </button>
@@ -1340,9 +1348,10 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                       className="review-speak-btn review-speak-slow-btn"
                                       aria-label={rc.listenSlowly}
                                       title="0.75×"
-                                      onClick={() =>
-                                        void speakText(text, language, 0.75)
-                                      }
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        void speakText(text, language, 0.75);
+                                      }}
                                     >
                                       <Turtle />
                                     </button>

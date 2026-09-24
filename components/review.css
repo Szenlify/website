@@ -1287,13 +1287,14 @@ body:has([data-reviews-page]) { overflow-x: clip; }
 .lectoro-review .review-flashcard.review-active {
     position: relative;
     z-index: 2;
+    opacity: 1;
 }
 .lectoro-review .review-flashcard.review-preview {
     position: absolute;
     inset: 12px 12px auto;
     width: calc(100% - 24px);
     z-index: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 10px, 0) scale(.99);
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
@@ -1301,7 +1302,8 @@ body:has([data-reviews-page]) { overflow-x: clip; }
 .lectoro-review .review-flashcard.review-flying ~ .review-preview {
     visibility: visible;
     opacity: 1;
-    transition: opacity 240ms ease-out;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition: opacity 360ms ease-out, transform 420ms cubic-bezier(.22, 1, .36, 1);
 }
 .lectoro-review .review-flashcard.review-dragging {
     cursor: grabbing;
