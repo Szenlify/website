@@ -166,7 +166,6 @@ export const pl: Dict = {
     },
 
     pricing: {
-        tag: "Przejrzysty cennik",
         title: "Wybierz plan dostosowany do Twoich celów",
         subtitle:
             "Zacznij całkowicie za darmo. Ulepsz w dowolnym momencie, by odblokować nielimitowane analizy AI i naturalne głosy lektorskie.",

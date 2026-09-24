@@ -47,8 +47,6 @@ interface PricingCopy {
     featureUnlimitedPractice: string;
     geminiVoices: string;
     basicVoice: string;
-    trialBannerTitle: string;
-    trialBannerDesc: string;
     signingIn: string;
     prevPlan: string;
     nextPlan: string;
@@ -85,8 +83,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Nielimitowane ćwiczenia AI",
         geminiVoices: "Naturalne głosy",
         basicVoice: "Głos podstawowy",
-        trialBannerTitle: "3 dni pełnego dostępu za 0 zł",
-        trialBannerDesc: "Wymagana karta · 0 zł opłaty za pierwsze 3 dni",
         signingIn: "Logowanie…",
         prevPlan: "Poprzedni plan",
         nextPlan: "Następny plan",
@@ -121,8 +117,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Unlimited AI practice",
         geminiVoices: "Gemini voices",
         basicVoice: "Basic voice",
-        trialBannerTitle: "3-day full access for $0",
-        trialBannerDesc: "Card required · $0 charged for the first 3 days",
         signingIn: "Signing in…",
         prevPlan: "Previous plan",
         nextPlan: "Next plan",
@@ -157,8 +151,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Unbegrenztes KI-Training",
         geminiVoices: "Natürliche Stimmen",
         basicVoice: "Systemstimme",
-        trialBannerTitle: "3 Tage voller Zugriff für 0 €",
-        trialBannerDesc: "Kreditkarte erforderlich · 0 € für die ersten 3 Tage",
         signingIn: "Anmelden…",
         prevPlan: "Vorheriger Plan",
         nextPlan: "Nächster Plan",
@@ -193,8 +185,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Práctica ilimitada con IA",
         geminiVoices: "Voces naturales",
         basicVoice: "Voz del sistema",
-        trialBannerTitle: "3 días de acceso total por $0",
-        trialBannerDesc: "Se requiere tarjeta · $0 durante los primeros 3 días",
         signingIn: "Iniciando sesión…",
         prevPlan: "Plan anterior",
         nextPlan: "Siguiente plan",
@@ -229,8 +219,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Entraînement IA illimité",
         geminiVoices: "Voix naturelles",
         basicVoice: "Voix standard",
-        trialBannerTitle: "3 jours d'accès complet pour 0 €",
-        trialBannerDesc: "Carte requise · 0 € facturé pour les 3 premiers jours",
         signingIn: "Connexion…",
         prevPlan: "Plan précédent",
         nextPlan: "Plan suivant",
@@ -265,8 +253,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Pratica IA illimitata",
         geminiVoices: "Voci naturali",
         basicVoice: "Voce standard",
-        trialBannerTitle: "3 giorni di accesso completo a 0 €",
-        trialBannerDesc: "Carta richiesta · 0 € addebitati per i primi 3 giorni",
         signingIn: "Accesso in corso…",
         prevPlan: "Piano precedente",
         nextPlan: "Piano successivo",
@@ -301,8 +287,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Neomezené procvičování AI",
         geminiVoices: "Přirozené hlasy",
         basicVoice: "Základní hlas",
-        trialBannerTitle: "3 dny plného přístupu za 0 Kč",
-        trialBannerDesc: "Vyžadována karta · 0 Kč poplatek za první 3 dny",
         signingIn: "Přihlašování…",
         prevPlan: "Předchozí plán",
         nextPlan: "Další plán",
@@ -337,8 +321,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Onbeperkt oefenen met AI",
         geminiVoices: "Natuurlijke stemmen",
         basicVoice: "Standaard stem",
-        trialBannerTitle: "3 dagen volledige toegang voor € 0",
-        trialBannerDesc: "Kaart vereist · € 0 in rekening gebracht voor de eerste 3 dagen",
         signingIn: "Inloggen…",
         prevPlan: "Vorig plan",
         nextPlan: "Volgend plan",
@@ -373,8 +355,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "Prática ilimitada de IA",
         geminiVoices: "Vozes naturais",
         basicVoice: "Voz do sistema",
-        trialBannerTitle: "3 dias de acesso total por R$ 0",
-        trialBannerDesc: "Cartão obrigatório · R$ 0 cobrados nos primeiros 3 dias",
         signingIn: "Entrando…",
         prevPlan: "Plano anterior",
         nextPlan: "Próximo plano",
@@ -409,8 +389,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "無制限のAI学習",
         geminiVoices: "自然な音声",
         basicVoice: "基本音声",
-        trialBannerTitle: "3日間の無料フルアクセス",
-        trialBannerDesc: "カード登録が必要 · 最初の3日間は無料",
         signingIn: "ログイン中…",
         prevPlan: "前のプラン",
         nextPlan: "次のプラン",
@@ -445,8 +423,6 @@ const PRICING_COPY: Record<Locale, PricingCopy> = {
         featureUnlimitedPractice: "무제한 AI 학습",
         geminiVoices: "자연스러운 음성",
         basicVoice: "기본 음성",
-        trialBannerTitle: "3일간 $0 전액 무료 체험",
-        trialBannerDesc: "카드 등록 필요 · 처음 3일 동안 0원 청구",
         signingIn: "로그인 중…",
         prevPlan: "이전 플랜",
         nextPlan: "다음 플랜",
@@ -704,9 +680,7 @@ export default function Pricing({ dict, locale }: PricingProps) {
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-xs font-bold text-cyan-300 mb-5 tracking-wider uppercase">
-                        <span>{pricing.tag}</span>
-                    </div>
+                
                     <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-white mb-4 tracking-tight text-balance">
                         {pricing.title}
                     </h2>
@@ -714,14 +688,7 @@ export default function Pricing({ dict, locale }: PricingProps) {
                         {pc.subtitle}
                     </p>
 
-                    {/* Exact Lectoro Trial Banner */}
-                    <div className="subscription-trial-banner" id="subscriptionTrialBanner">
-                        <span className="subscription-trial-icon" aria-hidden="true">✦</span>
-                        <div>
-                            <strong>{pc.trialBannerTitle}</strong>
-                            <span>{pc.trialBannerDesc}</span>
-                        </div>
-                    </div>
+                   
                 </div>
 
                 <div className="max-w-3xl mx-auto mb-8 text-center space-y-3">
@@ -779,7 +746,7 @@ export default function Pricing({ dict, locale }: PricingProps) {
 
                 {/* PC Desktop: All 3 plans visible side-by-side without scroll (>= lg) */}
                 <div
-                    className="hidden lg:grid lg:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch"
+                    className="hidden lg:grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto items-stretch"
                     aria-label={pricing.title}
                 >
                     {(["free", "basic", "pro"] as const).map((plan) => (

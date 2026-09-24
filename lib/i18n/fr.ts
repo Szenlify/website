@@ -167,7 +167,6 @@ export const fr: Dict = {
     },
 
     pricing: {
-        tag: "Tarifs transparents",
         title: "Choisissez le forfait adapté à vos objectifs",
         subtitle:
             "Commencez 100 % gratuitement. Passez au niveau supérieur à tout moment pour débloquer les analyses IA illimitées, les voix naturelles et les exports Anki complets.",

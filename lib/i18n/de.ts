@@ -167,7 +167,6 @@ export const de: Dict = {
     },
 
     pricing: {
-        tag: "Transparente Preise",
         title: "Wähle den Plan, der zu deinen Zielen passt",
         subtitle:
             "Starte völlig kostenlos. Upgrade jederzeit, um unbegrenzte KI-Abfragen, lebensechte Stimmen und vollständige Anki-Exporte freizuschalten.",

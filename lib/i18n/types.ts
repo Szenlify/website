@@ -110,7 +110,6 @@ export interface Dict {
     };
 
     pricing: {
-        tag: string;
         title: string;
         subtitle: string;
         mostPopular: string;

@@ -167,7 +167,6 @@ export const es: Dict = {
     },
 
     pricing: {
-        tag: "Precios transparentes",
         title: "Elige el plan adaptado a tus metas",
         subtitle:
             "Empieza completamente gratis. Mejora en cualquier momento para desbloquear consultas ilimitadas con IA, voces de estudio y exportaciones Anki.",

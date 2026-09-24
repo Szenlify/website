@@ -8,63 +8,6 @@
     --glass-border: rgba(255, 255, 255, 0.08);
 }
 
-/* Subscription Trial Banner */
-.lectoro-pricing .subscription-trial-banner {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    max-width: 480px;
-    margin: 0 auto 32px;
-    padding: 11px 16px;
-    border: 1px solid rgba(110, 231, 183, 0.22);
-    border-radius: 12px;
-    background:
-        radial-gradient(
-            circle at 8% 20%,
-            rgba(110, 231, 183, 0.14),
-            transparent 42%
-        ),
-        linear-gradient(
-            135deg,
-            rgba(16, 185, 129, 0.08),
-            rgba(99, 102, 241, 0.08)
-        );
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.lectoro-pricing .subscription-trial-icon {
-    display: grid;
-    flex: 0 0 32px;
-    width: 32px;
-    height: 32px;
-    place-items: center;
-    border-radius: 9px;
-    background: linear-gradient(135deg, #34d399, #6366f1);
-    color: #fff;
-    font-size: 15px;
-    box-shadow: 0 4px 14px rgba(52, 211, 153, 0.25);
-}
-
-.lectoro-pricing .subscription-trial-banner div {
-    min-width: 0;
-    text-align: left;
-}
-
-.lectoro-pricing .subscription-trial-banner strong {
-    display: block;
-    color: #ecfdf5;
-    font-size: 13.5px;
-    font-weight: 750;
-    line-height: 1.25;
-}
-
-.lectoro-pricing .subscription-trial-banner span {
-    display: block;
-    margin-top: 2px;
-    color: #a7f3d0;
-    font-size: 12px;
-    line-height: 1.35;
-}
 
 /* Subscription Plan Card */
 .lectoro-pricing .subscription-plan-card {
@@ -73,7 +16,7 @@
     flex-direction: column;
     width: 100%;
     min-height: 520px;
-    padding: 24px 22px 20px;
+    padding: 24px 32px 20px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.075);
     border-radius: 14px;
@@ -114,8 +57,9 @@
     position: absolute;
     top: -34px;
     right: -38px;
-    width: 95px;
-    height: 95px;
+    width: 525px;
+    height: 155px;
+    border: 1px solid rgba(110, 231, 183, 0.406);
     border-radius: 50%;
     background: rgba(110, 231, 183, 0.06);
     content: "";

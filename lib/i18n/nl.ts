@@ -167,7 +167,6 @@ export const nl: Dict = {
     },
 
     pricing: {
-        tag: "Transparante prijzen",
         title: "Kies het abonnement dat bij jouw doelen past",
         subtitle:
             "Begin 100% gratis. Upgrade wanneer je wilt om onbeperkte AI-analyses, levensechte stemmen en volledige Anki-exports te ontgrendelen.",

@@ -167,7 +167,6 @@ export const en: Dict = {
     },
 
     pricing: {
-        tag: "Transparent Pricing",
         title: "Choose the Plan That Fits Your Goals",
         subtitle:
             "Start completely free. Upgrade whenever you're ready to unlock unlimited AI queries, natural lektor voices, and full Anki exports.",

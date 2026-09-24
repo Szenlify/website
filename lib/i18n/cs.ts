@@ -167,7 +167,6 @@ export const cs: Dict = {
     },
 
     pricing: {
-        tag: "Přehledný ceník",
         title: "Vyberte si plán přizpůsobený vašim cílům",
         subtitle:
             "Začněte zcela zdarma. Kdykoli upgradujte a odemkněte neomezené dotazy na AI, přirozené hlasy a kompletní exporty do Anki.",
