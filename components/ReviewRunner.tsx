@@ -36,6 +36,8 @@ interface ReviewRunnerProps {
 
 const REVIEW_RUNNER_COPY: Record<Locale, {
   review: string;
+  showAnswer: string;
+  showQuestion: string;
   edit: string;
   delete: string;
   confirmDelete: string;
@@ -53,6 +55,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
   iosVoiceHint: string;
 }> = {
   pl: {
+    showAnswer: "Pokaż odpowiedź",
+    showQuestion: "Pokaż pytanie",
     review: "Powtórki",
     edit: "Edytuj",
     delete: "Usuń",
@@ -71,6 +75,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "Wskazówka iPhone: Możesz bezpłatnie uzyskać studyjną jakość głosu w Ustawienia → Dostępność → Zawartość mówiona → Głosy (pobierz głos Ulepszony).",
   },
   en: {
+    showAnswer: "Show answer",
+    showQuestion: "Show question",
     review: "Review",
     edit: "Edit",
     delete: "Delete",
@@ -89,6 +95,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "iPhone tip: Get natural studio voice quality in Settings → Accessibility → Spoken Content → Voices (download Enhanced voice).",
   },
   de: {
+    showAnswer: "Antwort anzeigen",
+    showQuestion: "Frage anzeigen",
     review: "Wiederholung",
     edit: "Bearbeiten",
     delete: "Löschen",
@@ -107,6 +115,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "iPhone-Tipp: Natürliche Studioqualität aktivieren unter: Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen (Erweiterte Stimme laden).",
   },
   es: {
+    showAnswer: "Mostrar respuesta",
+    showQuestion: "Mostrar pregunta",
     review: "Repaso",
     edit: "Editar",
     delete: "Eliminar",
@@ -125,6 +135,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "Consejo iPhone: Consigue voz de estudio gratuita en Ajustes → Accesibilidad → Contenido leído → Voces (descarga voz Mejorada).",
   },
   fr: {
+    showAnswer: "Afficher la réponse",
+    showQuestion: "Afficher la question",
     review: "Révision",
     edit: "Modifier",
     delete: "Supprimer",
@@ -143,6 +155,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "Astuce iPhone : Obtenez une voix naturelle en allant dans Réglages → Accessibilité → Contenu énoncé → Voix (téléchargez la voix Améliorée).",
   },
   it: {
+    showAnswer: "Mostra risposta",
+    showQuestion: "Mostra domanda",
     review: "Ripasso",
     edit: "Modifica",
     delete: "Elimina",
@@ -161,6 +175,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "Suggerimento iPhone: Ottieni una voce di qualità studio in Impostazioni → Accessibilità → Contenuti letti ad alta voce → Voci (scarica voce Migliorata).",
   },
   cs: {
+    showAnswer: "Zobrazit odpověď",
+    showQuestion: "Zobrazit otázku",
     review: "Opakování",
     edit: "Upravit",
     delete: "Smazat",
@@ -179,6 +195,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "Tip pro iPhone: Přirozený studiový hlas získáte v Nastavení → Zpřístupnění → Předčítání obsahu → Hlasy (stáhněte vylepšený hlas).",
   },
   nl: {
+    showAnswer: "Antwoord tonen",
+    showQuestion: "Vraag tonen",
     review: "Herhaling",
     edit: "Bewerken",
     delete: "Verwijderen",
@@ -197,6 +215,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "iPhone-tip: Krijg natuurlijke studiokwaliteit via Instellingen → Toegankelijkheid → Gesproken materiaal → Stemmen (download Verbeterde stem).",
   },
   pt: {
+    showAnswer: "Mostrar resposta",
+    showQuestion: "Mostrar pergunta",
     review: "Revisão",
     edit: "Editar",
     delete: "Excluir",
@@ -215,6 +235,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "Dica iPhone: Obtenha qualidade de estúdio gratuita em Ajustes → Acessibilidade → Conteúdo Falado → Vozes (baixe a voz Melhorada).",
   },
   ja: {
+    showAnswer: "答えを表示",
+    showQuestion: "問題を表示",
     review: "復習",
     edit: "編集",
     delete: "削除",
@@ -233,6 +255,8 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     iosVoiceHint: "iPhoneのヒント: 「設定」→「アクセシビリティ」→「読み上げコンテンツ」→「声」で拡張音声をダウンロードすると、より自然な発音になります。",
   },
   ko: {
+    showAnswer: "정답 보기",
+    showQuestion: "문제 보기",
     review: "복습",
     edit: "수정",
     delete: "삭제",
@@ -1398,6 +1422,17 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                     />
                                   )}
                                 </div>
+                                <button
+                                  type="button"
+                                  className="review-mobile-flip"
+                                  disabled={saving || !!flipPhase || !active}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    flipCard();
+                                  }}
+                                >
+                                  {back ? rc.showQuestion : rc.showAnswer}
+                                </button>
                               </div>
                             );
                           })}
