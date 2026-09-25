@@ -26,6 +26,7 @@ import {
   OPENAI_TTS_VOICES,
   DEFAULT_OPENAI_VOICE,
   OPENAI_VOICE_GAIN,
+  formatNextUsageRenewalDate,
   playBoostedAudioUrl,
   stopActiveAudio,
   type OpenAiVoiceId,
@@ -71,6 +72,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
   unlockVoices: string;
   close: string;
   voiceSelected: string;
+  quotaStatus: string;
 }> = {
   pl: {
     showAnswer: "Pokaż odpowiedź",
@@ -102,6 +104,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Odblokuj naturalne głosy",
     close: "Zamknij",
     voiceSelected: "Wybrano",
+    quotaStatus: "Limit AI wyczerpany\nOdnowi się {date}",
   },
   en: {
     showAnswer: "Show answer",
@@ -133,6 +136,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Unlock natural voices",
     close: "Close",
     voiceSelected: "Selected",
+    quotaStatus: "AI limit reached\nRenews {date}",
   },
   de: {
     showAnswer: "Antwort anzeigen",
@@ -164,6 +168,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Natürliche Stimmen freischalten",
     close: "Schließen",
     voiceSelected: "Ausgewählt",
+    quotaStatus: "KI-Limit erreicht\nErneuert sich am {date}",
   },
   es: {
     showAnswer: "Mostrar respuesta",
@@ -195,6 +200,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Desbloquear voces naturales",
     close: "Cerrar",
     voiceSelected: "Seleccionado",
+    quotaStatus: "Límite de IA alcanzado\nSe renueva el {date}",
   },
   fr: {
     showAnswer: "Afficher la réponse",
@@ -226,6 +232,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Débloquer les voix naturelles",
     close: "Fermer",
     voiceSelected: "Sélectionné",
+    quotaStatus: "Limite d'IA atteinte\nRenouvellement le {date}",
   },
   it: {
     showAnswer: "Mostra risposta",
@@ -241,7 +248,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     sentence: "Frase",
     sentenceTranslation: "Traduzione della frase",
     loadingAudio: "Caricamento audio…",
-    unsupportedAudio: "La pronuncia non è disponibile in questo browser.",
+    unsupportedAudio: "La pronuncia non jest disponibile in questo browser.",
     retryAudioTap: "Tocca l'altoparlante per riprovare.",
     playbackFailed: "Impossibile riprodurre la registrazione. Riprova.",
     listenSlowly: "Ascolta più lentamente (0,75×)",
@@ -257,6 +264,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Sblocca voci naturali",
     close: "Chiudi",
     voiceSelected: "Selezionato",
+    quotaStatus: "Limite IA raggiunto\nSi rinnova il {date}",
   },
   cs: {
     showAnswer: "Zobrazit odpověď",
@@ -288,6 +296,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Odemknout přirozené hlasy",
     close: "Zavřít",
     voiceSelected: "Vybráno",
+    quotaStatus: "Limit AI vyčerpán\nObnoví se {date}",
   },
   nl: {
     showAnswer: "Antwoord tonen",
@@ -319,6 +328,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Ontgrendel natuurlijke stemmen",
     close: "Sluiten",
     voiceSelected: "Geselecteerd",
+    quotaStatus: "AI-limiet bereikt\nVernieuwt op {date}",
   },
   pt: {
     showAnswer: "Mostrar resposta",
@@ -350,6 +360,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "Desbloquear vozes naturais",
     close: "Fechar",
     voiceSelected: "Selecionado",
+    quotaStatus: "Limite de IA atingido\nRenova em {date}",
   },
   ja: {
     showAnswer: "答えを表示",
@@ -381,6 +392,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "自然な音声をアンロック",
     close: "閉じる",
     voiceSelected: "選択",
+    quotaStatus: "AI上限に達しました\n更新日: {date}",
   },
   ko: {
     showAnswer: "정답 보기",
@@ -402,7 +414,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     listenSlowly: "느리게 듣기 (0.75×)",
     iosVoiceHint: "iPhone 팁: 설정 → 손쉬운 사용 → 콘텐츠 말하기 → 음성에서 '향상된 음성'을 다운로드하면 훨씬 자연스러운 발음을 들을 수 있습니다.",
     voicePickerTitle: "복습 음성",
-    voicePickerDesc: "더 자연스럽게 듣고 기억하기",
+    voicePickerDesc: "더自然스럽게 듣고 기억하기",
     systemVoice: "시스템 음성",
     systemVoiceDesc: "빠르고 무료",
     naturalVoices: "자연스러운 AI 음성",
@@ -412,6 +424,7 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     unlockVoices: "자연스러운 음성 잠금 해제",
     close: "닫기",
     voiceSelected: "선택됨",
+    quotaStatus: "AI 한도 소진\n갱신일: {date}",
   },
 };
 
@@ -438,8 +451,46 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     removeWord,
     refreshWords,
     isPaid,
+    subscriptionInfo,
     refreshPlan,
   } = useAuth();
+
+  const [quotaExhausted, setQuotaExhausted] = useState<boolean>(() => {
+    return Boolean(isPaid && subscriptionInfo?.ttsLimit > 0 && subscriptionInfo?.ttsRemaining <= 0);
+  });
+  const quotaExhaustedRef = useRef(quotaExhausted);
+  quotaExhaustedRef.current = quotaExhausted;
+
+  const [renewalTimestamp, setRenewalTimestamp] = useState<number | string | null>(() => {
+    return subscriptionInfo?.stripeCurrentPeriodEnd || subscriptionInfo?.month || null;
+  });
+
+  useEffect(() => {
+    if (isPaid && subscriptionInfo?.ttsLimit > 0 && subscriptionInfo?.ttsRemaining <= 0) {
+      setQuotaExhausted(true);
+      quotaExhaustedRef.current = true;
+    }
+    if (subscriptionInfo?.stripeCurrentPeriodEnd || subscriptionInfo?.month) {
+      setRenewalTimestamp(subscriptionInfo.stripeCurrentPeriodEnd || subscriptionInfo.month);
+    }
+  }, [isPaid, subscriptionInfo]);
+
+  useEffect(() => {
+    const handleQuotaExhausted = (e: Event) => {
+      const custom = e as CustomEvent<{ renewalTimestamp?: number | string | null }>;
+      setQuotaExhausted(true);
+      quotaExhaustedRef.current = true;
+      if (custom.detail?.renewalTimestamp) {
+        setRenewalTimestamp(custom.detail.renewalTimestamp);
+      }
+    };
+    window.addEventListener("lectoro-quota-exhausted", handleQuotaExhausted);
+    return () => window.removeEventListener("lectoro-quota-exhausted", handleQuotaExhausted);
+  }, []);
+
+  const formattedRenewalDate = useMemo(() => {
+    return formatNextUsageRenewalDate(renewalTimestamp, locale);
+  }, [renewalTimestamp, locale]);
 
   const [queue, setQueue] = useState<ReviewWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -828,7 +879,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         fallbackNativeSpeak(clean, lang, rate, request);
       }
     },
-    [playOpenAiAudio, playEdgeAudio, fallbackNativeSpeak]
+    [playOpenAiAudio, playEdgeAudio, fallbackNativeSpeak, formattedRenewalDate, rc, subscriptionInfo]
   );
 
   const flipCard = useCallback(() => {
@@ -1497,7 +1548,9 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
               aria-expanded={voiceMenuOpen}
               aria-controls="reviewVoiceMenu"
               title={
-                isPaid && voiceMode === "openai"
+                quotaExhausted && isPaid && voiceMode === "openai"
+                  ? rc.quotaStatus.replace("{date}", formattedRenewalDate)
+                  : isPaid && voiceMode === "openai"
                   ? `${rc.naturalVoices}: ${openAiVoice === "nova" ? "Nova" : "Onyx"}`
                   : rc.voicePickerTitle
               }
@@ -1515,8 +1568,8 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                   ? `${openAiVoice === "nova" ? "👩 Nova" : "👨 Onyx"}`
                   : rc.systemVoice}
               </span>
-              <span className={`review-voice-ai-badge ${!isPaid ? "is-locked" : ""}`}>
-                AI
+              <span className={`review-voice-ai-badge ${!isPaid ? "is-locked" : quotaExhausted ? "is-exhausted" : ""}`}>
+                {quotaExhausted && isPaid ? "!" : "AI"}
               </span>
               <span className="review-voice-chevron hidden sm:inline" aria-hidden="true">
                 ⌄
@@ -1571,6 +1624,13 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                   <span>{rc.naturalVoices}</span>
                   <span className="review-voice-premium">PREMIUM</span>
                 </div>
+
+                {quotaExhausted && isPaid && (
+                  <div className="review-voice-quota-banner" role="status">
+                    <span aria-hidden="true">ℹ️</span>
+                    <strong>{rc.quotaStatus.replace("{date}", formattedRenewalDate)}</strong>
+                  </div>
+                )}
 
                 {isPaid ? (
                   <div className="review-voice-list">

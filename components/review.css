@@ -132,6 +132,11 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
     margin-right: 3px;
     font-size: 7px;
 }
+.review-voice-ai-badge.is-exhausted {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.16);
+    color: #fcd34d;
+}
 .review-voice-chevron {
     color: var(--text-ghost);
     font-size: 11px;
@@ -269,6 +274,26 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
     font-weight: 800;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+}
+.review-voice-quota-banner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 10px;
+    padding: 6px 10px;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 8px;
+    background: rgba(245, 158, 11, 0.08);
+    font-size: 11px;
+    line-height: 1.35;
+    color: #fef3c7;
+    white-space: pre-line;
+}
+.review-voice-quota-banner strong {
+    color: #fef3c7;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: pre-line;
 }
 .review-voice-teaser {
     padding: 11px;
@@ -1626,10 +1651,15 @@ body:has([data-reviews-page]) { overflow-x: clip; }
 
 .lectoro-review .review-audio-status {
     flex-shrink: 0;
-    margin: 0 0 8px;
-    color: var(--text-secondary);
-    font-size: 12px;
+    margin: 0 0 10px;
+    padding: 6px 12px;
+    border: 1px solid rgba(245, 158, 11, 0.22);
+    border-radius: 8px;
+    background: rgba(245, 158, 11, 0.08);
+    color: #fef3c7;
+    font-size: 11.5px;
     line-height: 1.4;
+    text-align: left;
 }
 
 .lectoro-review .review-screenshot-box.is-error {

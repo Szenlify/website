@@ -25,6 +25,47 @@ export const OPENAI_TTS_VOICES: readonly OpenAiVoiceOption[] = [
   { id: "onyx", name: "Onyx", gender: "male", avatar: "👨" },
 ] as const;
 
+export function formatNextUsageRenewalDate(
+  timestampOrMonth?: number | string | Date | null,
+  locale = "pl"
+): string {
+  let renewalDate: Date | null = null;
+  if (typeof timestampOrMonth === "number" && timestampOrMonth > 0) {
+    const ms = timestampOrMonth < 10000000000 ? timestampOrMonth * 1000 : timestampOrMonth;
+    renewalDate = new Date(ms);
+  } else if (timestampOrMonth instanceof Date) {
+    renewalDate = timestampOrMonth;
+  } else if (typeof timestampOrMonth === "string" && timestampOrMonth.trim()) {
+    const num = Number(timestampOrMonth);
+    if (!isNaN(num) && num > 0) {
+      const ms = num < 10000000000 ? num * 1000 : num;
+      renewalDate = new Date(ms);
+    } else {
+      const match = /^(\d{4})-(\d{2})$/.exec(timestampOrMonth.trim());
+      if (match) {
+        const year = Number(match[1]);
+        const monthIndex = Number(match[2]) - 1;
+        renewalDate = new Date(Date.UTC(year, monthIndex + 1, 1));
+      }
+    }
+  }
+
+  if (!renewalDate || isNaN(renewalDate.getTime())) {
+    const now = new Date();
+    renewalDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+  }
+
+  try {
+    return new Intl.DateTimeFormat(locale || "pl", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(renewalDate);
+  } catch {
+    return renewalDate.toLocaleDateString();
+  }
+}
+
 const CDN = "https://pub-ee4534784e534bd9af38ba8022bc5e1e.r2.dev";
 const GEMINI_PROXY_URL = "https://europe-west1-extension-eng.cloudfunctions.net/geminiProxy";
 
@@ -97,7 +138,34 @@ export async function synthesizeOpenAiSpeech({
 
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
-    throw new Error(data.error || `TTS synthesis error (${response.status})`);
+    const isLimit =
+      response.status === 429 ||
+      data.limit?.code === "GEMINI_TTS_MONTHLY_LIMIT_REACHED" ||
+      data.code === "GEMINI_TTS_MONTHLY_LIMIT_REACHED" ||
+      String(data.error || "").toLowerCase().includes("limit");
+
+    if (isLimit && typeof window !== "undefined") {
+      const renewalTimestamp =
+        data.profile?.stripeCurrentPeriodEnd ||
+        data.profile?.usage?.elevenLabsCharacters?.month ||
+        null;
+      window.dispatchEvent(
+        new CustomEvent("lectoro-quota-exhausted", {
+          detail: {
+            feature: "tts",
+            renewalTimestamp,
+            profile: data.profile,
+          },
+        })
+      );
+    }
+
+    const err: any = new Error(data.error || `TTS synthesis error (${response.status})`);
+    err.status = response.status;
+    err.code = data.limit?.code || data.code || (isLimit ? "GEMINI_TTS_MONTHLY_LIMIT_REACHED" : undefined);
+    err.profile = data.profile;
+    err.limit = data.limit;
+    throw err;
   }
 
   // Extract updated character usage from server response header and broadcast to UI

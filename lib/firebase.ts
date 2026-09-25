@@ -19,6 +19,7 @@ import {
     writeBatch,
 } from "firebase/firestore";
 import { SRS, type ReviewWord, type SRState } from "./srs";
+import { formatNextUsageRenewalDate } from "./review-audio";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCjJRBkjpxbCVtCSaB6Clk01eIx1-3V7Po",
@@ -318,6 +319,8 @@ export interface SubscriptionDetails {
     ttsUsed: number;
     ttsRemaining: number;
     month: string;
+    stripeCurrentPeriodEnd?: number | null;
+    renewalDate?: string;
 }
 
 export const PLAN_TTS_LIMITS: Record<UserPlan, number> = {
@@ -340,11 +343,15 @@ export async function fetchUserSubscriptionDetails(user: User | null): Promise<S
             ttsUsed: 0,
             ttsRemaining: 0,
             month,
+            stripeCurrentPeriodEnd: null,
+            renewalDate: formatNextUsageRenewalDate(month, "pl"),
         };
     }
 
     let plan: UserPlan = "free";
     let ttsUsed = 0;
+    let stripeCurrentPeriodEnd: number | null = null;
+    let resetDate = "";
 
     try {
         // 1. Force refresh token for fresh custom claims
@@ -373,7 +380,10 @@ export async function fetchUserSubscriptionDetails(user: User | null): Promise<S
                 }
             }
 
-            const resetDate = String(data.elevenLabsResetDate || "");
+            if (data.stripeCurrentPeriodEnd) {
+                stripeCurrentPeriodEnd = Number(data.stripeCurrentPeriodEnd) || null;
+            }
+            resetDate = String(data.elevenLabsResetDate || "");
             if (resetDate === month) {
                 ttsUsed = Math.max(0, Number(data.elevenLabsCharactersThisMonth) || 0);
             }
@@ -409,6 +419,9 @@ export async function fetchUserSubscriptionDetails(user: User | null): Promise<S
                     if (typeof serverUsed === "number") {
                         ttsUsed = Math.max(ttsUsed, serverUsed);
                     }
+                    if (data?.profile?.stripeCurrentPeriodEnd) {
+                        stripeCurrentPeriodEnd = Number(data.profile.stripeCurrentPeriodEnd) || stripeCurrentPeriodEnd;
+                    }
                 }
             } catch (proxyErr) {
                 console.warn("[Firebase] geminiProxy subscription check error:", proxyErr);
@@ -421,6 +434,7 @@ export async function fetchUserSubscriptionDetails(user: User | null): Promise<S
     const isPaid = plan === "basic" || plan === "pro";
     const ttsLimit = PLAN_TTS_LIMITS[plan] || 0;
     const ttsRemaining = isPaid ? Math.max(0, ttsLimit - ttsUsed) : 0;
+    const renewalDate = formatNextUsageRenewalDate(stripeCurrentPeriodEnd || resetDate || month, "pl");
 
     return {
         plan,
@@ -429,5 +443,7 @@ export async function fetchUserSubscriptionDetails(user: User | null): Promise<S
         ttsUsed,
         ttsRemaining,
         month,
+        stripeCurrentPeriodEnd,
+        renewalDate,
     };
 }

@@ -22,6 +22,7 @@ import {
 } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 import { SRS, type ReviewWord, type SRState } from "@/lib/srs";
+import { formatNextUsageRenewalDate } from "@/lib/review-audio";
 
 interface AuthContextValue {
     user: User | null;
@@ -65,6 +66,8 @@ const AuthContext = createContext<AuthContextValue>({
         ttsUsed: 0,
         ttsRemaining: 0,
         month: "",
+        stripeCurrentPeriodEnd: null,
+        renewalDate: "",
     },
     refreshPlan: async () => {},
     isSigningIn: false,
@@ -103,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [subscriptionInfo, setSubscriptionInfo] = useState<SubscriptionDetails>(() => {
         const month = getCurrentMonth();
         if (typeof window === "undefined") {
-            return { plan: "free", isPaid: false, ttsLimit: 0, ttsUsed: 0, ttsRemaining: 0, month };
+            return { plan: "free", isPaid: false, ttsLimit: 0, ttsUsed: 0, ttsRemaining: 0, month, stripeCurrentPeriodEnd: null, renewalDate: formatNextUsageRenewalDate(month, "pl") };
         }
         try {
             const savedPlan = (localStorage.getItem("lectoro_cached_user_plan") || "free") as UserPlan;
@@ -119,9 +122,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 ttsUsed: validUsed,
                 ttsRemaining: isPaid ? Math.max(0, limit - validUsed) : 0,
                 month,
+                stripeCurrentPeriodEnd: null,
+                renewalDate: formatNextUsageRenewalDate(month, "pl"),
             };
         } catch {
-            return { plan: "free", isPaid: false, ttsLimit: 0, ttsUsed: 0, ttsRemaining: 0, month };
+            return { plan: "free", isPaid: false, ttsLimit: 0, ttsUsed: 0, ttsRemaining: 0, month, stripeCurrentPeriodEnd: null, renewalDate: formatNextUsageRenewalDate(month, "pl") };
         }
     });
 
@@ -203,13 +208,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Realtime nasłuchiwanie dokumentu użytkownika w Firestore
     useEffect(() => {
         if (!user?.uid) {
+            const m = getCurrentMonth();
             setSubscriptionInfo({
                 plan: "free",
                 isPaid: false,
                 ttsLimit: 0,
                 ttsUsed: 0,
                 ttsRemaining: 0,
-                month: getCurrentMonth(),
+                month: m,
+                stripeCurrentPeriodEnd: null,
+                renewalDate: formatNextUsageRenewalDate(m, "pl"),
             });
             try {
                 localStorage.removeItem("lectoro_cached_user_plan");
@@ -237,11 +245,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
             }
 
+            const stripeEnd = Number(data.stripeCurrentPeriodEnd) || null;
             const resetDate = String(data.elevenLabsResetDate || "");
             const used = resetDate === month ? Math.max(0, Number(data.elevenLabsCharactersThisMonth) || 0) : 0;
             const paid = activePlan === "basic" || activePlan === "pro";
             const limit = PLAN_TTS_LIMITS[activePlan] || 0;
             const remaining = paid ? Math.max(0, limit - used) : 0;
+            const renewalDate = formatNextUsageRenewalDate(stripeEnd || resetDate || month, "pl");
 
             setSubscriptionInfo({
                 plan: activePlan,
@@ -250,6 +260,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 ttsUsed: used,
                 ttsRemaining: remaining,
                 month,
+                stripeCurrentPeriodEnd: stripeEnd,
+                renewalDate,
             });
 
             try {
