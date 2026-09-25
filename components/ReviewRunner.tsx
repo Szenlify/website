@@ -25,6 +25,7 @@ import {
   ReviewAudioCache,
 } from "@/lib/review-audio";
 import ReviewScreenshot from "./ReviewScreenshot";
+import { ReviewGesture, reviewSwipeThreshold } from "@/lib/review-gesture";
 import { resetReviewScroll } from "@/lib/review-scroll";
 import "./review.css";
 
@@ -301,13 +302,14 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
 
   const cardRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
-  const drag = useRef({ x: 0, lastX: 0, time: 0, velocity: 0 });
+  const drag = useRef({ x: 0 });
+  const gesture = useRef(new ReviewGesture());
+  const suppressClickUntil = useRef(0);
 
   // Shared touch, pen and mouse drag state
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [touchDeltaX, setTouchDeltaX] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [swipeThreshold, setSwipeThreshold] = useState(() => reviewSwipeThreshold(320));
 
   // Snapshot the session: rating updates must not reorder or reset its queue.
   useEffect(() => {
@@ -749,110 +751,108 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     editing,
   ]);
 
-  const touchStartTime = useRef(0);
-  const suppressClickUntil = useRef(0);
-  const pointerId = useRef<number | null>(null);
-
-  // Pointer capture keeps a swipe continuous outside the card bounds.
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (busy.current || !e.isPrimary || e.button !== 0 || pointerId.current !== null ||
-      (e.target as HTMLElement).closest("button, input, textarea, a")) return;
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-    const now = performance.now();
-    touchStartTime.current = now;
-    pointerId.current = e.pointerId;
-    e.currentTarget.setPointerCapture(e.pointerId);
-
-    drag.current = {
-      x: 0,
-      lastX: clientX,
-      time: now,
-      velocity: 0,
-    };
-    setTouchStartX(clientX);
-    setTouchStartY(clientY);
-    setIsDragging(true);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (busy.current || e.pointerId !== pointerId.current || touchStartX === null || touchStartY === null) return;
-    const currentX = e.clientX;
-    const currentY = e.clientY;
-    const deltaX = currentX - touchStartX;
-    const deltaY = currentY - touchStartY;
-
-    // If movement is predominantly vertical, cancel horizontal drag so user can scroll smoothly
-    if (Math.abs(deltaY) > 14 && Math.abs(deltaY) > Math.abs(deltaX) * 1.3) {
-      suppressClickUntil.current = performance.now() + 500;
-      pointerId.current = null;
-      if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
-      setTouchStartX(null);
-      setTouchStartY(null);
-      setIsDragging(false);
-      setTouchDeltaX(0);
-      drag.current.x = 0;
-      return;
-    }
-
-    const now = performance.now();
-    drag.current.velocity =
-      (currentX - drag.current.lastX) / Math.max(1, now - drag.current.time);
-    drag.current.lastX = currentX;
-    drag.current.time = now;
-    drag.current.x = deltaX;
-    setTouchDeltaX(deltaX);
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (e.pointerId !== pointerId.current || touchStartX === null) return;
-    pointerId.current = null;
+  const cancelGesture = useCallback(() => {
+    const id = gesture.current.pointerId;
+    gesture.current.cancel();
+    if (id === null) return;
     suppressClickUntil.current = performance.now() + 500;
+    const card = cardRef.current;
+    if (card?.hasPointerCapture(id)) card.releasePointerCapture(id);
+    drag.current.x = 0;
+    setTouchDeltaX(0);
     setIsDragging(false);
+  }, []);
 
-    const x = drag.current.x;
-    const elapsed = performance.now() - touchStartTime.current;
-    const velocity =
-      performance.now() - drag.current.time < 100 ? drag.current.velocity : 0;
-    const threshold = Math.min(
-      100,
-      (cardRef.current?.offsetWidth || 320) * 0.24,
+  useEffect(() => {
+    // Buttons (including TTS), a second finger and a new contact discard old input.
+    const onPointerDown = () => cancelGesture();
+    const onVisibility = () => {
+      if (document.hidden) cancelGesture();
+    };
+    document.addEventListener("pointerdown", onPointerDown, true);
+    window.addEventListener("blur", cancelGesture);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      window.removeEventListener("blur", cancelGesture);
+      document.removeEventListener("visibilitychange", onVisibility);
+      cancelGesture();
+    };
+  }, [cancelGesture]);
+
+  useEffect(() => {
+    cancelGesture();
+  }, [activeCardKey, currentIndex, editingCardId, saving, isCramMode, cancelGesture]);
+
+  const isInteractiveTarget = (target: EventTarget | null) =>
+    target instanceof Element && !!target.closest(
+      "button, input, textarea, select, a, [role=button]:not(.review-screenshot), [contenteditable], [data-no-swipe]",
     );
 
-    // 1. Swipe exceeded threshold or fling velocity: rate card
-    if (
-      Math.abs(x) >= threshold ||
-      (Math.abs(x) > 28 &&
-        Math.abs(velocity) > 0.55 &&
-        Math.sign(velocity) === Math.sign(x))
-    ) {
-      void rateCard(x < 0 ? 1 : 2);
-    } else {
-      // 2. Clean quick tap on the card (movement < 12px and duration < 380ms): flip card!
-      if (Math.abs(x) < 12 && elapsed < 380) {
-        const target = e.target as HTMLElement;
-        if (!target.closest("button, input, textarea, a")) {
-          flipCard();
-        }
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (busy.current || editing || !e.isPrimary || e.button !== 0 ||
+      isInteractiveTarget(e.target)) return;
+    setSwipeThreshold(reviewSwipeThreshold(e.currentTarget.offsetWidth));
+    gesture.current.start(e.pointerId, e.clientX, e.clientY,
+      e.currentTarget.offsetWidth, performance.now());
+    drag.current.x = 0;
+    setTouchDeltaX(0);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerId !== gesture.current.pointerId) return;
+    if (busy.current || (e.pointerType === "mouse" && e.buttons !== 1)) {
+      cancelGesture();
+      return;
+    }
+    gesture.current.move(e.pointerId, e.clientX, e.clientY);
+    if (gesture.current.pointerId === null) {
+      suppressClickUntil.current = performance.now() + 500;
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
       }
+    }
+    drag.current.x = gesture.current.deltaX;
+    setTouchDeltaX(gesture.current.deltaX);
+    setIsDragging(gesture.current.dragging);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerId !== gesture.current.pointerId) return;
+    // Pointer capture retargets events: inspect the actual release point too.
+    const releaseTarget = document.elementFromPoint(e.clientX, e.clientY);
+    if (busy.current || isInteractiveTarget(releaseTarget)) {
+      cancelGesture();
+      return;
+    }
+    gesture.current.move(e.pointerId, e.clientX, e.clientY);
+    drag.current.x = gesture.current.deltaX;
+    const result = gesture.current.finish(e.pointerId, e.clientX, e.clientY, performance.now());
+    suppressClickUntil.current = performance.now() + 500;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    setIsDragging(false);
+    if (result === 1 || result === 2) {
+      void rateCard(result);
+    } else {
       drag.current.x = 0;
       setTouchDeltaX(0);
+      if (result === "tap" && releaseTarget && e.currentTarget.contains(releaseTarget)) flipCard();
     }
-    setTouchStartX(null);
-    setTouchStartY(null);
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-    if (busy.current || performance.now() < suppressClickUntil.current) return;
-    const target = e.target as HTMLElement;
-    if (target.closest("button, input, textarea, a")) return;
-    if (Math.abs(touchDeltaX) > 10) return;
+    // Physical taps are handled exactly once in pointerup. Keep virtual clicks.
+    if (e.detail !== 0 || busy.current || performance.now() < suppressClickUntil.current ||
+      isInteractiveTarget(e.target)) return;
     flipCard();
   };
 
   // Calculate rotation, translation, and glow shadow during touch drag
   const isSwipingLeft = touchDeltaX < -15;
-  const swipeIntensity = Math.min(1, Math.abs(touchDeltaX) / 80);
+  const swipeIntensity = Math.min(1, Math.abs(touchDeltaX) / swipeThreshold);
 
   const dynamicShadow =
     isDragging && touchDeltaX !== 0
@@ -1279,19 +1279,12 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                       className={`review-flashcard ${preview ? "review-preview" : "review-active"} ${!preview && isDragging ? "review-dragging" : ""} ${preview ? "" : flipPhase} ${preview ? "" : swipeClass}`}
                       style={preview ? undefined : cardTransformStyle}
                       onClick={preview ? undefined : handleCardClick}
+                      onDragStart={(event) => event.preventDefault()}
                       onPointerDown={preview ? undefined : handlePointerDown}
                       onPointerMove={preview ? undefined : handlePointerMove}
                       onPointerUp={preview ? undefined : handlePointerUp}
-                      onPointerCancel={() => {
-                        if (busy.current) return;
-                        pointerId.current = null;
-                        suppressClickUntil.current = performance.now() + 500;
-                        drag.current.x = 0;
-                        setTouchStartX(null);
-                        setTouchStartY(null);
-                        setTouchDeltaX(0);
-                        setIsDragging(false);
-                      }}
+                      onPointerCancel={preview ? undefined : cancelGesture}
+                      onLostPointerCapture={preview ? undefined : cancelGesture}
                     >
                       {/* Dynamic Swipe Action Stamps on Mobile */}
                       {!preview && isDragging && touchDeltaX !== 0 && (
@@ -1299,7 +1292,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                           {touchDeltaX < -15 && (
                             <div
                               className="review-swipe-stamp review-swipe-stamp-again"
-                              style={{ opacity: Math.min(1, (Math.abs(touchDeltaX) - 15) / 50) }}
+                              style={{ opacity: swipeIntensity }}
                             >
                               <span className="stamp-title">{r.btnAgain}</span>
                             </div>
@@ -1307,7 +1300,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                           {touchDeltaX > 15 && (
                             <div
                               className="review-swipe-stamp review-swipe-stamp-good"
-                              style={{ opacity: Math.min(1, (Math.abs(touchDeltaX) - 15) / 50) }}
+                              style={{ opacity: swipeIntensity }}
                             >
                               <span className="stamp-title">{r.btnGood}</span>
                             </div>
@@ -1352,6 +1345,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                                     </span>
                                     <div
                                       className="review-inline-audio flex items-center gap-2 my-2"
+                                      data-no-swipe
                                       onPointerDown={(event) => event.stopPropagation()}
                                       onPointerUp={(event) => event.stopPropagation()}
                                       onClick={(event) => event.stopPropagation()}

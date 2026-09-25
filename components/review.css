@@ -1233,7 +1233,7 @@ container-type: inline-size; width: 100%; max-width: 480px; margin: 0 auto; padd
 }
 
 .lectoro-review .review-card { overflow: visible; }
-.lectoro-review .review-flashcard { touch-action: pan-y; overflow-wrap: anywhere; }
+.lectoro-review .review-flashcard { touch-action: pan-y pinch-zoom; overflow-wrap: anywhere; }
 .lectoro-review .review-header { flex-wrap: wrap; }
 .lectoro-review .review-voice-picker { position: relative; }
 .lectoro-review .review-voice-menu { z-index: 30; max-width: calc(100vw - 48px); }
@@ -1504,7 +1504,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     .lectoro-review .review-flashcard,
     .lectoro-review .review-flip-scene,
     .lectoro-review .review-flip-inner { height: 100%; min-height: 0; }
-    .lectoro-review .review-flashcard { margin-bottom: 0; touch-action: pinch-zoom; }
+    .lectoro-review .review-flashcard { margin-bottom: 0; touch-action: pan-y pinch-zoom; }
     .lectoro-review .review-flashcard.review-preview {
         inset: 14px;
         width: calc(100% - 28px);
