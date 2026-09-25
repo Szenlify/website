@@ -1,16 +1,16 @@
 // High-quality OpenAI TTS neural voices & Cloudflare R2 cache with Edge TTS fallback.
-export type OpenAiVoiceId = "nova" | "alloy";
+export type OpenAiVoiceId = "nova" | "onyx";
 export const DEFAULT_OPENAI_VOICE: OpenAiVoiceId = "nova";
 export const REVIEW_VOICE: OpenAiVoiceId = "nova";
 
 /**
  * Voice loudness compensation gain multipliers.
  * OpenAI "nova" is naturally softer (~ -21 LUFS) compared to Edge TTS (~ -14 LUFS).
- * Boosting Nova by ~1.85x (+5.3 dB) and Alloy by ~1.30x (+2.3 dB) brings them to a balanced, crystal-clear level.
+ * Boosting Nova by ~1.85x (+5.3 dB) and Onyx by ~1.30x (+2.3 dB) brings them to a balanced, crystal-clear level.
  */
 export const OPENAI_VOICE_GAIN: Record<OpenAiVoiceId, number> = {
   nova: 1.85,
-  alloy: 1.30,
+  onyx: 1.30,
 };
 
 export interface OpenAiVoiceOption {
@@ -22,7 +22,7 @@ export interface OpenAiVoiceOption {
 
 export const OPENAI_TTS_VOICES: readonly OpenAiVoiceOption[] = [
   { id: "nova", name: "Nova", gender: "female", avatar: "👩" },
-  { id: "alloy", name: "Alloy", gender: "male", avatar: "👨" },
+  { id: "onyx", name: "Onyx", gender: "male", avatar: "👨" },
 ] as const;
 
 const CDN = "https://pub-ee4534784e534bd9af38ba8022bc5e1e.r2.dev";
@@ -43,7 +43,8 @@ export async function openAiAudioR2Url(
   if (!/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/.test(lang) || lang.length > 35) {
     throw new Error("Invalid audio language");
   }
-  const v = voiceId.toLowerCase() === "alloy" ? "alloy" : "nova";
+  const raw = (voiceId || "").toLowerCase();
+  const v = raw === "onyx" || raw === "alloy" ? "onyx" : "nova";
   const clean = cleanSpeechText(text).trim();
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(clean));
   const hash = Array.from(new Uint8Array(digest), (byte) =>
@@ -73,7 +74,8 @@ export async function synthesizeOpenAiSpeech({
   userToken: string;
   signal?: AbortSignal;
 }): Promise<Blob> {
-  const v = voiceId.toLowerCase() === "alloy" ? "alloy" : "nova";
+  const raw = (voiceId || "").toLowerCase();
+  const v = raw === "onyx" || raw === "alloy" ? "onyx" : "nova";
   const lang = (language || "en").trim().toLowerCase();
   const clean = cleanSpeechText(text).trim();
 
@@ -337,7 +339,8 @@ export class ReviewAudioCache {
     userToken?: string | null,
     background = false
   ): Promise<string | null> {
-    const v: OpenAiVoiceId = voiceId === "alloy" ? "alloy" : "nova";
+    const raw = String(voiceId || "").toLowerCase();
+    const v: OpenAiVoiceId = raw === "onyx" || raw === "alloy" ? "onyx" : "nova";
     const lang = (language || "en").trim().toLowerCase();
     const clean = cleanSpeechText(text).trim();
     if (!clean) return Promise.resolve(null);

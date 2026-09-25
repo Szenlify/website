@@ -471,7 +471,8 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     if (typeof window === "undefined") return DEFAULT_OPENAI_VOICE;
     try {
       const saved = localStorage.getItem("lectoro_review_voice_id");
-      if (saved === "alloy" || saved === "nova") return saved;
+      if (saved === "onyx" || saved === "nova") return saved;
+      if (saved === "alloy") return "onyx";
     } catch {}
     return DEFAULT_OPENAI_VOICE;
   });
@@ -1497,7 +1498,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
               aria-controls="reviewVoiceMenu"
               title={
                 isPaid && voiceMode === "openai"
-                  ? `${rc.naturalVoices}: ${openAiVoice === "nova" ? "Nova" : "Alloy"}`
+                  ? `${rc.naturalVoices}: ${openAiVoice === "nova" ? "Nova" : "Onyx"}`
                   : rc.voicePickerTitle
               }
               onClick={() => {
@@ -1511,7 +1512,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
               </svg>
               <span id="reviewVoiceBtnLabel" className="hidden sm:inline">
                 {isPaid && voiceMode === "openai"
-                  ? `${openAiVoice === "nova" ? "👩 Nova" : "👨 Alloy"}`
+                  ? `${openAiVoice === "nova" ? "👩 Nova" : "👨 Onyx"}`
                   : rc.systemVoice}
               </span>
               <span className={`review-voice-ai-badge ${!isPaid ? "is-locked" : ""}`}>
@@ -1605,7 +1606,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                             const language = original ? currentCard?.srcLang || "en" : currentCard?.tgtLang || "pl";
                             const textToSpeak = word
                               ? (sentence && sentence.trim().toLowerCase() !== word.trim().toLowerCase() ? `${word}. ${sentence}` : word)
-                              : (newVoice === "nova" ? "Nova" : "Alloy");
+                              : (newVoice === "nova" ? "Nova" : "Onyx");
 
                             void speakText(textToSpeak, language || "en", 1, newVoice);
                           }}
@@ -1631,7 +1632,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
                     <p>{rc.teaserDesc}</p>
                     <div className="review-voice-chips" aria-hidden="true">
                       <span className="review-voice-chip">👩 Nova</span>
-                      <span className="review-voice-chip">👨 Alloy</span>
+                      <span className="review-voice-chip">👨 Onyx</span>
                     </div>
                     <a
                       href={`/${locale}#pricing`}
