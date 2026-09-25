@@ -31,13 +31,16 @@ export class ReviewGesture {
     const dx = x - active.startX;
     const dy = y - active.startY;
     active.maxTravel = Math.max(active.maxTravel, Math.hypot(dx, dy));
-    // Once scrolling or an ambiguous diagonal starts, this contact cannot rate.
-    if (Math.abs(dy) >= 12 && Math.abs(dx) < Math.abs(dy) * 1.5) {
-      this.cancel();
-      return;
-    }
-    if (Math.abs(dx) >= 16 && Math.abs(dx) >= Math.abs(dy) * 1.5) {
-      active.horizontal = true;
+    // Choose the axis once, like native scrolling. A thumb naturally follows
+    // an arc: vertical drift must not cancel an already established swipe.
+    if (!active.horizontal) {
+      if (Math.abs(dy) >= 12 && Math.abs(dx) < Math.abs(dy) * 1.5) {
+        this.cancel();
+        return;
+      }
+      if (Math.abs(dx) >= 16 && Math.abs(dx) >= Math.abs(dy) * 1.5) {
+        active.horizontal = true;
+      }
     }
     active.x = dx;
   }

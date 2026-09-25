@@ -1512,6 +1512,11 @@ body:has([data-reviews-page]) { overflow-x: clip; }
         height: calc(100% - 28px);
     }
     .lectoro-review .review-flip-inner { grid-template-rows: minmax(0, 1fr); }
+    /* Touch arbitration stops at the nearest scroll container, so the outer
+       card's touch-action alone does not protect swipes over long content. */
+    .lectoro-review .review-flip-face,
+    .lectoro-review .review-question,
+    .lectoro-review .review-screenshot-box { touch-action: pan-y pinch-zoom; }
     .lectoro-review .review-flip-face {
         display: flex;
         flex-direction: column;
@@ -1525,6 +1530,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
         box-sizing: border-box;
         margin: 0;
         padding: 32px clamp(24px, 7vw, 36px) 24px;
+        overflow-x: hidden;
         overflow-y: auto;
         overscroll-behavior: contain;
         scrollbar-width: none;
