@@ -127,7 +127,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                   variant="outline"
                   size="sm"
                   aria-label={lang.selectLanguage}
-                  className="group hidden gap-1.5 rounded-lg text-xs font-bold text-slate-300 lg:inline-flex"
+                  className="group hidden gap-1.5 py-4 rounded-lg text-xs font-bold text-slate-300 lg:inline-flex"
                 >
                   <Languages className="size-3.5" />
                   <span>{currentLangLabel}</span>
