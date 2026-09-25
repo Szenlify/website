@@ -34,12 +34,16 @@ export class ReviewGesture {
     // Choose the axis once, like native scrolling. A thumb naturally follows
     // an arc: vertical drift must not cancel an already established swipe.
     if (!active.horizontal) {
-      if (Math.abs(dy) >= 12 && Math.abs(dx) < Math.abs(dy) * 1.5) {
+      if (Math.abs(dx) >= 10 && Math.abs(dx) >= Math.abs(dy) * 1.2) {
+        active.horizontal = true;
+      } else if (
+        (Math.abs(dy) >= 10 && Math.abs(dy) >= Math.abs(dx) * 1.2) ||
+        Math.max(Math.abs(dx), Math.abs(dy)) >= 24
+      ) {
+        // Give small diagonal starts time to resolve, but never rate an
+        // established vertical or ambiguous gesture.
         this.cancel();
         return;
-      }
-      if (Math.abs(dx) >= 16 && Math.abs(dx) >= Math.abs(dy) * 1.5) {
-        active.horizontal = true;
       }
     }
     active.x = dx;

@@ -1555,7 +1555,7 @@ body:has([data-reviews-page]) { overflow-x: clip; }
         font-weight: 500;
         line-height: 1.5;
         cursor: pointer;
-        touch-action: manipulation;
+        touch-action: pan-y pinch-zoom;
     }
     .lectoro-review .review-mobile-flip:active:not(:disabled) { opacity: .7; }
     .lectoro-review .review-mobile-flip:focus-visible {
