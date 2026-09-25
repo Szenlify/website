@@ -9,7 +9,7 @@ import {
   BookOpen,
   Check,
   ChevronDown,
-  Globe2,
+  Languages,
   LogOut,
   Menu,
   Sparkles,
@@ -129,7 +129,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                   aria-label={lang.selectLanguage}
                   className="group hidden gap-1.5 rounded-lg text-xs font-bold text-slate-300 lg:inline-flex"
                 >
-                  <Globe2 className="size-3.5" />
+                  <Languages className="size-3.5" />
                   <span>{currentLangLabel}</span>
                   <ChevronDown className="size-3 transition-transform group-data-[state=open]:rotate-180" />
                 </Button>
@@ -163,7 +163,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                 type="button"
                 disabled={isSigningIn}
                 onClick={() => void signInWithGoogle()}
-                className="min-h-11 whitespace-nowrap inline-flex items-center gap-2 px-2.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-50"
+                className=" whitespace-nowrap inline-flex items-center gap-2 px-2.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-50"
               >
                 {isSigningIn ? (
                   <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
@@ -406,8 +406,8 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                     <div className="px-4 pb-4">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button type="button" className="flex min-h-12 w-full items-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-200 outline-none transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-indigo-400" aria-label={lang.selectLanguage}>
-                            <Globe2 aria-hidden="true" className="size-4 text-indigo-300" />
+                          <button type="button" className="flex min-h-11 w-full items-center gap-3 rounded-md border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-200 outline-none transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-indigo-400" aria-label={lang.selectLanguage}>
+                            <Languages aria-hidden="true" className="size-4 text-indigo-300" />
                             <span className="flex-1 text-left">{currentLangLabel}</span>
                             <ChevronDown aria-hidden="true" className="size-4 text-slate-400" />
                           </button>
