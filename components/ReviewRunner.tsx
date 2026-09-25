@@ -23,6 +23,12 @@ import {
   isMobileDevice,
   isSafariBrowser,
   ReviewAudioCache,
+  OPENAI_TTS_VOICES,
+  DEFAULT_OPENAI_VOICE,
+  OPENAI_VOICE_GAIN,
+  playBoostedAudioUrl,
+  stopActiveAudio,
+  type OpenAiVoiceId,
 } from "@/lib/review-audio";
 import ReviewScreenshot from "./ReviewScreenshot";
 import { attachReviewTouch } from "@/lib/review-touch";
@@ -54,6 +60,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
   playbackFailed: string;
   listenSlowly: string;
   iosVoiceHint: string;
+  voicePickerTitle: string;
+  voicePickerDesc: string;
+  systemVoice: string;
+  systemVoiceDesc: string;
+  naturalVoices: string;
+  femaleDesc: string;
+  maleDesc: string;
+  teaserDesc: string;
+  unlockVoices: string;
+  close: string;
+  voiceSelected: string;
 }> = {
   pl: {
     showAnswer: "Pokaż odpowiedź",
@@ -74,6 +91,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "Nie udało się odtworzyć nagrania. Spróbuj ponownie.",
     listenSlowly: "Słuchaj wolniej (0,75×)",
     iosVoiceHint: "Wskazówka iPhone: Możesz bezpłatnie uzyskać studyjną jakość głosu w Ustawienia → Dostępność → Zawartość mówiona → Głosy (pobierz głos Ulepszony).",
+    voicePickerTitle: "Głos powtórek",
+    voicePickerDesc: "Słuchaj i zapamiętuj naturalniej",
+    systemVoice: "Głos systemowy",
+    systemVoiceDesc: "Szybki i darmowy",
+    naturalVoices: "Naturalne głosy AI",
+    femaleDesc: "Głos żeński · Ciepły, naturalny",
+    maleDesc: "Głos męski · Zrównoważony, czysty",
+    teaserDesc: "Słuchaj autentycznych akcentów OpenAI i wybierz głos do swoich powtórek.",
+    unlockVoices: "Odblokuj naturalne głosy",
+    close: "Zamknij",
+    voiceSelected: "Wybrano",
   },
   en: {
     showAnswer: "Show answer",
@@ -94,6 +122,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "Could not play recording. Try again.",
     listenSlowly: "Listen slowly (0.75×)",
     iosVoiceHint: "iPhone tip: Get natural studio voice quality in Settings → Accessibility → Spoken Content → Voices (download Enhanced voice).",
+    voicePickerTitle: "Review voice",
+    voicePickerDesc: "Listen and memorize more naturally",
+    systemVoice: "System voice",
+    systemVoiceDesc: "Fast and free",
+    naturalVoices: "Natural AI voices",
+    femaleDesc: "Female voice · Warm & natural",
+    maleDesc: "Male voice · Balanced & clear",
+    teaserDesc: "Listen to authentic OpenAI accents and choose a voice for your reviews.",
+    unlockVoices: "Unlock natural voices",
+    close: "Close",
+    voiceSelected: "Selected",
   },
   de: {
     showAnswer: "Antwort anzeigen",
@@ -114,6 +153,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "Aufnahme konnte nicht abgespielt werden. Bitte erneut versuchen.",
     listenSlowly: "Langsamer anhören (0,75×)",
     iosVoiceHint: "iPhone-Tipp: Natürliche Studioqualität aktivieren unter: Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen (Erweiterte Stimme laden).",
+    voicePickerTitle: "Wiederholungsstimme",
+    voicePickerDesc: "Natürlicher zuhören und einprägen",
+    systemVoice: "Systemstimme",
+    systemVoiceDesc: "Schnell und kostenlos",
+    naturalVoices: "Natürliche KI-Stimmen",
+    femaleDesc: "Weibliche Stimme · Warm und natürlich",
+    maleDesc: "Männliche Stimme · Ausgewogen und klar",
+    teaserDesc: "Höre authentische OpenAI-Akzente und wähle eine Stimme für deine Wiederholungen.",
+    unlockVoices: "Natürliche Stimmen freischalten",
+    close: "Schließen",
+    voiceSelected: "Ausgewählt",
   },
   es: {
     showAnswer: "Mostrar respuesta",
@@ -134,6 +184,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "No se pudo reproducir el audio. Inténtalo de nuevo.",
     listenSlowly: "Escuchar más lento (0,75×)",
     iosVoiceHint: "Consejo iPhone: Consigue voz de estudio gratuita en Ajustes → Accesibilidad → Contenido leído → Voces (descarga voz Mejorada).",
+    voicePickerTitle: "Voz de repaso",
+    voicePickerDesc: "Escucha y memoriza de forma más natural",
+    systemVoice: "Voz del sistema",
+    systemVoiceDesc: "Rápida y gratuita",
+    naturalVoices: "Voces de IA naturales",
+    femaleDesc: "Voz femenina · Cálida y natural",
+    maleDesc: "Voz masculina · Equilibrada y clara",
+    teaserDesc: "Escucha acentos auténticos de OpenAI y elige una voz para tus repasos.",
+    unlockVoices: "Desbloquear voces naturales",
+    close: "Cerrar",
+    voiceSelected: "Seleccionado",
   },
   fr: {
     showAnswer: "Afficher la réponse",
@@ -154,6 +215,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "Impossible de lire l'enregistrement. Réessayez.",
     listenSlowly: "Écouter plus lentement (0,75×)",
     iosVoiceHint: "Astuce iPhone : Obtenez une voix naturelle en allant dans Réglages → Accessibilité → Contenu énoncé → Voix (téléchargez la voix Améliorée).",
+    voicePickerTitle: "Voix de révision",
+    voicePickerDesc: "Écoutez et mémorisez plus naturellement",
+    systemVoice: "Voix du système",
+    systemVoiceDesc: "Rapide et gratuit",
+    naturalVoices: "Voix IA naturelles",
+    femaleDesc: "Voix féminine · Chaleureuse et naturelle",
+    maleDesc: "Voix masculine · Équilibrée et claire",
+    teaserDesc: "Écoutez des accents authentiques d'OpenAI et choisissez une voix pour vos révisions.",
+    unlockVoices: "Débloquer les voix naturelles",
+    close: "Fermer",
+    voiceSelected: "Sélectionné",
   },
   it: {
     showAnswer: "Mostra risposta",
@@ -174,6 +246,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "Impossibile riprodurre la registrazione. Riprova.",
     listenSlowly: "Ascolta più lentamente (0,75×)",
     iosVoiceHint: "Suggerimento iPhone: Ottieni una voce di qualità studio in Impostazioni → Accessibilità → Contenuti letti ad alta voce → Voci (scarica voce Migliorata).",
+    voicePickerTitle: "Voce di ripasso",
+    voicePickerDesc: "Ascolta e memorizza più naturalmente",
+    systemVoice: "Voce di sistema",
+    systemVoiceDesc: "Veloce e gratuito",
+    naturalVoices: "Voci IA naturali",
+    femaleDesc: "Voce femminile · Calda e naturale",
+    maleDesc: "Voce maschile · Equilibrata e chiara",
+    teaserDesc: "Ascolta accenti autentici di OpenAI e scegli una voce per i tuoi ripassi.",
+    unlockVoices: "Sblocca voci naturali",
+    close: "Chiudi",
+    voiceSelected: "Selezionato",
   },
   cs: {
     showAnswer: "Zobrazit odpověď",
@@ -194,6 +277,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "Nahrávku se nepodařilo přehrát. Zkuste to znovu.",
     listenSlowly: "Poslouchat pomaleji (0,75×)",
     iosVoiceHint: "Tip pro iPhone: Přirozený studiový hlas získáte v Nastavení → Zpřístupnění → Předčítání obsahu → Hlasy (stáhněte vylepšený hlas).",
+    voicePickerTitle: "Hlas opakování",
+    voicePickerDesc: "Poslouchejte a zapamatujte si přirozeněji",
+    systemVoice: "Systémový hlas",
+    systemVoiceDesc: "Rychlý a bezplatný",
+    naturalVoices: "Přirozené hlasy AI",
+    femaleDesc: "Ženský hlas · Teplý a přirozený",
+    maleDesc: "Mužský hlas · Vyvážený a čistý",
+    teaserDesc: "Poslouchejte autentické akcenty OpenAI a vyberte si hlas pro své opakování.",
+    unlockVoices: "Odemknout přirozené hlasy",
+    close: "Zavřít",
+    voiceSelected: "Vybráno",
   },
   nl: {
     showAnswer: "Antwoord tonen",
@@ -214,6 +308,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "Kon opname niet afspelen. Probeer het opnieuw.",
     listenSlowly: "Langzamer luisteren (0,75×)",
     iosVoiceHint: "iPhone-tip: Krijg natuurlijke studiokwaliteit via Instellingen → Toegankelijkheid → Gesproken materiaal → Stemmen (download Verbeterde stem).",
+    voicePickerTitle: "Stem voor herhaling",
+    voicePickerDesc: "Luister en onthoud natuurlijker",
+    systemVoice: "Systeemstem",
+    systemVoiceDesc: "Snel en gratis",
+    naturalVoices: "Natuurlijke AI-stemmen",
+    femaleDesc: "Vrouwelijke stem · Warm en natuurlijk",
+    maleDesc: "Mannelijke stem · Gebalanceerd en helder",
+    teaserDesc: "Luister naar authentieke OpenAI-accenten en kies een stem voor je herhalingen.",
+    unlockVoices: "Ontgrendel natuurlijke stemmen",
+    close: "Sluiten",
+    voiceSelected: "Geselecteerd",
   },
   pt: {
     showAnswer: "Mostrar resposta",
@@ -234,6 +339,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "Não foi possível reproduzir o áudio. Tente novamente.",
     listenSlowly: "Ouvir mais devagar (0,75×)",
     iosVoiceHint: "Dica iPhone: Obtenha qualidade de estúdio gratuita em Ajustes → Acessibilidade → Conteúdo Falado → Vozes (baixe a voz Melhorada).",
+    voicePickerTitle: "Voz de revisão",
+    voicePickerDesc: "Ouça e memorize mais naturalmente",
+    systemVoice: "Voz do sistema",
+    systemVoiceDesc: "Rápido e gratuito",
+    naturalVoices: "Vozes de IA naturais",
+    femaleDesc: "Voz feminina · Quente e natural",
+    maleDesc: "Voz masculina · Equilibrada e clara",
+    teaserDesc: "Ouça sotaques autênticos da OpenAI e escolha uma voz para as suas revisões.",
+    unlockVoices: "Desbloquear vozes naturais",
+    close: "Fechar",
+    voiceSelected: "Selecionado",
   },
   ja: {
     showAnswer: "答えを表示",
@@ -254,6 +370,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "音声を再生できませんでした。もう一度お試しください。",
     listenSlowly: "ゆっくり再生 (0.75×)",
     iosVoiceHint: "iPhoneのヒント: 「設定」→「アクセシビリティ」→「読み上げコンテンツ」→「声」で拡張音声をダウンロードすると、より自然な発音になります。",
+    voicePickerTitle: "復習の音声",
+    voicePickerDesc: "より自然に聞いて覚える",
+    systemVoice: "システム音声",
+    systemVoiceDesc: "高速で無料",
+    naturalVoices: "自然なAI音声",
+    femaleDesc: "女性の声 · 温かみのある自然な声",
+    maleDesc: "男性の声 · バランスの取れたクリアな声",
+    teaserDesc: "本物のOpenAIアクセントを聴き、復習用の音声を選択できます。",
+    unlockVoices: "自然な音声をアンロック",
+    close: "閉じる",
+    voiceSelected: "選択",
   },
   ko: {
     showAnswer: "정답 보기",
@@ -274,6 +401,17 @@ const REVIEW_RUNNER_COPY: Record<Locale, {
     playbackFailed: "오디오를 재생하지 못했습니다. 다시 시도해 주세요.",
     listenSlowly: "느리게 듣기 (0.75×)",
     iosVoiceHint: "iPhone 팁: 설정 → 손쉬운 사용 → 콘텐츠 말하기 → 음성에서 '향상된 음성'을 다운로드하면 훨씬 자연스러운 발음을 들을 수 있습니다.",
+    voicePickerTitle: "복습 음성",
+    voicePickerDesc: "더 자연스럽게 듣고 기억하기",
+    systemVoice: "시스템 음성",
+    systemVoiceDesc: "빠르고 무료",
+    naturalVoices: "자연스러운 AI 음성",
+    femaleDesc: "여성 음성 · 따뜻하고 자연스러운",
+    maleDesc: "남성 음성 · 균형 잡히고 맑은",
+    teaserDesc: "자연스러운 OpenAI 악센트로 복습 음성을 선택하세요.",
+    unlockVoices: "자연스러운 음성 잠금 해제",
+    close: "닫기",
+    voiceSelected: "선택됨",
   },
 };
 
@@ -299,6 +437,8 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     editWord,
     removeWord,
     refreshWords,
+    isPaid,
+    refreshPlan,
   } = useAuth();
 
   const [queue, setQueue] = useState<ReviewWord[]>([]);
@@ -316,6 +456,48 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     }
     return "normal";
   });
+
+  // Voice mode: "openai" (natural voices for paid plans) or "system" (free device voice)
+  const [voiceMode, setVoiceMode] = useState<"openai" | "system">(() => {
+    if (typeof window === "undefined") return "openai";
+    try {
+      const saved = localStorage.getItem("lectoro_review_voice_mode");
+      if (saved === "system" || saved === "openai") return saved;
+    } catch {}
+    return "openai";
+  });
+
+  const [openAiVoice, setOpenAiVoice] = useState<OpenAiVoiceId>(() => {
+    if (typeof window === "undefined") return DEFAULT_OPENAI_VOICE;
+    try {
+      const saved = localStorage.getItem("lectoro_review_voice_id");
+      if (saved === "alloy" || saved === "nova") return saved;
+    } catch {}
+    return DEFAULT_OPENAI_VOICE;
+  });
+
+  const voiceModeRef = useRef(voiceMode);
+  voiceModeRef.current = voiceMode;
+  const openAiVoiceRef = useRef(openAiVoice);
+  openAiVoiceRef.current = openAiVoice;
+  const isPaidRef = useRef(isPaid);
+  isPaidRef.current = isPaid;
+
+  const [voiceMenuOpen, setVoiceMenuOpen] = useState(false);
+  const [voiceFeedback, setVoiceFeedback] = useState<string>("");
+  const voiceMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!voiceMenuOpen) return;
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (voiceMenuRef.current && !voiceMenuRef.current.contains(event.target as Node)) {
+        setVoiceMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [voiceMenuOpen]);
+
   const [flipPhase, setFlipPhase] = useState<"" | "flipping">("");
   const busy = useRef(false);
   const [saving, setSaving] = useState(false);
@@ -362,10 +544,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     return () => {
       speechReq.current++;
       window.speechSynthesis?.cancel();
-      if (audioPlayerRef.current) {
-        audioPlayerRef.current.pause();
-        audioPlayerRef.current = null;
-      }
+      stopActiveAudio();
       audioCache.clear();
     };
   }, [audioCache]);
@@ -390,10 +569,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   useEffect(() => {
     speechRequest.current++;
     window.speechSynthesis?.cancel();
-    if (audioPlayerRef.current) {
-      audioPlayerRef.current.pause();
-      audioPlayerRef.current = null;
-    }
+    stopActiveAudio();
   }, [activeCardKey]);
 
   const [voicesRevision, setVoicesRevision] = useState(0);
@@ -418,50 +594,104 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
     []
   );
 
-  // Background prefetch for mobile and Safari PC Edge TTS audio
+  // Background prefetch for audio: OpenAI TTS for paid subscribers, Edge TTS for mobile/Safari
   useEffect(() => {
-    if (!currentCard || !isEdgeTtsTarget) return;
+    if (!currentCard) return;
     const frontText = direction === "normal" ? currentCard.original : currentCard.translated;
     const frontLang = direction === "normal" ? (currentCard.srcLang || "en") : (currentCard.tgtLang || "pl");
     const backText = direction === "normal" ? currentCard.translated : currentCard.original;
     const backLang = direction === "normal" ? (currentCard.tgtLang || "pl") : (currentCard.srcLang || "en");
 
-    void audioCache.getEdge(cleanSpeechText(frontText), frontLang, true);
-    void audioCache.getEdge(cleanSpeechText(backText), backLang, true);
-
     const nextCard = queue[currentIndex + 1];
-    if (nextCard) {
-      const nextText = direction === "normal" ? nextCard.original : nextCard.translated;
-      const nextLang = direction === "normal" ? (nextCard.srcLang || "en") : (nextCard.tgtLang || "pl");
-      void audioCache.getEdge(cleanSpeechText(nextText), nextLang, true);
+    const nextText = nextCard ? (direction === "normal" ? nextCard.original : nextCard.translated) : "";
+    const nextLang = nextCard ? (direction === "normal" ? (nextCard.srcLang || "en") : (nextCard.tgtLang || "pl")) : "";
+
+    if (isPaid && voiceMode === "openai") {
+      void user?.getIdToken().then((token) => {
+        void audioCache.getOpenAi(cleanSpeechText(frontText), frontLang, openAiVoice, token, true);
+        void audioCache.getOpenAi(cleanSpeechText(backText), backLang, openAiVoice, token, true);
+        if (nextText) {
+          void audioCache.getOpenAi(cleanSpeechText(nextText), nextLang, openAiVoice, token, true);
+        }
+      });
+    } else if (isEdgeTtsTarget) {
+      void audioCache.getEdge(cleanSpeechText(frontText), frontLang, true);
+      void audioCache.getEdge(cleanSpeechText(backText), backLang, true);
+      if (nextText) {
+        void audioCache.getEdge(cleanSpeechText(nextText), nextLang, true);
+      }
     }
-  }, [currentCard, currentIndex, direction, isEdgeTtsTarget, audioCache, queue]);
+  }, [currentCard, currentIndex, direction, isPaid, voiceMode, openAiVoice, user, audioCache, queue, isEdgeTtsTarget]);
+
+  const playOpenAiAudio = useCallback(
+    async (
+      clean: string,
+      lang: string,
+      voiceId: OpenAiVoiceId,
+      rate: number,
+      request: number
+    ): Promise<boolean> => {
+      if (!isPaidRef.current) return false;
+      try {
+        setIsSpeaking(true);
+        const token = user ? await user.getIdToken() : null;
+        const audioUrl = await audioCache.getOpenAi(clean, lang, voiceId, token);
+        if (request !== speechRequest.current) return false;
+
+        if (audioUrl) {
+          const gain = OPENAI_VOICE_GAIN[voiceId] || 1.3;
+          const ok = await playBoostedAudioUrl(audioUrl, {
+            gain,
+            rate,
+            onEnded: () => {
+              if (request === speechRequest.current) {
+                setIsSpeaking(false);
+              }
+            },
+            onError: () => {
+              if (request === speechRequest.current) {
+                setIsSpeaking(false);
+              }
+            },
+          });
+          return ok;
+        }
+      } catch (err) {
+        console.warn("[ReviewRunner] OpenAI audio playback issue, falling back:", err);
+      }
+      return false;
+    },
+    [user, audioCache]
+  );
 
   const playEdgeAudio = useCallback(
-    async (clean: string, lang: string, rate: number, request: number): Promise<boolean> => {
+    async (
+      clean: string,
+      lang: string,
+      rate: number,
+      request: number
+    ): Promise<boolean> => {
       try {
         setIsSpeaking(true);
         const audioUrl = await audioCache.getEdge(clean, lang);
         if (request !== speechRequest.current) return false;
 
         if (audioUrl) {
-          const audio = new Audio(audioUrl);
-          audioPlayerRef.current = audio;
-          audio.playbackRate = rate;
-          audio.onended = () => {
-            if (request === speechRequest.current) {
-              setIsSpeaking(false);
-              audioPlayerRef.current = null;
-            }
-          };
-          audio.onerror = () => {
-            if (request === speechRequest.current) {
-              setIsSpeaking(false);
-              audioPlayerRef.current = null;
-            }
-          };
-          await audio.play();
-          return true;
+          const ok = await playBoostedAudioUrl(audioUrl, {
+            gain: 1.0,
+            rate,
+            onEnded: () => {
+              if (request === speechRequest.current) {
+                setIsSpeaking(false);
+              }
+            },
+            onError: () => {
+              if (request === speechRequest.current) {
+                setIsSpeaking(false);
+              }
+            },
+          });
+          return ok;
         }
       } catch {
         // Return false on playback failure or network issue
@@ -547,24 +777,31 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
   );
 
   const speakText = useCallback(
-    async (text: string, lang = "en", rate = 1) => {
+    async (text: string, lang = "en", rate = 1, overrideVoice?: OpenAiVoiceId) => {
       if (!text) return;
       const request = ++speechRequest.current;
       window.speechSynthesis?.cancel();
-      if (audioPlayerRef.current) {
-        audioPlayerRef.current.pause();
-        audioPlayerRef.current = null;
-      }
+      stopActiveAudio();
       setIsSpeaking(false);
       setAudioMessage("");
 
       const clean = cleanSpeechText(text);
       if (!clean) return;
 
+      const currentVoice = overrideVoice || openAiVoiceRef.current;
+      const currentVoiceMode = voiceModeRef.current;
+      const currentIsPaid = isPaidRef.current;
+
+      // 1. Paid users with OpenAI neural voices enabled
+      if (currentIsPaid && currentVoiceMode === "openai") {
+        const played = await playOpenAiAudio(clean, lang, currentVoice, rate, request);
+        if (played || request !== speechRequest.current) return;
+      }
+
       const onMobile = isMobileDevice();
       const onSafariPc = isSafariBrowser() && !onMobile;
 
-      // 1. Mobile (iPhone / Android / tablets) & Safari on PC: Always use Microsoft Edge TTS (Azure Neural)
+      // 2. Mobile (iPhone / Android / tablets) & Safari on PC: Always use Microsoft Edge TTS (Azure Neural)
       if (onMobile || onSafariPc) {
         const ok = await playEdgeAudio(clean, lang, rate, request);
         if (ok || request !== speechRequest.current) return;
@@ -573,7 +810,7 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         return;
       }
 
-      // 2. PC (Chrome / Chromium): Check for native Google voice
+      // 3. PC (Chrome / Chromium): Check for native Google voice
       const synth = window.speechSynthesis;
       const available = synth?.getVoices() || [];
       const voiceList = available.length ? available : browserVoices.current;
@@ -584,13 +821,13 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
         return;
       }
 
-      // 3. PC browser without Google voice available: Play Microsoft Edge TTS so audio is never missing!
+      // 4. PC browser without Google voice available: Play Microsoft Edge TTS so audio is never missing!
       const edgeOk = await playEdgeAudio(clean, lang, rate, request);
       if (!edgeOk && request === speechRequest.current) {
         fallbackNativeSpeak(clean, lang, rate, request);
       }
     },
-    [playEdgeAudio, fallbackNativeSpeak]
+    [playOpenAiAudio, playEdgeAudio, fallbackNativeSpeak]
   );
 
   const flipCard = useCallback(() => {
@@ -1252,6 +1489,168 @@ export default function ReviewRunner({ dict, locale }: ReviewRunnerProps) {
             {isNormal ? srcLang : tgtLang} <span className="dir-arrow">→</span>{" "}
             {isNormal ? tgtLang : srcLang}
           </button>
+          <div className="review-voice-picker" ref={voiceMenuRef}>
+            <button
+              type="button"
+              className={`review-voice-btn ${isPaid && voiceMode === "openai" ? "is-gemini" : ""}`}
+              aria-expanded={voiceMenuOpen}
+              aria-controls="reviewVoiceMenu"
+              title={
+                isPaid && voiceMode === "openai"
+                  ? `${rc.naturalVoices}: ${openAiVoice === "nova" ? "Nova" : "Alloy"}`
+                  : rc.voicePickerTitle
+              }
+              onClick={() => {
+                setVoiceMenuOpen((prev) => !prev);
+                void refreshPlan();
+              }}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              <span id="reviewVoiceBtnLabel" className="hidden sm:inline">
+                {isPaid && voiceMode === "openai"
+                  ? `${openAiVoice === "nova" ? "👩 Nova" : "👨 Alloy"}`
+                  : rc.systemVoice}
+              </span>
+              <span className={`review-voice-ai-badge ${!isPaid ? "is-locked" : ""}`}>
+                AI
+              </span>
+              <span className="review-voice-chevron hidden sm:inline" aria-hidden="true">
+                ⌄
+              </span>
+            </button>
+
+            {voiceMenuOpen && (
+              <div className="review-voice-menu" id="reviewVoiceMenu">
+                <div className="review-voice-menu-head">
+                  <div>
+                    <strong>{rc.voicePickerTitle}</strong>
+                    <span>{rc.voicePickerDesc}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="review-voice-close"
+                    aria-label={rc.close}
+                    title={rc.close}
+                    onClick={() => setVoiceMenuOpen(false)}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className={`review-voice-system ${voiceMode === "system" ? "active" : ""}`}
+                  onClick={() => {
+                    setVoiceMode("system");
+                    voiceModeRef.current = "system";
+                    try {
+                      localStorage.setItem("lectoro_review_voice_mode", "system");
+                    } catch {}
+                    setVoiceFeedback(`✓ ${rc.voiceSelected}: ${rc.systemVoice}`);
+                    speechRequest.current++;
+                    window.speechSynthesis?.cancel();
+                    stopActiveAudio();
+                    setIsSpeaking(false);
+                  }}
+                >
+                  <span className="review-voice-avatar system">🔊</span>
+                  <span className="review-voice-option-copy">
+                    <strong>{rc.systemVoice}</strong>
+                    <small>{rc.systemVoiceDesc}</small>
+                  </span>
+                  <span className="review-voice-check" aria-hidden="true">
+                    ✓
+                  </span>
+                </button>
+
+                <div className="review-voice-el-head">
+                  <span>{rc.naturalVoices}</span>
+                  <span className="review-voice-premium">PREMIUM</span>
+                </div>
+
+                {isPaid ? (
+                  <div className="review-voice-list">
+                    {OPENAI_TTS_VOICES.map((v) => {
+                      const isActive = voiceMode === "openai" && openAiVoice === v.id;
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          className={`review-voice-item ${isActive ? "active" : ""}`}
+                          aria-pressed={isActive}
+                          onClick={() => {
+                            const newVoice = v.id;
+                            setVoiceMode("openai");
+                            voiceModeRef.current = "openai";
+                            setOpenAiVoice(newVoice);
+                            openAiVoiceRef.current = newVoice;
+                            try {
+                              localStorage.setItem("lectoro_review_voice_mode", "openai");
+                              localStorage.setItem("lectoro_review_voice_id", newVoice);
+                            } catch {}
+                            setVoiceFeedback(`✓ ${rc.voiceSelected}: ${v.name}`);
+
+                            // Cancel any old audio and immediately speak with the new voice
+                            speechRequest.current++;
+                            window.speechSynthesis?.cancel();
+                            stopActiveAudio();
+                            setIsSpeaking(false);
+
+                            const original = isNormal !== answerShown;
+                            const word = original ? currentCard?.original : currentCard?.translated;
+                            const sentence = original ? currentCard?.sentence : currentCard?.sentenceTranslated;
+                            const language = original ? currentCard?.srcLang || "en" : currentCard?.tgtLang || "pl";
+                            const textToSpeak = word
+                              ? (sentence && sentence.trim().toLowerCase() !== word.trim().toLowerCase() ? `${word}. ${sentence}` : word)
+                              : (newVoice === "nova" ? "Nova" : "Alloy");
+
+                            void speakText(textToSpeak, language || "en", 1, newVoice);
+                          }}
+                        >
+                          <span className="review-voice-avatar el">{v.avatar}</span>
+                          <span className="review-voice-option-copy">
+                            <strong>{v.name}</strong>
+                            <small>{v.id === "nova" ? rc.femaleDesc : rc.maleDesc}</small>
+                          </span>
+                          <span className="review-voice-check" aria-hidden="true">
+                            ✓
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="review-voice-teaser">
+                    <div className="review-voice-teaser-title">
+                      <span>{rc.naturalVoices}</span>
+                      <span>🔒</span>
+                    </div>
+                    <p>{rc.teaserDesc}</p>
+                    <div className="review-voice-chips" aria-hidden="true">
+                      <span className="review-voice-chip">👩 Nova</span>
+                      <span className="review-voice-chip">👨 Alloy</span>
+                    </div>
+                    <a
+                      href={`/${locale}#pricing`}
+                      className="review-voice-upgrade block text-center no-underline"
+                      onClick={() => setVoiceMenuOpen(false)}
+                    >
+                      {rc.unlockVoices}
+                    </a>
+                  </div>
+                )}
+
+                {voiceFeedback && (
+                  <div className="review-voice-status ok" role="status">
+                    {voiceFeedback}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
         {audioMessage && (
           <p className="review-audio-status" role="status">

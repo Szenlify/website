@@ -1657,3 +1657,29 @@ body:has([data-reviews-page]) { overflow-x: clip; }
     outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
+
+
+/* Mobile review voice button responsive layout */
+@media (max-width: 640px) {
+    .lectoro-review #reviewVoiceBtnLabel,
+    .lectoro-review .review-voice-chevron {
+        display: none !important;
+    }
+    .lectoro-review .review-voice-btn {
+        padding: 5px 8px !important;
+        gap: 5px !important;
+        min-width: 0 !important;
+    }
+}
+
+@container (max-width: 480px) {
+    .lectoro-review #reviewVoiceBtnLabel,
+    .lectoro-review .review-voice-chevron {
+        display: none !important;
+    }
+    .lectoro-review .review-voice-btn {
+        padding: 5px 8px !important;
+        gap: 5px !important;
+        min-width: 0 !important;
+    }
+}

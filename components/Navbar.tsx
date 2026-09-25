@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   Sparkles,
+  Volume2,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -50,10 +51,22 @@ export default function Navbar({ dict, locale }: NavbarProps) {
     user,
     isSigningIn,
     rawDueCount,
+    plan,
+    isPaid,
+    subscriptionInfo,
     openLanding,
     signInWithGoogle,
     signOut,
   } = useAuth();
+
+  const ttsLimit =
+    subscriptionInfo?.ttsLimit ||
+    (plan === "pro" ? 100000 : plan === "basic" ? 10000 : 0);
+  const ttsUsed = subscriptionInfo?.ttsUsed || 0;
+  const ttsRemaining =
+    subscriptionInfo?.ttsRemaining ?? Math.max(0, ttsLimit - ttsUsed);
+  const percentUsed =
+    ttsLimit > 0 ? Math.min(100, Math.round((ttsUsed / ttsLimit) * 100)) : 0;
 
   const { nav, lang } = dict;
   const guidesLabel = getGuideCatalogCopy(locale).label;
@@ -184,11 +197,8 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                   <button
                     type="button"
                     title={user.displayName || user.email || "User"}
-                    className={`relative min-h-11 min-w-11 justify-center flex items-center gap-1.5 p-1 sm:px-2 rounded-xl hover:bg-white/5 border transition cursor-pointer active:scale-95 ${
-                      pathname.includes("/dashboard/reviews")
-                        ? "border-violet-500/40 bg-violet-500/10"
-                        : "border-transparent hover:border-white/10"
-                    }`}
+                    className={`relative min-h-10 min-w-11 justify-center flex items-center gap-1.5 p-1 sm:px-2 rounded-xl hover:bg-white/5 transition cursor-pointer active:scale-95
+                    `}
                   >
                     <div className="size-7 shrink-0">
                       {user.photoURL ? (
@@ -211,25 +221,99 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                     </span>
                     <ChevronDown className="size-3 text-slate-400" />
                     {rawDueCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-violet-600 text-white text-[9.5px] font-bold font-mono flex items-center justify-center tabular-nums pointer-events-none">
+                      <span className="absolute top-0 right-0 min-w-4 h-4 px-1 rounded-full bg-violet-600 text-white text-[9.5px] font-bold font-mono flex items-center justify-center tabular-nums pointer-events-none">
                         {rawDueCount}
                       </span>
                     )}
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-52">
-                  <div className="px-3 py-2 border-b border-white/10">
-                    <p className="text-xs font-bold text-white truncate">
-                      {user.displayName || user.email || "User"}
-                    </p>
-                    <p className="text-[11px] text-slate-400 truncate">
+                <DropdownMenuContent align="end" className="w-64 p-1.5 bg-slate-900/95 border border-white/10 backdrop-blur-md shadow-2xl rounded-lg">
+                  {/* Nagłówek profilu z badge planu */}
+                  <div className="px-3 py-2.5 rounded-lg bg-white/5 border border-black/20 mb-1.5">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <p className="text-xs font-bold text-white truncate max-w-[130px]">
+                        {user.displayName || user.email || "User"}
+                      </p>
+                      {/* Plan Badge */}
+                      {plan === "pro" ? (
+                        <span className="px-2 py-0.5 rounded-sm text-[9px] font-extrabold tracking-wider uppercase bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-sm shadow-violet-500/30">
+                          PLAN PRO
+                        </span>
+                      ) : plan === "basic" ? (
+                        <span className="px-2 py-0.5 rounded-sm text-[9px] font-extrabold tracking-wider uppercase bg-emerald-500/30 text-emerald-300 border border-emerald-500/30">
+                          PLAN BASIC
+                        </span>
+                      ) : (
+                        <span className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold tracking-wide uppercase bg-slate-800 text-slate-400 border border-white/10">
+                          {locale === "pl" ? "PLAN DARMOWY" : "FREE PLAN"}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-slate-400 truncate mb-2">
                       {user.email}
                     </p>
+
+                    {/* Licznik znaków Naturalnych Głosów TTS */}
+                    <div className="pt-2 border-t border-white/10">
+                      <div className="flex items-center justify-between text-xs mb-0.5">
+                        <span className="flex items-center gap-1.5 font-bold text-slate-100">
+                          <Volume2 className="size-3.5 text-violet-400 shrink-0" />
+                          <span>{locale === "pl" ? "Naturalne głosy" : "Natural Voices"}</span>
+                        </span>
+                        {!isPaid && (
+                          <span className="text-[10px] text-slate-400 font-semibold">
+                            {locale === "pl" ? "Zablokowane" : "Locked"}
+                          </span>
+                        )}
+                      </div>
+
+                      {isPaid ? (
+                        <div className="mt-1">
+                          <div className="text-[11px] text-slate-300 font-medium">
+                            {locale === "pl"
+                              ? `${ttsRemaining.toLocaleString("pl-PL")} znaków pozostało`
+                              : `${ttsRemaining.toLocaleString("en-US")} characters left`}
+                          </div>
+
+                          <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden my-1.5">
+                            <div
+                              className={`h-full transition-all duration-500 ${
+                                percentUsed >= 95
+                                  ? "bg-rose-500"
+                                  : percentUsed >= 80
+                                  ? "bg-amber-400"
+                                  : "bg-gradient-to-r from-violet-500 to-indigo-400"
+                              }`}
+                              style={{
+                                width: `${Math.min(100, Math.max(ttsUsed > 0 ? 3 : 0, percentUsed))}%`,
+                              }}
+                            />
+                          </div>
+
+                          <div className="flex justify-between items-center text-[10.5px] font-mono text-slate-400">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-sans font-medium">
+                              {locale === "pl" ? "Zużyto" : "Used"}
+                            </span>
+                            <span className="font-semibold text-slate-200">
+                              {ttsUsed} / {ttsLimit}
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <Link
+                          href={getLocalizedHref("/#pricing", locale)}
+                          className="mt-1.5 flex items-center justify-between text-[10.5px] font-semibold text-violet-400 hover:text-violet-300 transition"
+                        >
+                          <span>{locale === "pl" ? "Odblokuj w cenniku →" : "Unlock in pricing →"}</span>
+                        </Link>
+                      )}
+                    </div>
                   </div>
+
                   <DropdownMenuItem asChild>
                     <Link
                       href={getLocalizedHref("/dashboard/reviews", locale)}
-                      className="text-violet-300 hover:text-white hover:bg-violet-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between w-full"
+                      className="text-violet-300 hover:text-white hover:bg-violet-600/30 cursor-pointer text-xs font-bold py-2 flex items-center justify-between w-full rounded-md"
                     >
                       <div className="flex items-center gap-2">
                         <Sparkles className="size-3.5 text-violet-400" />
@@ -245,7 +329,7 @@ export default function Navbar({ dict, locale }: NavbarProps) {
 
                   <DropdownMenuItem
                     onClick={() => void signOut()}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2"
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs font-semibold py-2 rounded-md"
                   >
                     <LogOut className="size-3.5 mr-2" />
                     <span>{nav.signOut}</span>
@@ -401,6 +485,99 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                       </Button>
                     ) : (
                       <div className="flex flex-col gap-2">
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              {user.photoURL ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img
+                                  src={user.photoURL}
+                                  alt={user.displayName || "User"}
+                                  className="size-7 rounded-full border border-indigo-400/40 object-cover shrink-0"
+                                />
+                              ) : (
+                                <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                  {(user.displayName || user.email || "U")[0].toUpperCase()}
+                                </div>
+                              )}
+                              <span className="text-xs font-bold text-white truncate">
+                                {user.displayName || user.email}
+                              </span>
+                            </div>
+                            {plan === "pro" ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-extrabold tracking-wider uppercase bg-gradient-to-r from-violet-500 to-indigo-500 text-white shrink-0">
+                                PRO
+                              </span>
+                            ) : plan === "basic" ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-extrabold tracking-wider uppercase bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
+                                BASIC
+                              </span>
+                            ) : (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-800 text-slate-400 border border-white/10 shrink-0">
+                                FREE
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Licznik TTS Naturalne Głosy na mobile */}
+                          <div className="pt-2 border-t border-white/10">
+                            <div className="flex items-center justify-between text-xs mb-0.5">
+                              <span className="flex items-center gap-1.5 font-bold text-slate-100">
+                                <Volume2 className="size-3.5 text-violet-400 shrink-0" />
+                                <span>{locale === "pl" ? "Naturalne głosy" : "Natural Voices"}</span>
+                              </span>
+                              {!isPaid && (
+                                <span className="text-[10px] text-slate-400 font-semibold">
+                                  {locale === "pl" ? "Plan płatny" : "Paid only"}
+                                </span>
+                              )}
+                            </div>
+
+                            {isPaid ? (
+                              <div className="mt-1">
+                                <div className="text-[11px] text-slate-300 font-medium">
+                                  {locale === "pl"
+                                    ? `${ttsRemaining.toLocaleString("pl-PL")} znaków pozostało`
+                                    : `${ttsRemaining.toLocaleString("en-US")} characters left`}
+                                </div>
+
+                                <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden my-1.5">
+                                  <div
+                                    className={`h-full transition-all duration-500 ${
+                                      percentUsed >= 95
+                                        ? "bg-rose-500"
+                                        : percentUsed >= 80
+                                        ? "bg-amber-400"
+                                        : "bg-gradient-to-r from-violet-500 to-indigo-400"
+                                    }`}
+                                    style={{
+                                      width: `${Math.min(100, Math.max(ttsUsed > 0 ? 3 : 0, percentUsed))}%`,
+                                    }}
+                                  />
+                                </div>
+
+                                <div className="flex justify-between items-center text-[10.5px] font-mono text-slate-400">
+                                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-sans font-medium">
+                                    {locale === "pl" ? "Zużyto" : "Used"}
+                                  </span>
+                                  <span className="font-semibold text-slate-200">
+                                    {ttsUsed} / {ttsLimit}
+                                  </span>
+                                </div>
+                              </div>
+                            ) : (
+                              <SheetClose asChild>
+                                <Link
+                                  href={getLocalizedHref("/#pricing", locale)}
+                                  className="mt-1.5 flex items-center justify-between text-[11px] font-semibold text-violet-400"
+                                >
+                                  <span>{locale === "pl" ? "Odblokuj w cenniku →" : "Unlock in pricing →"}</span>
+                                </Link>
+                              </SheetClose>
+                            )}
+                          </div>
+                        </div>
+
                         <SheetClose asChild>
                           <Link
                             href={getLocalizedHref(
@@ -411,27 +588,16 @@ export default function Navbar({ dict, locale }: NavbarProps) {
                             className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/40 transition cursor-pointer text-left active:scale-98"
                           >
                             <div className="flex items-center gap-2">
-                              {user.photoURL ? (
-                                /* eslint-disable-next-line @next/next/no-img-element */
-                                <img
-                                  src={user.photoURL}
-                                  alt={user.displayName || "User"}
-                                  className="size-7 rounded-full border border-indigo-400/40 object-cover"
-                                />
-                              ) : (
-                                <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
-                                  {(user.displayName ||
-                                    user.email ||
-                                    "U")[0].toUpperCase()}
-                                </div>
-                              )}
-                              <span className="text-xs font-bold text-white max-w-[130px] truncate">
-                                {user.displayName || user.email}
+                              <Sparkles className="size-4 text-violet-400" />
+                              <span className="text-xs font-bold text-white">
+                                {nav.reviews}
                               </span>
                             </div>
-                            <span className="px-2 py-0.5 rounded-full bg-violet-600 text-white text-[11px] font-bold">
-                              {rawDueCount}
-                            </span>
+                            {rawDueCount > 0 && (
+                              <span className="px-2 py-0.5 rounded-full bg-violet-600 text-white text-[11px] font-bold">
+                                {rawDueCount}
+                              </span>
+                            )}
                           </Link>
                         </SheetClose>
                         <SheetClose asChild>

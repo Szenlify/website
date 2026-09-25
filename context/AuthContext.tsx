@@ -5,6 +5,7 @@ import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import {
     auth,
+    db,
     loginWithGoogle,
     logoutUser,
     fetchUserWords,
@@ -12,7 +13,14 @@ import {
     checkRedirectAuth,
     editReviewWord,
     deleteReviewWord,
+    getUserPlan,
+    fetchUserSubscriptionDetails,
+    type UserPlan,
+    type SubscriptionDetails,
+    PLAN_TTS_LIMITS,
+    getCurrentMonth,
 } from "@/lib/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
 import { SRS, type ReviewWord, type SRState } from "@/lib/srs";
 
 interface AuthContextValue {
@@ -21,6 +29,10 @@ interface AuthContextValue {
     isSigningIn: boolean;
     authError: string | null;
     wordsError: string | null;
+    plan: UserPlan;
+    isPaid: boolean;
+    subscriptionInfo: SubscriptionDetails;
+    refreshPlan: () => Promise<void>;
     words: ReviewWord[];
     dueWords: ReviewWord[];
     rawDueCount: number;
@@ -44,6 +56,17 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
     user: null,
     loading: true,
+    plan: "free",
+    isPaid: false,
+    subscriptionInfo: {
+        plan: "free",
+        isPaid: false,
+        ttsLimit: 0,
+        ttsUsed: 0,
+        ttsRemaining: 0,
+        month: "",
+    },
+    refreshPlan: async () => {},
     isSigningIn: false,
     authError: null,
     wordsError: null,
@@ -77,6 +100,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loadingWords, setLoadingWords] = useState(false);
     const [viewMode, setViewMode] = useState<"reviews" | "landing">("landing");
     const [isCramMode, setIsCramMode] = useState(false);
+    const [subscriptionInfo, setSubscriptionInfo] = useState<SubscriptionDetails>(() => {
+        const month = getCurrentMonth();
+        if (typeof window === "undefined") {
+            return { plan: "free", isPaid: false, ttsLimit: 0, ttsUsed: 0, ttsRemaining: 0, month };
+        }
+        try {
+            const savedPlan = (localStorage.getItem("lectoro_cached_user_plan") || "free") as UserPlan;
+            const savedUsed = parseInt(localStorage.getItem("lectoro_cached_tts_used") || "0", 10);
+            const savedMonth = localStorage.getItem("lectoro_cached_tts_month") || month;
+            const validUsed = savedMonth === month && !isNaN(savedUsed) ? savedUsed : 0;
+            const limit = PLAN_TTS_LIMITS[savedPlan] || 0;
+            const isPaid = savedPlan === "basic" || savedPlan === "pro";
+            return {
+                plan: savedPlan,
+                isPaid,
+                ttsLimit: limit,
+                ttsUsed: validUsed,
+                ttsRemaining: isPaid ? Math.max(0, limit - validUsed) : 0,
+                month,
+            };
+        } catch {
+            return { plan: "free", isPaid: false, ttsLimit: 0, ttsUsed: 0, ttsRemaining: 0, month };
+        }
+    });
+
+    const plan = subscriptionInfo.plan;
+    const isPaid = subscriptionInfo.isPaid;
+
+    // Słuchaj na natychmiastowe aktualizacje użycia TTS z nagłówka X-Lectoro-TTS-Used
+    useEffect(() => {
+        const onTtsUsed = (e: Event) => {
+            const custom = e as CustomEvent<{ used: number }>;
+            const used = custom.detail?.used;
+            if (typeof used === "number" && !isNaN(used)) {
+                setSubscriptionInfo((prev) => {
+                    const limit = prev.ttsLimit;
+                    const nextRemaining = prev.isPaid ? Math.max(0, limit - used) : 0;
+                    try {
+                        localStorage.setItem("lectoro_cached_tts_used", String(used));
+                        localStorage.setItem("lectoro_cached_tts_month", prev.month);
+                    } catch {}
+                    return {
+                        ...prev,
+                        ttsUsed: used,
+                        ttsRemaining: nextRemaining,
+                    };
+                });
+            }
+        };
+        window.addEventListener("lectoro:tts-used", onTtsUsed);
+        return () => window.removeEventListener("lectoro:tts-used", onTtsUsed);
+    }, []);
 
     const BATCH_FLUSH_INACTIVITY_MS = 30000; // Auto-zapis po 30 sekundach bezruchu
     const BATCH_FLUSH_THRESHOLD = 10; // Auto-zapis gdy więcej niż lub równe 10 fiszek
@@ -124,6 +199,110 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         return () => unsubscribe();
     }, [loadWords]);
+
+    // Realtime nasłuchiwanie dokumentu użytkownika w Firestore
+    useEffect(() => {
+        if (!user?.uid) {
+            setSubscriptionInfo({
+                plan: "free",
+                isPaid: false,
+                ttsLimit: 0,
+                ttsUsed: 0,
+                ttsRemaining: 0,
+                month: getCurrentMonth(),
+            });
+            try {
+                localStorage.removeItem("lectoro_cached_user_plan");
+                localStorage.removeItem("lectoro_cached_tts_used");
+                localStorage.removeItem("lectoro_cached_tts_month");
+            } catch {}
+            return;
+        }
+
+        const unsub = onSnapshot(doc(db, "users", user.uid), (snap) => {
+            if (!snap.exists()) return;
+            const data = snap.data();
+            const month = getCurrentMonth();
+            const now = Date.now();
+            const prepaid = data.prepaidAccess || {};
+            let activePlan: UserPlan = "free";
+            if (Number(prepaid.pro || 0) > now) activePlan = "pro";
+            else if (Number(prepaid.basic || 0) > now) activePlan = "basic";
+            else {
+                const p = String(data.plan || data.subscriptionPlan || "").toLowerCase().trim();
+                if (p === "pro" || p === "basic") activePlan = p as UserPlan;
+                const status = String(data.subscriptionStatus || "").toLowerCase().trim();
+                if (status === "active" || status === "trialing") {
+                    activePlan = p === "pro" ? "pro" : "basic";
+                }
+            }
+
+            const resetDate = String(data.elevenLabsResetDate || "");
+            const used = resetDate === month ? Math.max(0, Number(data.elevenLabsCharactersThisMonth) || 0) : 0;
+            const paid = activePlan === "basic" || activePlan === "pro";
+            const limit = PLAN_TTS_LIMITS[activePlan] || 0;
+            const remaining = paid ? Math.max(0, limit - used) : 0;
+
+            setSubscriptionInfo({
+                plan: activePlan,
+                isPaid: paid,
+                ttsLimit: limit,
+                ttsUsed: used,
+                ttsRemaining: remaining,
+                month,
+            });
+
+            try {
+                localStorage.setItem("lectoro_cached_user_plan", activePlan);
+                localStorage.setItem("lectoro_cached_tts_used", String(used));
+                localStorage.setItem("lectoro_cached_tts_month", month);
+            } catch {}
+        }, (err) => {
+            console.warn("[AuthContext] user doc onSnapshot error:", err);
+        });
+
+        // Autorytatywne potwierdzenie z proxy w tle
+        void fetchUserSubscriptionDetails(user).then((details) => {
+            setSubscriptionInfo(details);
+            try {
+                localStorage.setItem("lectoro_cached_user_plan", details.plan);
+                localStorage.setItem("lectoro_cached_tts_used", String(details.ttsUsed));
+                localStorage.setItem("lectoro_cached_tts_month", details.month);
+            } catch {}
+        });
+
+        return () => unsub();
+    }, [user]);
+
+    const refreshPlan = useCallback(async () => {
+        if (!user) {
+            setSubscriptionInfo({
+                plan: "free",
+                isPaid: false,
+                ttsLimit: 0,
+                ttsUsed: 0,
+                ttsRemaining: 0,
+                month: getCurrentMonth(),
+            });
+            try {
+                localStorage.removeItem("lectoro_cached_user_plan");
+                localStorage.removeItem("lectoro_cached_tts_used");
+                localStorage.removeItem("lectoro_cached_tts_month");
+            } catch {}
+            return;
+        }
+        try {
+            const details = await fetchUserSubscriptionDetails(user);
+            setSubscriptionInfo(details);
+            try {
+                localStorage.setItem("lectoro_cached_user_plan", details.plan);
+                localStorage.setItem("lectoro_cached_tts_used", String(details.ttsUsed));
+                localStorage.setItem("lectoro_cached_tts_month", details.month);
+            } catch {}
+        } catch (e) {
+            console.warn("[AuthContext] refreshPlan error:", e);
+        }
+    }, [user]);
 
     const refreshWords = useCallback(async () => {
         if (user?.uid) {
@@ -367,6 +546,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         <AuthContext.Provider
             value={{
                 user,
+                plan,
+                isPaid,
+                subscriptionInfo,
+                refreshPlan,
                 loading,
                 isSigningIn,
                 authError,

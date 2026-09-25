@@ -13,6 +13,7 @@ import {
     collection,
     getDocs,
     doc,
+    getDoc,
     updateDoc,
     deleteDoc,
     writeBatch,
@@ -219,4 +220,214 @@ export async function editReviewWord(uid: string, word: ReviewWord): Promise<voi
 }
 export async function deleteReviewWord(uid: string, id: string): Promise<void> {
     await deleteDoc(doc(db, "users", uid, "words", id));
+}
+
+
+export type UserPlan = "free" | "basic" | "pro";
+
+const GEMINI_PROXY_URL = "https://europe-west1-extension-eng.cloudfunctions.net/geminiProxy";
+
+export async function fetchUserPlan(uid: string): Promise<UserPlan> {
+    if (!uid) return "free";
+    try {
+        const userSnap = await getDoc(doc(db, "users", uid));
+        if (userSnap.exists()) {
+            const data = userSnap.data();
+            const now = Date.now();
+            const prepaid = data.prepaidAccess || {};
+            const proEnd = Number(prepaid.pro || 0);
+            const basicEnd = Number(prepaid.basic || 0);
+            if (proEnd > now) return "pro";
+            if (basicEnd > now) return "basic";
+
+            const plan = String(data.plan || data.subscriptionPlan || "").toLowerCase().trim();
+            if (plan === "pro" || plan === "basic") return plan as UserPlan;
+
+            const status = String(data.subscriptionStatus || "").toLowerCase().trim();
+            if (status === "active" || status === "trialing") {
+                if (plan === "pro") return "pro";
+                return "basic";
+            }
+        }
+
+        // Also check subscriptionPlans collection (manual admin grant in Firebase Console)
+        try {
+            const subPlanSnap = await getDoc(doc(db, "subscriptionPlans", uid));
+            if (subPlanSnap.exists()) {
+                const spPlan = String(subPlanSnap.data()?.plan || "").toLowerCase().trim();
+                if (spPlan === "pro" || spPlan === "basic") return spPlan as UserPlan;
+            }
+        } catch {}
+
+        return "free";
+    } catch (err) {
+        console.warn("[Firebase] Could not fetch user plan from Firestore:", err);
+        return "free";
+    }
+}
+
+export async function getUserPlan(user: User | null): Promise<UserPlan> {
+    if (!user) return "free";
+    try {
+        // 1. Force refresh token to get fresh custom claims from Firebase Auth server
+        const tokenResult = await user.getIdTokenResult(true).catch(() => null);
+        const claimPlan = String(tokenResult?.claims?.plan || "").toLowerCase().trim();
+        if (claimPlan === "pro" || claimPlan === "basic") {
+            return claimPlan as UserPlan;
+        }
+
+        // 2. Check Firestore users/{uid} and subscriptionPlans/{uid}
+        const firestorePlan = await fetchUserPlan(user.uid);
+        if (firestorePlan === "pro" || firestorePlan === "basic") {
+            return firestorePlan;
+        }
+
+        // 3. Query authoritative geminiProxy backend (SSOT)
+        if (tokenResult?.token) {
+            try {
+                const response = await fetch(GEMINI_PROXY_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${tokenResult.token}`,
+                    },
+                    body: JSON.stringify({ action: "subscription" }),
+                });
+                if (response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    const authoritative = String(data?.profile?.plan || "").toLowerCase().trim();
+                    if (authoritative === "pro" || authoritative === "basic") {
+                        return authoritative as UserPlan;
+                    }
+                }
+            } catch (proxyErr) {
+                console.warn("[Firebase] geminiProxy subscription check error:", proxyErr);
+            }
+        }
+
+        return "free";
+    } catch {
+        return "free";
+    }
+}
+
+export interface SubscriptionDetails {
+    plan: UserPlan;
+    isPaid: boolean;
+    ttsLimit: number;
+    ttsUsed: number;
+    ttsRemaining: number;
+    month: string;
+}
+
+export const PLAN_TTS_LIMITS: Record<UserPlan, number> = {
+    free: 0,
+    basic: 10000,
+    pro: 100000,
+};
+
+export function getCurrentMonth(): string {
+    return new Date().toISOString().slice(0, 7);
+}
+
+export async function fetchUserSubscriptionDetails(user: User | null): Promise<SubscriptionDetails> {
+    const month = getCurrentMonth();
+    if (!user) {
+        return {
+            plan: "free",
+            isPaid: false,
+            ttsLimit: 0,
+            ttsUsed: 0,
+            ttsRemaining: 0,
+            month,
+        };
+    }
+
+    let plan: UserPlan = "free";
+    let ttsUsed = 0;
+
+    try {
+        // 1. Force refresh token for fresh custom claims
+        const tokenResult = await user.getIdTokenResult(true).catch(() => null);
+        const claimPlan = String(tokenResult?.claims?.plan || "").toLowerCase().trim();
+        if (claimPlan === "pro" || claimPlan === "basic") {
+            plan = claimPlan as UserPlan;
+        }
+
+        // 2. Check Firestore users/{uid}
+        const userSnap = await getDoc(doc(db, "users", user.uid)).catch(() => null);
+        if (userSnap && userSnap.exists()) {
+            const data = userSnap.data();
+            const now = Date.now();
+            const prepaid = data.prepaidAccess || {};
+            const proEnd = Number(prepaid.pro || 0);
+            const basicEnd = Number(prepaid.basic || 0);
+            if (proEnd > now) plan = "pro";
+            else if (basicEnd > now && plan !== "pro") plan = "basic";
+            else if (plan === "free") {
+                const p = String(data.plan || data.subscriptionPlan || "").toLowerCase().trim();
+                if (p === "pro" || p === "basic") plan = p as UserPlan;
+                const status = String(data.subscriptionStatus || "").toLowerCase().trim();
+                if (status === "active" || status === "trialing") {
+                    plan = p === "pro" ? "pro" : "basic";
+                }
+            }
+
+            const resetDate = String(data.elevenLabsResetDate || "");
+            if (resetDate === month) {
+                ttsUsed = Math.max(0, Number(data.elevenLabsCharactersThisMonth) || 0);
+            }
+        }
+
+        // 3. Fallback: check subscriptionPlans/{uid} if still free
+        if (plan === "free") {
+            const subSnap = await getDoc(doc(db, "subscriptionPlans", user.uid)).catch(() => null);
+            if (subSnap && subSnap.exists()) {
+                const p = String(subSnap.data()?.plan || "").toLowerCase().trim();
+                if (p === "pro" || p === "basic") plan = p as UserPlan;
+            }
+        }
+
+        // 4. Also sync with geminiProxy for authoritative verification
+        if (tokenResult?.token) {
+            try {
+                const response = await fetch(GEMINI_PROXY_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${tokenResult.token}`,
+                    },
+                    body: JSON.stringify({ action: "subscription" }),
+                });
+                if (response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    const authoritative = String(data?.profile?.plan || "").toLowerCase().trim();
+                    if (authoritative === "pro" || authoritative === "basic") {
+                        plan = authoritative as UserPlan;
+                    }
+                    const serverUsed = data?.profile?.usage?.elevenLabsCharacters?.used;
+                    if (typeof serverUsed === "number") {
+                        ttsUsed = Math.max(ttsUsed, serverUsed);
+                    }
+                }
+            } catch (proxyErr) {
+                console.warn("[Firebase] geminiProxy subscription check error:", proxyErr);
+            }
+        }
+    } catch (err) {
+        console.warn("[Firebase] fetchUserSubscriptionDetails error:", err);
+    }
+
+    const isPaid = plan === "basic" || plan === "pro";
+    const ttsLimit = PLAN_TTS_LIMITS[plan] || 0;
+    const ttsRemaining = isPaid ? Math.max(0, ttsLimit - ttsUsed) : 0;
+
+    return {
+        plan,
+        isPaid,
+        ttsLimit,
+        ttsUsed,
+        ttsRemaining,
+        month,
+    };
 }
