@@ -49,6 +49,7 @@ export const cs: Dict = {
     platforms: {
         label: "Bezproblémová integrace s vašimi oblíbenými video a webovými platformami",
         anyWeb: "Jakékoli webové články a dokumentace",
+        disclaimer: "Lectoro AI není spojeno s uvedenými značkami.",
     },
 
     showcase: {

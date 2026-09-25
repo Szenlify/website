@@ -15,7 +15,7 @@ Niniejsza dokumentacja stanowi **wyczerpujące kompendium wiedzy**: opisuje każ
    - [Tryb czytania napisów (Word Cloud — klawisz S)](#tryb-czytania-napisów-word-cloud--klawisz-s)
    - [Głębokie wyjaśnienia AI (Klawisz Enter / Q)](#głębokie-wyjaśnienia-ai-klawisz-enter--q)
    - [Tryb YouTube Focus Mode](#tryb-youtube-focus-mode)
-   - [Inteligentne fiszki ze zrzutem ekranu (Smart AI Flashcard)](#inteligentne-fiszki-ze-zrzutem-ekranu-smart-ai-flashcard)
+   - [Fiszki ze zrzutem ekranu](#fiszki-ze-zrzutem-ekranu)
 4. [Czytanie Tekstu i Artykułów w Internecie (Web Reading)](#4-czytanie-tekstu-i-artykułów-w-internecie-web-reading)
    - [Pływający pasek po zaznaczeniu tekstu](#pływający-pasek-po-zaznaczeniu-tekstu)
    - [Dymek tłumaczenia i słownik kontekstowy](#dymek-tłumaczenia-i-słownik-kontekstowy)
@@ -163,11 +163,9 @@ Opcja stworzona specjalnie dla materiałów edukacyjnych, wywiadów i podcastów
 
 ---
 
-### Inteligentne fiszki ze zrzutem ekranu (Smart AI Flashcard)
+### Fiszki ze zrzutem ekranu
 
-W ustawieniach wtyczki znajduje się przełącznik **Smart AI flashcard (Z)**:
-- **Domyślnie (wyłączone)**: wciśnięcie klawisza `Z` zapisuje dokładną treść bieżącego napisu wraz z jego tłumaczeniem i zrzutem klatki wideo.
-- **Po włączeniu Smart AI**: wciśnięcie `Z` wysyła bieżący napis wraz z kontekstem sąsiednich dialogów (kwestia przed i kwestia po) do sztucznej inteligencji. Model oczyszcza wypowiedź z zacięć, wtrąceń (*um, uh, you know*) i uciętych fragmentów, tworząc **idealne, krótkie, samodzielne zdanie do nauki** (4–12 słów) oraz jego precyzyjne tłumaczenie.
+Klawisz `Z` zapisuje oryginalną treść bieżącego napisu z interpunkcją, tłumaczeniem tej samej wypowiedzi i zrzutem klatki wideo. Tłumaczenie ma oddawać sens 1:1 naturalnym językiem, bez skracania, dopisywania kontekstu ani tworzenia nowego zdania.
 
 ---
 
@@ -250,7 +248,6 @@ Zawiera pełną konfigurację konta, języków, sztucznej inteligencji, napisów
   - `A` (*Medium*) — współczynnik 0.020 (domyślny, optymalny),
   - `A` (*Large*) — współczynnik 0.027 (duże, wyraźne napisy).
 - **Subtitle background opacity**: suwak od 0% do 100% regulujący stopień zaciemnienia tła pod napisami.
-- **Smart AI flashcard (Z)**: przełącznik aktywujący inteligentne oczyszczanie i dopasowywanie zdań kontekstowych przez AI przy zapisie klawiszem `Z`.
 - **YouTube Focus Mode**:
   - Przełącznik aktywacji trybu śledzenia słów na YouTube,
   - Paleta gotowych kolorów podświetlenia (*Indigo, Sky Blue, Emerald, Amber, Rose, Violet*),
@@ -392,7 +389,6 @@ Lectoro AI oferuje przejrzysty model rozliczeń: bogaty, w pełni użyteczny pla
 | **Podwójne napisy (YouTube, Netflix itp.)** | **Tak** | **Tak** | **Tak** |
 | **Tryb czytania (Word Cloud - klawisz S)** | **Tak** | **Tak** | **Tak** |
 | **YouTube Focus Mode (śledzenie słów)** | **Tak** | **Tak** | **Tak** |
-| **Smart AI Flashcard (kontekstowe fiszki)** | Zużywa kredyty AI | Zużywa kredyty AI | Nielimitowane |
 | **Głosy systemowe przeglądarki / Google** | **Tak (nielimitowane)** | **Tak (nielimitowane)** | **Tak (nielimitowane)** |
 | **AI TTS Natural Voices (Sulafat & Algieba)** | ❌ *Wyłączone* | **10 000 znaków / mc** *(do 500 zn./zapytanie)* | **100 000 znaków / mc** *(do 1000 zn./zapytanie)* |
 | **Synchronizacja w chmurze (Google/Firebase)** | **Tak** | **Tak** | **Tak** |

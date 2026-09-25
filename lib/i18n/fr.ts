@@ -49,6 +49,7 @@ export const fr: Dict = {
     platforms: {
         label: "S'intègre parfaitement à vos plateformes vidéo et web préférées",
         anyWeb: "Tous les articles web et documents",
+        disclaimer: "Lectoro AI n'est pas affilié aux marques mentionnées.",
     },
 
     showcase: {

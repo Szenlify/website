@@ -49,6 +49,7 @@ export const ko: Dict = {
     platforms: {
         label: "좋아하는 영상 및 웹 플랫폼과 완벽하게 연동됩니다",
         anyWeb: "모든 웹 기사 및 기술 문서",
+        disclaimer: "Lectoro AI는 나열된 브랜드와 제휴 관계가 없습니다.",
     },
 
     showcase: {

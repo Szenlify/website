@@ -49,6 +49,7 @@ export const de: Dict = {
     platforms: {
         label: "Nahtlose Integration mit deinen bevorzugten Video- und Webplattformen",
         anyWeb: "Beliebige Webseiten & Dokumentationen",
+        disclaimer: "Lectoro AI ist nicht mit den aufgeführten Marken verbunden.",
     },
 
     showcase: {

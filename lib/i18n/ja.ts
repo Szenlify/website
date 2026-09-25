@@ -49,6 +49,7 @@ export const ja: Dict = {
     platforms: {
         label: "お気に入りの動画・ウェブサービスとシームレスに連携",
         anyWeb: "あらゆるウェブ記事やドキュメント",
+        disclaimer: "Lectoro AI は記載されているブランドと提携していません。",
     },
 
     showcase: {

@@ -75,6 +75,7 @@ export interface Dict {
     platforms: {
         label: string;
         anyWeb: string;
+        disclaimer: string;
     };
 
     features: {
